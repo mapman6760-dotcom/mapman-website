@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Bookmark,
@@ -14,59 +14,128 @@ import { useNavigate } from "react-router-dom";
 
 const API_BASE_URL = "https://mapman-production.up.railway.app";
 
+const fetchSavedVideos = async (page) => {
+    try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(`${API_BASE_URL}/shop/fetchMySavedVideos?page=${page}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "usertoken": token
+            }
+        });
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching saved videos:", error);
+        throw error;
+    }
+};
+
+const fetchSavedShops = async (page) => {
+    try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(`${API_BASE_URL}/shop/fetchSavedShops?page=${page}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "usertoken": token
+            }
+        });
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching saved shops:", error);
+        throw error;
+    }
+};
+
 const SavedItems = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState("shops");
-    const [loading, setLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
+    const [hasMoreData, setHasMoreData] = useState(true);
+    const [savedShops, setSavedShops] = useState([]);
+    const [savedVideos, setSavedVideos] = useState([]);
 
-    // Mock data
-    const savedShops = [
-        {
-            id: 1,
-            name: "Ini's Mehandi",
-            category: "Premium Artist",
-            time: "10:30 AM - 04:16 PM",
-            image:
-                "https://images.unsplash.com/photo-1621252179027-94459d278660?w=600&h=600&fit=crop",
-            location: "Main Street, NY",
-        },
-        {
-            id: 2,
-            name: "Glam Hair Studio",
-            category: "Luxury Salon",
-            time: "11:00 AM - 08:00 PM",
-            image:
-                "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&h=600&fit=crop",
-            location: "Fifth Avenue, NY",
-        },
-    ];
+    const loadData = async (page, tab) => {
+        if (isLoading) return;
+        setIsLoading(true);
+        try {
+            const response = tab === "shops"
+                ? await fetchSavedShops(page)
+                : await fetchSavedVideos(page);
 
-    const savedVideos = [
-        {
-            id: 1,
-            title: "Co-bride Mehandi Art",
-            shopName: "Ini's Mehandi",
-            thumbnail:
-                "https://images.unsplash.com/photo-1621252179027-94459d278660?w=600&h=800&fit=crop",
-            views: "1.2k",
-        },
-        {
-            id: 2,
-            title: "Bridal Henna Concept",
-            shopName: "Ini's Mehandi",
-            thumbnail:
-                "https://images.unsplash.com/photo-1590670460287-03649561869e?w=600&h=800&fit=crop",
-            views: "890",
-        },
-        {
-            id: 3,
-            title: "Party Design Session",
-            shopName: "Ini's Mehandi",
-            thumbnail:
-                "https://images.unsplash.com/photo-1621252176993-94459d278660?w=600&h=800&fit=crop",
-            views: "2.5k",
-        },
-    ];
+            if (response.status === 200) {
+                const rawData = response.data || [];
+                const mappedData = rawData.map(item => {
+                    if (tab === "shops") {
+                        return {
+                            ...item,
+                            id: item.id,
+                            name: item.shopName,
+                            category: item.category,
+                            time: `${item.openTime || "10:30 AM"} - ${item.closeTime || "04:16 PM"}`,
+                            image: item.shopImage ? `${API_BASE_URL}${item.shopImage}` : "https://images.unsplash.com/photo-1621252179027-94459d278660?w=600&h=600&fit=crop",
+                            location: item.address || "Location not available",
+                            latitude: item.lat,
+                            longitude: item.long,
+                        };
+                    } else {
+                        return {
+                            ...item,
+                            id: item.id,
+                            title: item.videoTitle,
+                            shopName: item.shopName,
+                            thumbnail: item.video ? `${API_BASE_URL}${item.video}` : "https://images.unsplash.com/photo-1621252176993-94459d278660?w=600&h=800&fit=crop",
+                            views: `${item.views || 0}`,
+                        };
+                    }
+                });
+
+                if (tab === "shops") {
+                    setSavedShops(prev => (page === 1 ? mappedData : [...prev, ...mappedData]));
+                } else {
+                    setSavedVideos(prev => (page === 1 ? mappedData : [...prev, ...mappedData]));
+                }
+
+                if (rawData.length < 30) {
+                    setHasMoreData(false);
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching saved items:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (currentPage > 1) {
+            loadData(currentPage, activeTab);
+        }
+    }, [currentPage]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+        setHasMoreData(true);
+        loadData(1, activeTab);
+    }, [activeTab]);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollHeight = document.documentElement.scrollHeight;
+            const currentScroll = window.innerHeight + document.documentElement.scrollTop;
+            if (currentScroll + 10 >= scrollHeight) {
+                if (!isLoading && hasMoreData) {
+                    setCurrentPage(prev => prev + 1);
+                }
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [isLoading, hasMoreData]);
+
 
     return (
         <div className="min-h-screen bg-slate-50/50 pb-32">
@@ -201,11 +270,11 @@ const SavedItems = () => {
                                 {savedShops.map((shop, i) => (
                                     <div
                                         key={shop.id}
-                                        className="group relative bg-white p-4 rounded-[2rem] border border-slate-100 shadow-[0_15px_60px_-15px_rgba(0,0,0,0.06)] hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.12)] transition-all duration-700"
+                                        className="group relative bg-white p-3 rounded-[1.5rem] border border-slate-100 shadow-[0_12px_40px_-15px_rgba(0,0,0,0.06)] hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] transition-all duration-700"
                                     >
-                                        <div className="flex gap-7 items-center">
+                                        <div className="flex gap-4 items-center">
                                             {/* Shop Thumbnail with Navigation Icon Overlay */}
-                                            <div className="relative w-28 h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden shadow-2xl shrink-0 ring-1 ring-slate-100 ring-inset">
+                                            <div className="relative w-24 h-24 rounded-xl overflow-hidden shadow-xl shrink-0 ring-1 ring-slate-100 ring-inset">
                                                 <img
                                                     src={shop.image}
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
@@ -214,16 +283,24 @@ const SavedItems = () => {
                                                 <div className="absolute inset-0 bg-gradient-to-tr from-black/5 to-transparent mix-blend-overlay" />
 
                                                 {/* Pro Navigation Overlay */}
-                                                <div className="absolute bottom-2.5 right-2.5 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-xl cursor-pointer hover:bg-white hover:scale-110 transition-all z-10">
-                                                    <div className="w-6.5 h-6.5 bg-blue-500 text-white rounded-lg flex items-center justify-center rotate-45 shadow-lg shadow-blue-500/30">
-                                                        <ExternalLink className="w-3.5 h-3.5 rotate-[-45deg]" />
+                                                <div
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (shop.latitude && shop.longitude) {
+                                                            window.open(`https://www.google.com/maps?q=${shop.latitude},${shop.longitude}`, '_blank');
+                                                        }
+                                                    }}
+                                                    className="absolute bottom-2 right-2 w-8 h-8 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:bg-white hover:scale-110 transition-all z-10"
+                                                >
+                                                    <div className="w-5 h-5 bg-blue-500 text-white rounded-md flex items-center justify-center rotate-45 shadow-lg shadow-blue-500/20">
+                                                        <ExternalLink className="w-3 h-3 rotate-[-45deg]" />
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div className="flex-1 min-w-0 py-2 pr-6 flex flex-col justify-between h-full min-h-[114px]">
-                                                <div className="space-y-1.5">
-                                                    <h4 className="text-xl font-extrabold text-slate-900 tracking-tight leading-none group-hover:text-blue-600 transition-colors">
+                                            <div className="flex-1 min-w-0 py-1 pr-4 flex flex-col justify-between h-full min-h-[96px]">
+                                                <div className="space-y-1">
+                                                    <h4 className="text-base font-extrabold text-slate-900 tracking-tight leading-tight group-hover:text-blue-600 transition-colors">
                                                         {shop.name}
                                                     </h4>
                                                     <div className="flex items-center gap-2 text-xs text-slate-500 font-semibold uppercase tracking-wider opacity-80">
@@ -236,12 +313,12 @@ const SavedItems = () => {
                                                 {/* Ultra-Compact Premium Button */}
                                                 <div className="mt-4 w-fit relative">
                                                     <div className="absolute -inset-1 bg-gradient-to-r from-emerald-400 via-amber-300 to-indigo-500 rounded-full blur-[4px] opacity-15 group-hover:opacity-30 transition-opacity" />
-                                                    <div className="relative p-[1.5px] bg-gradient-to-r from-emerald-500 via-yellow-400 to-indigo-600 rounded-full ring-1 ring-white/5 group-hover:shadow-[0_0_12px_-5px_rgba(251,191,36,0.3)] transition-all">
+                                                    <div className="relative p-[1px] bg-gradient-to-r from-emerald-500 via-yellow-400 to-indigo-600 rounded-full ring-1 ring-white/5 group-hover:shadow-[0_0_12px_-5px_rgba(251,191,36,0.3)] transition-all">
                                                         <button
                                                             onClick={() =>
                                                                 navigate(`/shop-detail/${shop.id}`)
                                                             }
-                                                            className="flex items-center gap-2 px-4 py-1.5 bg-slate-950 text-white rounded-full text-[9px] font-black uppercase tracking-[0.12em] transition-all active:scale-95 shadow-inner"
+                                                            className="flex items-center gap-2 px-3 py-1 bg-slate-950 text-white rounded-full text-[8px] font-black uppercase tracking-[0.12em] transition-all active:scale-95 shadow-inner"
                                                         >
                                                             <div className="p-0.5 bg-white rounded-md shadow-sm">
                                                                 <Store className="w-3 h-3 text-slate-900" />
@@ -252,9 +329,9 @@ const SavedItems = () => {
                                                 </div>
 
                                                 {/* Top-Right Bookmark Button - Refined Shadow */}
-                                                <div className="absolute top-5 right-5">
-                                                    <button className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-[0_8px_30px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.05)] hover:shadow-[0_15px_40px_rgba(0,0,0,0.12)] transition-all active:scale-90 border border-slate-50 group/save">
-                                                        <Bookmark className="w-5 h-5 text-slate-900 fill-slate-900 group-hover/save:scale-110 transition-transform" />
+                                                <div className="absolute top-4 right-4">
+                                                    <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-[0_5px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.1)] transition-all active:scale-90 border border-slate-50 group/save">
+                                                        <Bookmark className="w-4 h-4 text-slate-900 fill-slate-900 group-hover/save:scale-110 transition-transform" />
                                                     </button>
                                                 </div>
                                             </div>
@@ -268,17 +345,20 @@ const SavedItems = () => {
                                 initial={{ opacity: 0, scale: 0.98 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.98 }}
-                                className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
+                                className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4"
                             >
                                 {savedVideos.map((video, idx) => (
                                     <div
                                         key={video.id}
-                                        className="group relative aspect-[9/13] overflow-hidden rounded-[2.2rem] bg-slate-950 shadow-xl border border-white/5 transition-all hover:-translate-y-1.5 duration-500"
+                                        className="group relative aspect-[4/5] overflow-hidden rounded-[1.8rem] bg-slate-950 shadow-lg border border-white/5 transition-all hover:-translate-y-1 duration-500"
                                     >
-                                        <img
+                                        <video
                                             src={video.thumbnail}
                                             className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-40 transition-all duration-700"
-                                            alt={video.title}
+                                            muted
+                                            playsInline
+                                            onMouseOver={(e) => e.target.play()}
+                                            onMouseOut={(e) => e.target.pause()}
                                         />
 
                                         <div
@@ -301,20 +381,20 @@ const SavedItems = () => {
                                             </div>
                                         </div>
 
-                                        <div className="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-black via-black/40 to-transparent flex flex-col gap-4">
-                                            <div className="space-y-1">
-                                                <h4 className="text-xs font-black text-white uppercase tracking-tighter leading-tight truncate">
+                                        <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black via-black/60 to-transparent flex flex-col gap-3">
+                                            <div className="space-y-0.5">
+                                                <h4 className="text-[10px] font-black text-white uppercase tracking-tighter leading-tight truncate">
                                                     {video.title}
                                                 </h4>
-                                                <p className="text-[8px] font-black text-blue-400 uppercase tracking-widest opacity-80">
+                                                <p className="text-[7.5px] font-black text-blue-400 uppercase tracking-widest opacity-80">
                                                     {video.shopName}
                                                 </p>
                                             </div>
                                             <button
                                                 onClick={() => navigate(`/shop-detail/1`)}
-                                                className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm shadow-lg transition-all flex items-center justify-center gap-2"
+                                                className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-[10px] shadow-lg transition-all flex items-center justify-center gap-2"
                                             >
-                                                <Store className="w-4 h-4" /> Visit Store
+                                                <Store className="w-3.5 h-3.5" /> Visit Store
                                             </button>
                                         </div>
                                     </div>

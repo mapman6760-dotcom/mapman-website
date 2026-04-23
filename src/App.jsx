@@ -64,14 +64,33 @@ import SavedItems from "./pages/SavedItems";
 import EditShop from "./pages/EditShop";
 import VideoPlayer from "./pages/VideoPlayer";
 import ViewedVideos from "./pages/ViewedVideos";
+import CategoryVideos from "./pages/CategoryVideos";
+import { getProfile } from "./api/shop";
+
+const API_BASE_URL = "https://mapman-production.up.railway.app";
 
 // --- Dashboard Component (Responsive Routing) ---
 const Dashboard = ({ onLogout }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [profileData, setProfileData] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await getProfile();
+        if (res.status === 200) {
+          setProfileData(res.data);
+        }
+      } catch (error) {
+        console.error("Error fetching profile for header:", error);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const showFullMenu = !isCollapsed || isSidebarOpen;
 
@@ -277,10 +296,16 @@ const Dashboard = ({ onLogout }) => {
             </button>
             <button onClick={() => navigate("/profile")} className={`flex items-center gap-3 group cursor-pointer p-2 rounded-2xl transition-all ${currentPage === 'profile' ? 'bg-blue-50 ring-1 ring-blue-100' : 'hover:bg-slate-50'}`}>
               <div className="text-right hidden md:block">
-                <p className="text-sm font-black text-slate-900 leading-none">Dhineshkumar R</p>
+                <p className="text-sm font-black text-slate-900 leading-none">
+                  {profileData?.userName || "Profile Name"}
+                </p>
               </div>
               <div className={`w-10 h-10 lg:w-11 lg:h-11 rounded-xl overflow-hidden ring-2 shadow-xl shadow-slate-200/50 group-hover:ring-blue-100 transition-all duration-300 ${currentPage === 'profile' ? 'ring-blue-500' : 'ring-slate-100'}`}>
-                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop" alt="Profile" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                <img
+                  src={profileData?.profilePic ? `${API_BASE_URL}${profileData.profilePic}` : "https://cdn-icons-png.flaticon.com/128/3135/3135715.png"}
+                  alt="Profile"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                />
               </div>
             </button>
           </div>
@@ -303,6 +328,7 @@ const Dashboard = ({ onLogout }) => {
             <Route path="/video-player/:id" element={<VideoPlayer />} />
             <Route path="/notification-settings" element={<NotificationSettings />} />
             <Route path="/viewed-videos" element={<ViewedVideos />} />
+            <Route path="/category-videos" element={<CategoryVideos />} />
             <Route path="*" element={
               <div className="flex flex-col items-center justify-center h-[60vh] text-slate-400">
                 <span className="text-4xl font-black uppercase tracking-widest opacity-20">404</span>

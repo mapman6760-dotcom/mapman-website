@@ -9,7 +9,11 @@ import {
     ChevronLeft,
     CirclePlay,
     RotateCcw,
-    CheckCircle2
+    CheckCircle2,
+    Volume2,
+    VolumeX,
+    Pause,
+    Play
 } from "lucide-react";
 
 const API_BASE_URL = "https://mapman-production.up.railway.app";
@@ -42,7 +46,32 @@ const VideoPlayer = () => {
         normalizedVideos.findIndex(v => v.id == id) || 0;
 
     const [currentIndex, setCurrentIndex] = useState(startIndex);
+    const [isMuted, setIsMuted] = useState(false);
+    const [isPlaying, setIsPlaying] = useState(true);
+    const [showRewardsModal, setShowRewardsModal] = useState(false);
+    const isMyVideos = location.state?.isMyVideos || false;
+    const trackedVideos = useRef(new Set());
     const containerRef = useRef(null);
+    const videoRefs = useRef([]);
+
+    const trackView = async (videoId) => {
+        if (isMyVideos || trackedVideos.current.has(videoId)) return;
+
+        try {
+            const token = localStorage.getItem("token");
+            await fetch(`${API_BASE_URL}/shop/viewedVideos`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "usertoken": token
+                },
+                body: JSON.stringify({ videoId })
+            });
+            trackedVideos.current.add(videoId);
+        } catch (error) {
+            console.error("Error tracking view:", error);
+        }
+    };
 
     // Snap to the starting video on first load
     useEffect(() => {
@@ -60,6 +89,28 @@ const VideoPlayer = () => {
         }
     };
 
+    // Auto-play/pause logic for sound
+    useEffect(() => {
+        videoRefs.current.forEach((video, idx) => {
+            if (video) {
+                if (idx === currentIndex) {
+                    if (isPlaying) {
+                        video.play().catch(err => console.log("Autoplay blocked:", err));
+                    } else {
+                        video.pause();
+                    }
+                } else {
+                    video.pause();
+                    video.currentTime = 0;
+                }
+            }
+        });
+    }, [currentIndex, isPlaying]);
+
+    const togglePlay = () => {
+        setIsPlaying(!isPlaying);
+    };
+
     return (
         <div className="fixed inset-0 z-[1000] bg-black overflow-hidden select-none">
             {/* ── TOP ACTION BAR ── */}
@@ -71,18 +122,31 @@ const VideoPlayer = () => {
                     <ChevronLeft className="w-6 h-6" />
                 </button>
 
-                <div className="flex items-center gap-2 bg-black/40 backdrop-blur-3xl px-4 py-2.5 rounded-full border border-white/10 pointer-events-auto cursor-pointer hover:bg-black/60 transition-colors shadow-2xl"
-                    onClick={() => navigate(`/shop-detail/${normalizedVideos[currentIndex]?.id}`)}>
-                    <div className="w-6 h-6 bg-emerald-500 rounded-lg flex items-center justify-center shadow-lg">
-                        <Store className="w-3.5 h-3.5 text-white" />
+                <div className="flex items-center gap-2 pointer-events-auto">
+                    <div
+                        className="flex items-center gap-2 bg-black/40 backdrop-blur-3xl px-4 py-2.5 rounded-full border border-white/10 cursor-pointer hover:bg-black/60 transition-colors shadow-2xl"
+                        onClick={() => navigate(`/shop-detail/${normalizedVideos[currentIndex]?.id}`)}
+                    >
+                        <div className="w-6 h-6 bg-emerald-500 rounded-lg flex items-center justify-center shadow-lg">
+                            <Store className="w-3.5 h-3.5 text-white" />
+                        </div>
+                        <span className="text-[10px] font-black text-white uppercase tracking-widest">Shop Details</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse ml-0.5" />
                     </div>
-                    <span className="text-[10px] font-black text-white uppercase tracking-widest">Shop Details</span>
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse ml-0.5" />
-                </div>
 
-                <div className="bg-white px-5 py-2.5 rounded-full flex items-center gap-3 shadow-[0_20px_40px_rgba(0,0,0,0.4)] border border-slate-100 pointer-events-auto">
-                    <img src="https://cdn-icons-png.flaticon.com/128/7892/7892416.png" className="w-5 h-5 object-contain" alt="Coins" />
-                    <span className="text-sm font-black text-slate-900">{normalizedVideos[currentIndex]?.coins || 0}</span>
+                    <button
+                        onClick={(e) => { e.stopPropagation(); setShowRewardsModal(true); }}
+                        className="w-12 h-12 bg-white/20 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center text-white active:scale-90 transition-transform shadow-xl"
+                    >
+                        <img src="https://cdn-icons-png.flaticon.com/128/7892/7892416.png" className="w-5 h-5 object-contain" alt="Coins" />
+                    </button>
+
+                    <button
+                        onClick={(e) => { e.stopPropagation(); setIsMuted(!isMuted); }}
+                        className="w-12 h-12 bg-white/20 backdrop-blur-xl border border-white/20 rounded-full flex items-center justify-center text-white active:scale-90 transition-transform shadow-xl"
+                    >
+                        {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                    </button>
                 </div>
             </div>
 
@@ -94,31 +158,63 @@ const VideoPlayer = () => {
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
                 {normalizedVideos.map((video, idx) => (
-                    <div key={video.id || idx} className="h-full w-full snap-start relative flex items-center justify-center bg-zinc-950">
-                        <video
-                            id={`video-${idx}`}
-                            className="w-full h-full object-cover"
-                            src={video.videoUrl}
-                            autoPlay={idx === currentIndex}
-                            loop
-                            muted
-                            playsInline
-                        />
+                    <div key={video.id || idx} className="h-full w-full snap-start relative flex items-center justify-center bg-black">
+                        {/* ── VIDEO CONTAINER (PORTRAIT CENTERED) ── */}
+                        <div
+                            className="relative w-full h-full max-w-[450px] mx-auto bg-black flex items-center justify-center overflow-hidden cursor-pointer"
+                            onClick={togglePlay}
+                        >
+                            <video
+                                ref={el => videoRefs.current[idx] = el}
+                                src={video.videoUrl}
+                                className="w-full h-full object-cover lg:object-contain relative z-10"
+                                loop
+                                playsInline
+                                muted={isMuted}
+                                onEnded={() => trackView(video.id)}
+                            />
 
-                        {/* ── OVERLAY INTERFACE ── */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/90 flex flex-col justify-end p-6 pb-24 md:pb-12">
+                            {/* PLAY/PAUSE OVERLAY INDICATOR */}
+                            <AnimatePresence>
+                                {!isPlaying && (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.8 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.8 }}
+                                        className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none"
+                                    >
+                                        <div className="w-16 h-16 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center text-white border border-white/20 shadow-2xl">
+                                            <Play className="w-7 h-7 fill-current opacity-80" />
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
 
-                            {/* PROGRESS BAR */}
-                            <div className="absolute bottom-[114px] left-0 right-0 h-1.5 bg-white/10 overflow-hidden">
+                            {/* AUDIO TOGGLE OVERLAY */}
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsMuted(!isMuted);
+                                }}
+                                className="absolute bottom-32 right-6 w-12 h-12 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/20 z-[60] active:scale-90 transition-transform"
+                            >
+                                {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                            </button>
+
+                            {/* PROGRESS BAR - MOVED TO ABSOLUTE BOTTOM */}
+                            <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-white/10 overflow-hidden z-[60]">
                                 <motion.div
-                                    className="h-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.6)]"
+                                    className="h-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.8)]"
                                     initial={{ width: "0%" }}
-                                    animate={{ width: idx === currentIndex ? "100%" : "0%" }}
+                                    animate={{ width: (idx === currentIndex && isPlaying) ? "100%" : "0%" }}
                                     transition={{ duration: 15, ease: "linear" }}
                                 />
                             </div>
+                        </div>
 
-                            <div className="flex items-end justify-between gap-6">
+                        {/* ── OVERLAY INTERFACE ── */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/95 flex flex-col justify-end p-6 pb-26 md:pb-14 pointer-events-none">
+                            <div className="flex items-end justify-between gap-6 pointer-events-auto">
                                 {/* VIDEO INFO */}
                                 <div className="space-y-4 flex-1">
                                     <div className="flex items-center gap-3">
@@ -155,6 +251,57 @@ const VideoPlayer = () => {
 
             {/* SMOOTH BOTTOM INDICATOR */}
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-40 h-1.5 bg-white/10 rounded-full backdrop-blur-xl" />
+
+            {/* ── EARN REWARDS DIALOG (PROFESSIONAL) ── */}
+            <AnimatePresence>
+                {showRewardsModal && (
+                    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-6 text-center">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowRewardsModal(false)}
+                            className="absolute inset-0 bg-slate-900/40 backdrop-blur-xl"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 30 }}
+                            className="relative w-full max-w-[300px] bg-white rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(30,58,138,0.25)] p-8 border border-white overflow-hidden"
+                        >
+                            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-amber-600" />
+
+                            {/* Treasure Chest Illustration */}
+                            <div className="w-32 h-32 mx-auto mb-6 relative">
+                                <motion.div
+                                    animate={{ y: [0, -10, 0] }}
+                                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                    className="relative z-10"
+                                >
+                                    <img src="https://img.freepik.com/premium-vector/purple-box-with-gold-bow-top-it-there-are-many-gold-coins-scattered-around-box-vector-illustration_345238-2441.jpg?semt=ais_incoming&w=740&q=80" className="w-full h-full object-cover rounded-2xl" alt="Treasure" />
+                                </motion.div>
+                                <div className="absolute inset-0 bg-orange-400/20 blur-3xl rounded-full" />
+                            </div>
+
+                            <div className="space-y-3 mb-8">
+                                <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic leading-tight">
+                                    Earn Rewards for <br /> Watching Videos
+                                </h3>
+                                <p className="text-[11px] font-medium text-slate-400 leading-relaxed px-2 uppercase tracking-wide">
+                                    For every video you watch, you will receive <span className="text-orange-600 font-bold">2 SuperCoins</span> as a reward.
+                                </p>
+                            </div>
+
+                            <button
+                                onClick={() => setShowRewardsModal(false)}
+                                className="w-full h-14 rounded-2xl bg-gradient-to-r from-orange-400 to-amber-600 text-white font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-orange-500/30 hover:shadow-orange-500/50 hover:scale-[1.02] transition-all active:scale-95"
+                            >
+                                Yes, I Got It
+                            </button>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

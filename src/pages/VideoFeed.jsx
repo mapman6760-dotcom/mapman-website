@@ -25,7 +25,10 @@ import {
     CheckCircle2,
     Lock,
     Sparkles,
-    ChevronLeft
+    ChevronLeft,
+    ShieldCheck,
+    Grid,
+    VideoOff
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -36,33 +39,202 @@ const VideoFeed = () => {
     const [activeTab, setActiveTab] = useState("all");
     const [videos, setVideos] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isShopRegistered, setIsShopRegistered] = useState(true);
+    const [shopInfo, setShopInfo] = useState(null);
+    const [isSaving, setIsSaving] = useState(false);
+    const [editingVideo, setEditingVideo] = useState(null);
     const [selectedReel, setSelectedReel] = useState(null);
 
     // Upload Modal State
     const [showUploadModal, setShowUploadModal] = useState(false);
+    const [showRewardsModal, setShowRewardsModal] = useState(false);
     const [videoFile, setVideoFile] = useState(null);
     const [fileError, setFileError] = useState("");
     const [uploadForm, setUploadForm] = useState({
         videoTitle: "",
         description: "",
-        shopCategory: "Food & Drinks",
-        shopName: "Mapman Premium Shop"
+        shopCategory: "",
+        shopName: ""
     });
+
+    useEffect(() => {
+        if (shopInfo) {
+            setUploadForm(prev => ({
+                ...prev,
+                shopCategory: shopInfo.category || "",
+                shopName: shopInfo.name || ""
+            }));
+        }
+    }, [shopInfo]);
 
     useEffect(() => {
         fetchData();
     }, [activeTab]);
 
+    const handleRegisterVideo = async () => {
+        if (!videoFile || !uploadForm.videoTitle || !shopInfo) return;
+        setIsSaving(true);
+        try {
+            const token = localStorage.getItem("token");
+            const formData = new FormData();
+            formData.append("shopId", shopInfo.id);
+            formData.append("video", videoFile);
+            formData.append("videoTitle", uploadForm.videoTitle);
+            formData.append("shopName", uploadForm.shopName);
+            formData.append("category", uploadForm.shopCategory);
+            formData.append("description", uploadForm.description);
+
+            const res = await fetch(`${API_BASE_URL}/shop/videoRegister`, {
+                method: "POST",
+                headers: { "usertoken": token },
+                body: formData
+            });
+            const result = await res.json();
+            if (result.status === 200) {
+                setShowUploadModal(false);
+                setVideoFile(null);
+                setUploadForm({ ...uploadForm, videoTitle: "", description: "" });
+                fetchData();
+            }
+        } catch (error) {
+            console.error("Upload error:", error);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleUpdateVideo = async () => {
+        if (!uploadForm.videoTitle || !shopInfo || !editingVideo) return;
+        setIsSaving(true);
+        try {
+            const token = localStorage.getItem("token");
+            const res = await fetch(`${API_BASE_URL}/shop/updateVideoDetails`, {
+                method: "POST",
+                headers: {
+                    "usertoken": token,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    shopId: shopInfo.id,
+                    videoTitle: uploadForm.videoTitle,
+                    shopName: uploadForm.shopName,
+                    category: uploadForm.shopCategory,
+                    description: uploadForm.description,
+                    videoId: editingVideo.id
+                })
+            });
+            const result = await res.json();
+            if (result.status === 200) {
+                setShowUploadModal(false);
+                setEditingVideo(null);
+                fetchData();
+            }
+        } catch (error) {
+            console.error("Update error:", error);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleReplaceVideo = async (file) => {
+        if (!file || !editingVideo) return;
+        setIsSaving(true);
+        try {
+            const token = localStorage.getItem("token");
+            const formData = new FormData();
+            formData.append("video", file);
+            formData.append("videoId", editingVideo.id);
+
+            const res = await fetch(`${API_BASE_URL}/shop/replaceVideo`, {
+                method: "POST",
+                headers: { "usertoken": token },
+                body: formData
+            });
+            const result = await res.json();
+            if (result.status === 200) {
+                fetchData();
+                setShowUploadModal(false);
+                setEditingVideo(null);
+            }
+        } catch (error) {
+            console.error("Replace video error:", error);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleDeleteVideo = async () => {
+        if (!editingVideo) return;
+        if (!window.confirm("Are you sure you want to delete this reel?")) return;
+        setIsSaving(true);
+        try {
+            const token = localStorage.getItem("token");
+            const res = await fetch(`${API_BASE_URL}/shop/deleteVideo`, {
+                method: "POST",
+                headers: {
+                    "usertoken": token,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ videoId: editingVideo.id })
+            });
+            const result = await res.json();
+            if (result.status === 200) {
+                fetchData();
+                setShowUploadModal(false);
+                setEditingVideo(null);
+            }
+        } catch (error) {
+            console.error("Delete error:", error);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleOpenEdit = (vid) => {
+        setEditingVideo(vid);
+        setUploadForm({
+            videoTitle: vid.videoTitle || "",
+            description: vid.description || "",
+            shopCategory: vid.category || shopInfo?.category || "",
+            shopName: vid.shopName || shopInfo?.name || ""
+        });
+        setVideoFile(null); // We don't have the file object for existing videos
+        setShowUploadModal(true);
+    };
+
     const fetchData = async () => {
         setLoading(true);
         try {
             const token = localStorage.getItem("token");
+
+            // 1. Check Shop Status if in "My Videos" tab
+            if (activeTab === "my") {
+                try {
+                    const shopRes = await fetch(`${API_BASE_URL}/shop/home`, {
+                        headers: { "usertoken": token }
+                    });
+                    const shopResult = await shopRes.json();
+                    if (shopResult.status === 200 && shopResult.data) {
+                        setIsShopRegistered(true);
+                        setShopInfo(shopResult.data);
+                    } else {
+                        setIsShopRegistered(false);
+                        setShopInfo(null);
+                    }
+                } catch (err) {
+                    console.error("Shop check error:", err);
+                    setIsShopRegistered(false);
+                    setShopInfo(null);
+                }
+            }
+
+            // 2. Fetch Videos
             const endpoint = activeTab === "all" ? "/shop/getCategoryVideos" : "/shop/myVideos";
             const response = await fetch(`${API_BASE_URL}${endpoint}`, {
                 headers: { "usertoken": token }
             });
             const result = await response.json();
-            if (result.status === 200) {
+            if (result.status === 200 && Array.isArray(result.data)) {
                 setVideos(result.data);
             } else {
                 setVideos([]);
@@ -105,32 +277,48 @@ const VideoFeed = () => {
                         onClick={() => setActiveTab("all")}
                         className={`px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all duration-300 ${activeTab === "all" ? "bg-slate-900 text-white shadow-xl scale-105" : "text-slate-500 hover:text-slate-700"}`}
                     >
-                        Live Feed
+                        All Videos
                     </button>
                     <button
                         onClick={() => setActiveTab("my")}
                         className={`px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all duration-300 ${activeTab === "my" ? "bg-slate-900 text-white shadow-xl scale-105" : "text-slate-500 hover:text-slate-700"}`}
                     >
-                        My Studio
+                        My Videos
                     </button>
                 </div>
 
-                {activeTab === "my" && (
-                    <motion.button
-                        layoutId="capture-btn"
-                        onClick={() => setShowUploadModal(true)}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        whileHover={{ scale: 1.05, y: -2 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="flex items-center gap-2.5 bg-blue-600 text-white px-7 py-4 rounded-xl font-bold text-sm shadow-lg transition-all hover:bg-blue-700"
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => setShowRewardsModal(true)}
+                        className="bg-white px-5 py-2.5 rounded-full flex items-center gap-3 shadow-sm border border-slate-100 hover:shadow-md transition-all active:scale-95 group"
                     >
-                        <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center">
-                            <Plus className="w-4 h-4 text-white" />
-                        </div>
-                        <span className="flex items-center gap-2">Capture Reel</span>
-                    </motion.button>
-                )}
+                        <img src="https://cdn-icons-png.flaticon.com/128/7892/7892416.png" className="w-5 h-5 object-contain group-hover:rotate-12 transition-transform" alt="Coins" />
+                        <span className="text-sm font-black text-slate-900 tracking-tighter">4</span>
+                    </button>
+
+                    {activeTab === "my" && (
+                        <motion.button
+                            layoutId="capture-btn"
+                            onClick={() => {
+                                if (!shopInfo || Object.keys(shopInfo).length === 0) {
+                                    navigate("/edit-shop");
+                                } else {
+                                    setShowUploadModal(true);
+                                }
+                            }}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            whileHover={{ scale: 1.05, y: -2 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="flex items-center gap-2.5 bg-blue-600 text-white px-7 py-4 rounded-xl font-bold text-sm shadow-lg transition-all hover:bg-blue-700"
+                        >
+                            <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center">
+                                <Plus className="w-4 h-4 text-white" />
+                            </div>
+                            <span className="flex items-center gap-2">Capture Reel</span>
+                        </motion.button>
+                    )}
+                </div>
             </div>
 
             {/* 2. DISCOVERY GRID */}
@@ -142,57 +330,77 @@ const VideoFeed = () => {
             ) : videos.length > 0 ? (
                 <div className={`${activeTab === "all" ? "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6" : "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 px-4"} gap-5 bg-transparent pb-20 no-scrollbar`}>
                     <AnimatePresence mode="popLayout">
-                        {videos.map((vid, i) => (
-                            <motion.div
-                                key={vid.id || i}
-                                initial={{ opacity: 0, scale: 0.95, y: 15 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                transition={{ delay: i * 0.02 }}
-                                onClick={() => navigate(`/video-player/${vid.id || i}`, {
-                                    state: { videos: videos, index: i }
-                                })}
-                                className={`relative group cursor-pointer transition-all duration-500 ${activeTab === 'all' ? 'flex flex-col aspect-[3/4] overflow-hidden bg-white border-r border-b border-slate-100' : 'flex flex-col bg-white rounded-[2rem] p-4 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 border border-slate-100'}`}
-                            >
-                                {activeTab === "all" ? (
-                                    <>
-                                        <div className="absolute inset-0">
-                                            <img src={`${API_BASE_URL}${vid.categoryVideo}`} alt={vid.categoryName} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" />
-                                        </div>
-                                        <div className="absolute top-4 left-4 right-4 z-10 flex items-center justify-between pointer-events-none">
-                                            <div className="px-2.5 py-1 rounded-md border text-white text-[7px] font-black uppercase tracking-widest shadow-xl backdrop-blur-md bg-white/10 border-white/20">{vid.categoryName}</div>
-                                        </div>
-                                        <div className="absolute bottom-5 left-5 right-5 z-10 text-white">
-                                            <h4 className="text-[11px] font-black uppercase tracking-tight mb-3 line-clamp-2 leading-tight drop-shadow-lg group-hover:text-blue-400 transition-colors uppercase">{vid.categoryName} Reel</h4>
-                                            <div className="flex items-center gap-1.5 px-2 py-1 bg-emerald-500/10 backdrop-blur-md border border-emerald-500/20 rounded-md inline-flex">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                                                <span className="text-[7px] font-black text-emerald-400 uppercase tracking-widest">Active Studio</span>
+                        {videos.map((vid, i) => {
+                            if (!vid) return null;
+                            return (
+                                <motion.div
+                                    key={vid.id || i}
+                                    initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    transition={{ delay: i * 0.02 }}
+                                    onClick={() => {
+                                        if (activeTab === "all") {
+                                            navigate(`/category-videos?category=${vid.categoryName}`);
+                                        } else {
+                                            navigate(`/video-player/${vid.id || i}`, {
+                                                state: { videos: videos, index: i, isMyVideos: activeTab === "my" }
+                                            });
+                                        }
+                                    }}
+                                    className={`relative group cursor-pointer transition-all duration-500 ${activeTab === 'all' ? 'flex flex-col aspect-[3/4] overflow-hidden bg-white border-r border-b border-slate-100' : 'flex flex-col bg-white rounded-[2rem] p-4 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 border border-slate-100'}`}
+                                >
+                                    {activeTab === "all" ? (
+                                        <>
+                                            <div className="absolute inset-0">
+                                                <img src={`${API_BASE_URL}${vid.categoryVideo}`} alt={vid.categoryName} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" />
                                             </div>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <>
-                                        <div className="w-full aspect-video rounded-[1.5rem] overflow-hidden bg-slate-950 mb-4 relative group-hover:shadow-xl h-36 border border-slate-900 shadow-inner">
-                                            <video src={`${API_BASE_URL}${vid.video}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100" muted loop />
-                                            <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/80 backdrop-blur-md rounded-lg text-[8px] font-black text-white/90 uppercase tracking-widest leading-none border border-white/10">{vid.id % 2 === 0 ? "LIVE" : "HD"}</div>
-                                        </div>
-                                        <div className="flex gap-4">
-                                            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-800 to-black p-0.5 shadow-lg group-hover:rotate-6 transition-transform">
-                                                <div className="w-full h-full rounded-[0.5rem] bg-slate-900 flex items-center justify-center text-white font-black text-[10px]">{vid.shopName?.charAt(0) || "M"}</div>
+                                            <div className="absolute top-4 left-4 right-4 z-10 flex items-center justify-between pointer-events-none">
+                                                <div className="px-2.5 py-1 rounded-md border text-white text-[7px] font-black uppercase tracking-widest shadow-xl backdrop-blur-md bg-white/10 border-white/20">{vid.categoryName}</div>
                                             </div>
-                                            <div className="flex flex-col gap-1 min-w-0 flex-1">
-                                                <h4 className="text-[12px] font-black text-slate-900 uppercase tracking-tight line-clamp-2 leading-tight transition-colors uppercase">{vid.videoTitle}</h4>
-                                                <div className="flex items-center gap-1.5 text-slate-400 text-[9px] font-bold uppercase tracking-tight opacity-70">
-                                                    <span className="truncate">{vid.shopName}</span>
-                                                    <div className="w-1 h-1 rounded-full bg-slate-200"></div>
-                                                    <span>{vid.views || 0} views</span>
+                                            <div className="absolute bottom-5 left-5 right-5 z-10 text-white">
+                                                <h4 className="text-[11px] font-black uppercase tracking-tight mb-3 line-clamp-2 leading-tight drop-shadow-lg group-hover:text-blue-400 transition-colors uppercase">{vid.categoryName} Reel</h4>
+                                                <div className="flex items-center gap-1.5 px-2 py-1 bg-emerald-500/10 backdrop-blur-md border border-emerald-500/20 rounded-md inline-flex">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                                                    <span className="text-[7px] font-black text-emerald-400 uppercase tracking-widest">Active Studio</span>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </>
-                                )}
-                            </motion.div>
-                        ))}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="w-full aspect-video rounded-[1.5rem] overflow-hidden bg-slate-950 mb-4 relative group-hover:shadow-xl h-36 border border-slate-900 shadow-inner">
+                                                <video src={`${API_BASE_URL}${vid.video}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100" muted loop />
+                                                <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/80 backdrop-blur-md rounded-lg text-[8px] font-black text-white/90 uppercase tracking-widest leading-none border border-white/10">{vid.id % 2 === 0 ? "LIVE" : "HD"}</div>
+                                            </div>
+                                            <div className="flex gap-4">
+                                                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-800 to-black p-0.5 shadow-lg group-hover:rotate-6 transition-transform">
+                                                    <div className="w-full h-full rounded-[0.5rem] bg-slate-900 flex items-center justify-center text-white font-black text-[10px]">{vid.shopName?.charAt(0) || "M"}</div>
+                                                </div>
+                                                <div className="flex flex-col gap-1 min-w-0 flex-1 relative pr-8">
+                                                    <h4 className="text-[12px] font-black text-slate-900 uppercase tracking-tight line-clamp-2 leading-tight transition-colors uppercase">{vid.videoTitle}</h4>
+                                                    <div className="flex items-center gap-1.5 text-slate-400 text-[9px] font-bold uppercase tracking-tight opacity-70">
+                                                        <span className="truncate">{vid.shopName}</span>
+                                                        <div className="w-1 h-1 rounded-full bg-slate-200"></div>
+                                                        <span>{vid.views || 0} views</span>
+                                                    </div>
+
+                                                    {/* Edit Menu Button */}
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleOpenEdit(vid);
+                                                        }}
+                                                        className="absolute right-0 top-0 w-8 h-8 flex items-center justify-center hover:bg-slate-100 rounded-lg transition-colors text-slate-400 hover:text-blue-600"
+                                                    >
+                                                        <MoreVertical className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+                                </motion.div>
+                            );
+                        })}
                     </AnimatePresence>
                 </div>
             ) : (
@@ -233,14 +441,23 @@ const VideoFeed = () => {
                                     </div>
                                     <div>
                                         <h3 className="text-xl font-black text-slate-900 tracking-tighter uppercase leading-none mb-1.5 flex items-center gap-2">
-                                            Studio Reel
+                                            {editingVideo ? "Refine Reel" : "Studio Reel"}
                                         </h3>
                                         <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest flex items-center gap-1.5">
-                                            <div className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse"></div> List Experience
+                                            <div className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse"></div>
+                                            {editingVideo ? "Modify Experience" : "List Experience"}
                                         </p>
                                     </div>
                                 </div>
-                                <button onClick={() => setShowUploadModal(false)} className="w-10 h-10 bg-white hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-xl flex items-center justify-center transition-all border border-slate-100 shadow-sm relative z-10">
+                                {editingVideo && (
+                                    <button
+                                        onClick={handleDeleteVideo}
+                                        className="ml-auto mr-4 w-10 h-10 bg-rose-50 hover:bg-rose-100 text-rose-500 rounded-xl flex items-center justify-center transition-all border border-rose-100 shadow-sm relative z-10"
+                                    >
+                                        <AlertCircle className="w-5 h-5" />
+                                    </button>
+                                )}
+                                <button onClick={() => { setShowUploadModal(false); setEditingVideo(null); }} className="w-10 h-10 bg-white hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-xl flex items-center justify-center transition-all border border-slate-100 shadow-sm relative z-10">
                                     <X className="w-5 h-5" />
                                 </button>
                             </div>
@@ -262,16 +479,25 @@ const VideoFeed = () => {
                                             className={`w-full h-40 border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center transition-all duration-500 ${videoFile ? 'border-emerald-500 bg-emerald-50/5' : 'border-slate-200 bg-slate-50 group-hover/picker:border-blue-400 group-hover/picker:bg-blue-50/5'}`}
                                         >
                                             <div className={`w-14 h-14 rounded-2xl mb-4 flex items-center justify-center shadow-lg transition-all duration-500 ${videoFile ? 'bg-emerald-600 text-white rotate-0' : 'bg-white text-slate-300 group-hover/picker:rotate-6'}`}>
-                                                {videoFile ? <CheckCircle2 className="w-7 h-7" /> : <FileVideo className="w-7 h-7" />}
+                                                {videoFile ? <CheckCircle2 className="w-7 h-7" /> : <Plus className="w-7 h-7" />}
                                             </div>
                                             <span className={`text-[12px] font-black uppercase tracking-widest transition-colors ${videoFile ? 'text-emerald-700' : 'text-slate-500'}`}>
-                                                {videoFile ? videoFile.name : 'Select or Drop Studio Video'}
+                                                {videoFile ? videoFile.name : editingVideo ? 'Replace Studio Video' : 'Select or Drop Studio Video'}
                                             </span>
                                             {videoFile && (
                                                 <p className="text-[9px] text-emerald-600/60 font-black mt-1 uppercase tracking-widest">Valid Capture Component</p>
                                             )}
                                         </motion.div>
                                     </div>
+                                    {editingVideo && (
+                                        <button
+                                            onClick={() => handleReplaceVideo(videoFile)}
+                                            disabled={!videoFile || isSaving}
+                                            className={`w-full h-12 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${videoFile ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'bg-slate-100 text-slate-300 cursor-not-allowed'}`}
+                                        >
+                                            {isSaving ? "Replacing..." : "Commit Video Replacement"}
+                                        </button>
+                                    )}
                                     {fileError && (
                                         <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-3 px-4 py-3 bg-red-50 text-red-600 rounded-2xl border border-red-100 shadow-sm shadow-red-200/20 mt-2">
                                             <div className="shrink-0 w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm"><AlertCircle className="w-4 h-4" /></div>
@@ -358,15 +584,71 @@ const VideoFeed = () => {
                                     Cancel
                                 </button>
                                 <button
-                                    className={`flex-[1.5] py-4 rounded-xl font-bold text-sm transition-all relative overflow-hidden shadow-lg active:scale-95 
-                                        ${videoFile && uploadForm.videoTitle
+                                    className={`flex-[1.5] py-4 rounded-xl font-bold text-sm transition-all relative overflow-hidden shadow-lg active:scale-95 flex items-center justify-center
+                                        ${uploadForm.videoTitle && (videoFile || editingVideo)
                                             ? 'bg-blue-600 text-white hover:bg-blue-700'
                                             : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'}`}
-                                    disabled={!videoFile || !uploadForm.videoTitle}
+                                    disabled={(!videoFile && !editingVideo) || !uploadForm.videoTitle || isSaving}
+                                    onClick={editingVideo ? handleUpdateVideo : handleRegisterVideo}
                                 >
-                                    <span className="relative z-10">Confirm Release</span>
+                                    {isSaving ? (
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                    ) : (
+                                        <span className="relative z-10">{editingVideo ? "Update Details" : "Confirm Release"}</span>
+                                    )}
                                 </button>
                             </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* 4. EARN REWARDS DIALOG (PROFESSIONAL) */}
+            <AnimatePresence>
+                {showRewardsModal && (
+                    <div className="fixed inset-0 z-[150] flex items-center justify-center p-6 text-center">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowRewardsModal(false)}
+                            className="absolute inset-0 bg-slate-900/40 backdrop-blur-xl"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 30 }}
+                            className="relative w-full max-w-[300px] bg-white rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(30,58,138,0.25)] p-8 border border-white overflow-hidden"
+                        >
+                            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-amber-600" />
+
+                            {/* Treasure Chest Illustration */}
+                            <div className="w-32 h-32 mx-auto mb-6 relative">
+                                <motion.div
+                                    animate={{ y: [0, -10, 0] }}
+                                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                    className="relative z-10"
+                                >
+                                    <img src="https://img.freepik.com/premium-vector/purple-box-with-gold-bow-top-it-there-are-many-gold-coins-scattered-around-box-vector-illustration_345238-2441.jpg?semt=ais_incoming&w=740&q=80" className="w-full h-full object-cover rounded-2xl" alt="Treasure" />
+                                </motion.div>
+                                <div className="absolute inset-0 bg-orange-400/20 blur-3xl rounded-full" />
+                            </div>
+
+                            <div className="space-y-3 mb-8">
+                                <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic leading-tight">
+                                    Earn Rewards for <br /> Watching Videos
+                                </h3>
+                                <p className="text-[11px] font-medium text-slate-400 leading-relaxed px-2 uppercase tracking-wide">
+                                    For every video you watch, you will receive <span className="text-orange-600 font-bold">2 SuperCoins</span> as a reward.
+                                </p>
+                            </div>
+
+                            <button
+                                onClick={() => setShowRewardsModal(false)}
+                                className="w-full h-14 rounded-2xl bg-gradient-to-r from-orange-400 to-amber-600 text-white font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-orange-500/30 hover:shadow-orange-500/50 hover:scale-[1.02] transition-all active:scale-95"
+                            >
+                                Yes, I Got It
+                            </button>
                         </motion.div>
                     </div>
                 )}

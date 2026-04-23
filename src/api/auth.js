@@ -1,13 +1,13 @@
 const BASE_URL = "https://mapman-production.up.railway.app/shop/auth";
 
-export const sendEmailOtp = async (email) => {
+export const sendEmailOtp = async (phoneNumber) => {
   try {
-    const response = await fetch(`${BASE_URL}/sendEmailOtp`, {
+    const response = await fetch(`${BASE_URL}/sendOtp`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ phoneNumber }),
     });
 
     if (!response.ok) {
@@ -22,14 +22,14 @@ export const sendEmailOtp = async (email) => {
   }
 };
 
-export const verifyEmailOtp = async (email, otp) => {
+export const verifyEmailOtp = async (phoneNumber, otp) => {
   try {
-    const response = await fetch(`${BASE_URL}/verifyEmailOtp`, {
+    const response = await fetch(`${BASE_URL}/verifyOtp`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, otp }),
+      body: JSON.stringify({ phoneNumber, otp }),
     });
 
     if (!response.ok) {
