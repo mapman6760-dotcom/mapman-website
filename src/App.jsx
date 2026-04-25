@@ -55,6 +55,7 @@ import MapExplore from "./pages/MapExplore";
 import VideoFeed from "./pages/VideoFeed";
 import Profile from "./pages/Profile";
 import Notifications from "./pages/Notifications";
+import EditProfile from "./pages/EditProfile";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
 import ShopAnalytics from "./pages/ShopAnalytics";
@@ -65,6 +66,7 @@ import EditShop from "./pages/EditShop";
 import VideoPlayer from "./pages/VideoPlayer";
 import ViewedVideos from "./pages/ViewedVideos";
 import CategoryVideos from "./pages/CategoryVideos";
+import Support from "./pages/Support";
 import { getProfile } from "./api/shop";
 
 const API_BASE_URL = "https://mapman-production.up.railway.app";
@@ -319,6 +321,7 @@ const Dashboard = ({ onLogout }) => {
             <Route path="/video" element={<VideoFeed />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/profile" element={<Profile onLogout={() => setShowLogoutDialog(true)} />} />
+            <Route path="/edit-profile" element={<EditProfile />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-conditions" element={<TermsConditions />} />
             <Route path="/shop-analytics" element={<ShopAnalytics />} />
@@ -329,6 +332,7 @@ const Dashboard = ({ onLogout }) => {
             <Route path="/notification-settings" element={<NotificationSettings />} />
             <Route path="/viewed-videos" element={<ViewedVideos />} />
             <Route path="/category-videos" element={<CategoryVideos />} />
+            <Route path="/support" element={<Support />} />
             <Route path="*" element={
               <div className="flex flex-col items-center justify-center h-[60vh] text-slate-400">
                 <span className="text-4xl font-black uppercase tracking-widest opacity-20">404</span>

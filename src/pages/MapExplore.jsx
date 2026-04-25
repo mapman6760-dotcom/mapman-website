@@ -28,11 +28,14 @@ const API_BASE_URL = "https://mapman-production.up.railway.app";
 // --- API Helper ---
 const fetchShops = async (input = "") => {
   try {
+    console.log(input);
+    
     const token = localStorage.getItem("token");
     const response = await fetch(`${API_BASE_URL}/shop/search?input=${input}`, {
       headers: { usertoken: token },
     });
     const result = await response.json();
+    console.log(result.data);
     if (result.status === 200) return result.data;
     return [];
   } catch (error) {

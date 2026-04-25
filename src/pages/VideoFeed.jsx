@@ -31,6 +31,7 @@ import {
     VideoOff
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { fetchShop } from "../api/shop";
 
 const API_BASE_URL = "https://mapman-production.up.railway.app";
 
@@ -62,7 +63,7 @@ const VideoFeed = () => {
             setUploadForm(prev => ({
                 ...prev,
                 shopCategory: shopInfo.category || "",
-                shopName: shopInfo.name || ""
+                shopName: shopInfo.shopName || shopInfo.name || ""
             }));
         }
     }, [shopInfo]);
@@ -190,16 +191,28 @@ const VideoFeed = () => {
         }
     };
 
-    const handleOpenEdit = (vid) => {
-        setEditingVideo(vid);
-        setUploadForm({
-            videoTitle: vid.videoTitle || "",
-            description: vid.description || "",
-            shopCategory: vid.category || shopInfo?.category || "",
-            shopName: vid.shopName || shopInfo?.name || ""
-        });
-        setVideoFile(null); // We don't have the file object for existing videos
-        setShowUploadModal(true);
+    const handleOpenEdit = async (vid) => {
+        try {
+            // Re-fetch shop info to ensure we have the latest metadata
+            const shopRes = await fetchShop();
+            let currentShop = shopInfo;
+            if (shopRes.status === 200 && shopRes.data) {
+                setShopInfo(shopRes.data);
+                currentShop = shopRes.data;
+            }
+
+            setEditingVideo(vid);
+            setUploadForm({
+                videoTitle: vid.videoTitle || "",
+                description: vid.description || "",
+                shopCategory: vid.category || currentShop?.category || "",
+                shopName: vid.shopName || currentShop?.shopName || currentShop?.name || ""
+            });
+            setVideoFile(null);
+            setShowUploadModal(true);
+        } catch (error) {
+            console.error("Error opening edit modal:", error);
+        }
     };
 
     const fetchData = async () => {
@@ -210,10 +223,7 @@ const VideoFeed = () => {
             // 1. Check Shop Status if in "My Videos" tab
             if (activeTab === "my") {
                 try {
-                    const shopRes = await fetch(`${API_BASE_URL}/shop/home`, {
-                        headers: { "usertoken": token }
-                    });
-                    const shopResult = await shopRes.json();
+                    const shopResult = await fetchShop();
                     if (shopResult.status === 200 && shopResult.data) {
                         setIsShopRegistered(true);
                         setShopInfo(shopResult.data);
@@ -299,11 +309,18 @@ const VideoFeed = () => {
                     {activeTab === "my" && (
                         <motion.button
                             layoutId="capture-btn"
-                            onClick={() => {
-                                if (!shopInfo || Object.keys(shopInfo).length === 0) {
+                            onClick={async () => {
+                                try {
+                                    const res = await fetchShop();
+                                    if (res.status === 200 && res.data && Object.keys(res.data).length > 0) {
+                                        setShopInfo(res.data);
+                                        setShowUploadModal(true);
+                                    } else {
+                                        navigate("/edit-shop");
+                                    }
+                                } catch (error) {
+                                    console.error("Shop verification error:", error);
                                     navigate("/edit-shop");
-                                } else {
-                                    setShowUploadModal(true);
                                 }
                             }}
                             initial={{ opacity: 0, x: 20 }}
@@ -579,12 +596,12 @@ const VideoFeed = () => {
                             <div className="p-8 bg-slate-50/80 border-t border-slate-100 flex gap-4 relative overflow-hidden">
                                 <button
                                     onClick={() => setShowUploadModal(false)}
-                                    className="flex-1 py-5 bg-white hover:bg-slate-100 text-slate-500 hover:text-slate-900 border border-slate-200 rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest transition-all active:scale-95 shadow-sm"
+                                    className="flex-1 h-14 bg-white hover:bg-slate-100 text-slate-500 hover:text-slate-900 border border-slate-200 rounded-[10px] font-black text-[10px] uppercase tracking-widest transition-all active:scale-95 shadow-sm"
                                 >
                                     Cancel
                                 </button>
                                 <button
-                                    className={`flex-[1.5] py-4 rounded-xl font-bold text-sm transition-all relative overflow-hidden shadow-lg active:scale-95 flex items-center justify-center
+                                    className={`flex-[1.5] h-14 rounded-[10px] font-black text-[11px] uppercase tracking-[0.3em] shadow-xl transition-all flex items-center justify-center gap-3
                                         ${uploadForm.videoTitle && (videoFile || editingVideo)
                                             ? 'bg-blue-600 text-white hover:bg-blue-700'
                                             : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'}`}

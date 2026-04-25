@@ -871,7 +871,7 @@ const EditShop = () => {
                 whileTap={{ scale: 0.98 }}
                 onClick={handleSave}
                 disabled={saving}
-                className="px-10 py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-[10px] transition-all shadow-xl shadow-blue-600/20 group relative overflow-hidden uppercase tracking-[0.2em]"
+                className="px-10 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-[10px] font-black text-[10px] transition-all shadow-xl shadow-blue-600/20 group relative overflow-hidden uppercase tracking-[0.2em]"
               >
                 <AnimatePresence mode="wait">
                   {saving ? (
@@ -954,13 +954,13 @@ const EditShop = () => {
               <div className="grid grid-cols-2 gap-4 pt-2">
                 <button
                   onClick={() => setShowDeleteShopModal(false)}
-                  className="h-16 rounded-2xl bg-slate-50 text-slate-500 font-black text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all active:scale-95"
+                  className="h-14 rounded-[10px] bg-slate-50 text-slate-500 font-black text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all active:scale-95"
                 >
                   Terminate
                 </button>
                 <button
                   onClick={handleDeleteShop}
-                  className="h-16 rounded-2xl bg-rose-600 text-white font-black text-[10px] uppercase tracking-widest shadow-xl shadow-rose-600/30 hover:bg-rose-700 transition-all active:scale-95"
+                  className="h-14 rounded-[10px] bg-rose-600 text-white font-black text-[10px] uppercase tracking-widest shadow-xl shadow-rose-600/30 hover:bg-rose-700 transition-all active:scale-95"
                 >
                   Confirm Delete
                 </button>
@@ -1018,14 +1018,14 @@ const EditShop = () => {
                 <div className="grid grid-cols-2 gap-4 pt-4">
                   <button
                     onClick={() => setShowAddCategoryModal(false)}
-                    className="h-14 rounded-2xl bg-slate-50 text-slate-500 font-black text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all"
+                    className="h-14 rounded-[10px] bg-slate-50 text-slate-500 font-black text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleCreateCategory}
                     disabled={catLoading}
-                    className="h-14 rounded-2xl bg-blue-600 text-white font-black text-[10px] uppercase tracking-widest shadow-xl shadow-blue-600/20 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-70"
+                    className="h-14 rounded-[10px] bg-blue-600 text-white font-black text-[10px] uppercase tracking-widest shadow-xl shadow-blue-600/20 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-70"
                   >
                     {catLoading ? (
                       <>
@@ -1146,7 +1146,7 @@ const EditShop = () => {
                       onClick={() => {
                         setShowMapPicker(false);
                       }}
-                      className="w-full md:w-auto px-10 py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-blue-600/30 transition-all flex items-center justify-center gap-3 active:scale-95"
+                      className="w-full md:w-auto px-10 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-[10px] font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-blue-600/30 transition-all flex items-center justify-center gap-3 active:scale-95"
                     >
                       <Check className="w-4 h-4" /> Confirm Global Map
                     </button>
