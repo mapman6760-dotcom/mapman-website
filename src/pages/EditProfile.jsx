@@ -242,10 +242,9 @@ const EditProfile = () => {
                                             </AnimatePresence>
                                         </div>
                                         <div className="relative group">
-                                            <User className={`absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 transition-colors ${errors.name ? 'text-rose-500' : 'text-slate-400 group-focus-within:text-blue-600'}`} />
                                             <input
                                                 type="text"
-                                                className={`w-full h-12 pl-12 pr-4 bg-slate-50/50 border rounded-xl outline-none font-bold text-xs transition-all focus:bg-white focus:ring-4 ${errors.name ? 'border-rose-200 focus:border-rose-500 focus:ring-rose-500/5' : 'border-slate-100 focus:border-blue-600 focus:ring-blue-600/5'}`}
+                                                className={`w-full h-12 px-5 pr-4 bg-white border rounded-xl outline-none font-medium text-sm transition-all focus:ring-4 ${errors.name ? 'border-rose-200 focus:border-rose-500 focus:ring-rose-500/5' : 'border-slate-200 focus:border-blue-600 focus:ring-blue-600/5'}`}
                                                 placeholder="John Doe"
                                                 value={userData.name}
                                                 onChange={(e) => {
@@ -269,10 +268,9 @@ const EditProfile = () => {
                                             </AnimatePresence>
                                         </div>
                                         <div className="relative group">
-                                            <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 transition-colors ${errors.email ? 'text-rose-500' : 'text-slate-400 group-focus-within:text-blue-600'}`} />
                                             <input
                                                 type="email"
-                                                className={`w-full h-12 pl-12 pr-4 bg-slate-50/50 border rounded-xl outline-none font-bold text-xs transition-all focus:bg-white focus:ring-4 ${errors.email ? 'border-rose-200 focus:border-rose-500 focus:ring-rose-500/5' : 'border-slate-100 focus:border-blue-600 focus:ring-blue-600/5'}`}
+                                                className={`w-full h-12 px-5 pr-4 bg-white border rounded-xl outline-none font-medium text-sm transition-all focus:ring-4 ${errors.email ? 'border-rose-200 focus:border-rose-500 focus:ring-rose-500/5' : 'border-slate-200 focus:border-blue-600 focus:ring-blue-600/5'}`}
                                                 placeholder="your@domain.com"
                                                 value={userData.email}
                                                 onChange={(e) => {
@@ -305,9 +303,8 @@ const EditProfile = () => {
                                             </AnimatePresence>
                                         </div>
                                         <div className="relative">
-                                            <Building className={`absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 transition-colors ${errors.state ? 'text-rose-500' : 'text-slate-400'}`} />
                                             <select
-                                                className={`w-full h-12 pl-12 pr-10 bg-slate-50/50 border rounded-xl outline-none font-bold text-xs transition-all appearance-none focus:bg-white focus:ring-4 ${errors.state ? 'border-rose-200 focus:border-rose-500 focus:ring-rose-500/5' : 'border-slate-100 focus:border-indigo-600 focus:ring-indigo-600/5'}`}
+                                                className={`w-full h-12 px-5 pr-10 bg-white border rounded-xl outline-none font-medium text-sm transition-all appearance-none focus:ring-4 ${errors.state ? 'border-rose-200 focus:border-rose-500 focus:ring-rose-500/5' : 'border-slate-200 focus:border-blue-600 focus:ring-blue-600/5'}`}
                                                 value={userData.state}
                                                 onChange={(e) => {
                                                     setUserData({ ...userData, state: e.target.value, district: "" });
@@ -333,9 +330,8 @@ const EditProfile = () => {
                                             </AnimatePresence>
                                         </div>
                                         <div className="relative">
-                                            <MapPin className={`absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 transition-colors ${errors.district ? 'text-rose-500' : 'text-slate-400'}`} />
                                             <select
-                                                className={`w-full h-12 pl-12 pr-10 bg-slate-50/50 border rounded-xl outline-none font-bold text-xs transition-all appearance-none disabled:opacity-50 focus:bg-white focus:ring-4 ${errors.district ? 'border-rose-200 focus:border-rose-500 focus:ring-rose-500/5' : 'border-slate-100 focus:border-indigo-600 focus:ring-indigo-600/5'}`}
+                                                className={`w-full h-12 px-5 pr-10 bg-white border rounded-xl outline-none font-medium text-sm transition-all appearance-none disabled:opacity-50 focus:ring-4 ${errors.district ? 'border-rose-200 focus:border-rose-500 focus:ring-rose-500/5' : 'border-slate-200 focus:border-blue-600 focus:ring-blue-600/5'}`}
                                                 value={userData.district}
                                                 disabled={!userData.state}
                                                 onChange={(e) => {
@@ -356,11 +352,10 @@ const EditProfile = () => {
                             <div className="space-y-2 opacity-60">
                                 <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest px-1">Verified Terminal</label>
                                 <div className="relative">
-                                    <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
                                     <input
                                         type="text"
                                         readOnly
-                                        className="w-full h-12 pl-12 bg-slate-100/50 border border-slate-200 rounded-xl outline-none font-bold text-xs text-slate-500 cursor-not-allowed"
+                                        className="w-full h-12 px-5 bg-slate-100/50 border border-slate-200 rounded-xl outline-none font-bold text-xs text-slate-500 cursor-not-allowed"
                                         value={userData.phone}
                                     />
                                 </div>
@@ -373,7 +368,7 @@ const EditProfile = () => {
                                     whileTap={{ scale: 0.98 }}
                                     disabled={saving}
                                     onClick={handleSaveProfile}
-                                    className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-[10px] font-black text-[11px] uppercase tracking-[0.3em] flex items-center justify-center gap-3 transition-all shadow-xl shadow-blue-600/30 disabled:opacity-50"
+                                    className="btn-primary w-full shadow-blue-600/30"
                                 >
                                     {saving ? (
                                         <>
@@ -390,7 +385,7 @@ const EditProfile = () => {
 
                                 <button
                                     onClick={() => navigate("/profile")}
-                                    className="w-full sm:w-auto h-14 px-12 bg-white border border-slate-200 hover:bg-slate-50 text-slate-500 rounded-[10px] font-black text-[11px] uppercase tracking-[0.3em] transition-all"
+                                    className="btn-secondary w-full sm:w-auto px-12"
                                 >
                                     Abort
                                 </button>

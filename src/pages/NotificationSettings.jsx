@@ -25,7 +25,7 @@ const SaveButton = ({ saved, loading, onClick }) => (
     whileTap={{ scale: loading ? 1 : 0.99 }}
     onClick={onClick}
     disabled={loading}
-    className={`w-full h-14 rounded-[10px] font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center shadow-lg ${saved ? "bg-emerald-500 text-white shadow-emerald-500/20" : loading ? "bg-slate-300 text-white cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20"}`}
+    className={`w-full h-[45px] rounded-[10px] font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center shadow-lg ${saved ? "bg-emerald-500 text-white shadow-emerald-500/20" : loading ? "bg-slate-300 text-white cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20"}`}
   >
     <div className="flex items-center gap-2">
       {loading ? (
@@ -407,13 +407,13 @@ const NotificationSettings = () => {
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => setIsDeleteModalOpen(false)}
-                  className="w-full h-14 bg-red-600 text-white rounded-[10px] font-black text-[10px] uppercase tracking-[0.2em]"
+                  className="btn-discard w-full"
                 >
                   Erase Identity
                 </button>
                 <button
                   onClick={() => setIsDeleteModalOpen(false)}
-                  className="w-full h-14 bg-slate-50 text-slate-400 rounded-[10px] font-black text-[10px] uppercase tracking-widest italic"
+                  className="btn-secondary w-full italic"
                 >
                   Abort
                 </button>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Smartphone,
@@ -16,9 +17,11 @@ import {
   Sparkles,
 } from "lucide-react";
 import { sendEmailOtp, verifyEmailOtp } from "../api/auth";
+import { getProfile } from "../api/shop";
 import indiaData from "../assets/india_states_districts.json";
 
 const Login = ({ onLogin, logo }) => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -69,7 +72,31 @@ const Login = ({ onLogin, logo }) => {
       if (response.status === 200 && response.data?.token) {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("userId", response.data.userId);
-        setStep(3);
+
+        // Verify profile completion automatically
+        try {
+          const profileRes = await getProfile();
+          if (profileRes.status === 200 && profileRes.data) {
+            const profile = profileRes.data;
+            const isComplete =
+              profile.userName &&
+              profile.state &&
+              profile.district &&
+              profile.country;
+
+            if (isComplete) {
+              onLogin(); // Navigate to dashboard directly if profile is complete
+              navigate("/dashboard");
+            } else {
+              setStep(3); // Show profile completion if data is missing
+            }
+          } else {
+            setStep(3);
+          }
+        } catch (profileErr) {
+          console.error("Profile check failed:", profileErr);
+          setStep(3);
+        }
       } else {
         throw new Error(
           response.message || "Verification failed. Please try again.",
@@ -94,6 +121,7 @@ const Login = ({ onLogin, logo }) => {
       return;
     }
     onLogin();
+    navigate("/dashboard");
   };
 
   const handleOtpChange = (element, index) => {
@@ -142,39 +170,42 @@ const Login = ({ onLogin, logo }) => {
         <div className="relative z-10 w-full h-full flex flex-col p-8 lg:p-20 justify-between">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 lg:w-14 lg:h-14 bg-white rounded-xl lg:rounded-2xl flex items-center justify-center p-2 lg:p-3 shadow-2xl">
-              <img src={logo} alt="Logo" className="w-full h-full object-contain" />
+              <img
+                src={logo}
+                alt="Logo"
+                className="w-full h-full object-contain"
+              />
             </div>
             <div>
-              <h1 className="text-white text-lg lg:text-2xl font-black tracking-tighter leading-none uppercase italic">Mapman</h1>
-              <p className="text-blue-500 text-[8px] lg:text-[10px] uppercase font-black tracking-[0.3em] mt-1 lg:mt-2 opacity-80">Modern Explorer Hub</p>
+              <h1 className="text-white text-lg lg:text-2xl font-black tracking-tighter leading-none uppercase italic">
+                Mapman
+              </h1>
+              <p className="text-blue-500 text-[8px] lg:text-[10px] uppercase font-black tracking-[0.3em] mt-1 lg:mt-2 opacity-80">
+                Modern Explorer Hub
+              </p>
             </div>
           </div>
 
           <div className="space-y-6 lg:space-y-8 max-w-xl">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
               <h2 className="text-3xl md:text-4xl lg:text-6xl font-black text-white leading-[1.1] tracking-tighter">
                 Explore the world, <br />
                 <span className="text-blue-600 italic">differently.</span>
               </h2>
               <p className="text-slate-400 text-sm lg:text-lg mt-4 lg:mt-6 font-medium leading-relaxed max-w-md">
-                Sophisticated mapping platform built for modern professionals and global explorers.
+                Sophisticated mapping platform built for modern professionals
+                and global explorers.
               </p>
             </motion.div>
-
-            <div className="hidden lg:flex items-center gap-10 pt-10 border-t border-white/10">
-              <div className="space-y-1">
-                <p className="text-white text-2xl font-black italic tracking-tighter">120k+</p>
-                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-widest leading-none">Active Explorers</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-white text-2xl font-black italic tracking-tighter">500+</p>
-                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-widest leading-none">Verified Zones</p>
-              </div>
-            </div>
           </div>
 
           <div className="text-slate-500 text-[9px] lg:text-[11px] font-medium tracking-wide">
-            &copy; 2026 Mapman Global. <span className="text-slate-700">All rights reserved.</span>
+            &copy; 2026 Mapman Global.{" "}
+            <span className="text-slate-700">All rights reserved.</span>
           </div>
         </div>
       </div>
@@ -186,9 +217,13 @@ const Login = ({ onLogin, logo }) => {
           <div className="px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img src={logo} alt="Logo" className="w-8 h-8 object-contain" />
-              <span className="text-lg font-black text-slate-900 tracking-tighter uppercase italic">Mapman</span>
+              <span className="text-lg font-black text-slate-900 tracking-tighter uppercase italic">
+                Mapman
+              </span>
             </div>
-            <div className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[9px] font-black uppercase tracking-widest">Digital ID</div>
+            <div className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[9px] font-black uppercase tracking-widest">
+              Digital ID
+            </div>
           </div>
         </div>
 
@@ -196,112 +231,272 @@ const Login = ({ onLogin, logo }) => {
           <div className="w-full max-w-[340px] sm:max-w-[360px] space-y-10">
             <AnimatePresence mode="wait">
               {step === 1 ? (
-                <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
+                <motion.div
+                  key="step1"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="space-y-8"
+                >
                   <div className="space-y-3">
                     <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mb-4">
                       <Sparkles className="w-5 h-5 stroke-[2.5]" />
                     </div>
                     <h3 className="text-3xl md:text-4xl font-black text-slate-950 tracking-[-0.04em] leading-[1.1] uppercase italic">
                       Sign in to <br />
-                      Modern <span className="text-blue-600">Hub</span>
+                      <span className="text-blue-600">Mapman</span>
                     </h3>
-                    <p className="text-slate-400 text-xs font-medium">Identify yourself to continue your exploration.</p>
+                    <p className="text-slate-400 text-xs font-medium">
+                      Identify yourself to continue your exploration.
+                    </p>
                   </div>
 
                   <form onSubmit={handleNext} className="space-y-6">
                     <div className="space-y-2">
-                      <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Terminal Identity ID</label>
+                      <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
+                        Mobile Number
+                      </label>
                       <div className="relative group">
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center text-slate-300 group-focus-within:text-blue-600 transition-colors">
-                          <Smartphone className="w-4 h-4 lg:w-5 lg:h-5 stroke-[2.5]" />
-                        </div>
                         <input
                           type="tel"
                           required
                           placeholder="91XXXXXXXXXX"
-                          className="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-12 py-3 font-black text-base text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all"
+                          className="w-full h-12 bg-white border border-slate-200 rounded-xl px-5 font-medium text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all"
                           value={phoneNumber}
                           onChange={(e) => setPhoneNumber(e.target.value)}
                         />
                       </div>
                     </div>
 
-                    {error && <div className="p-3 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-center border border-red-100">{error}</div>}
+                    {error && (
+                      <div className="p-3 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-center border border-red-100">
+                        {error}
+                      </div>
+                    )}
 
-                    <button type="submit" disabled={loading} className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] uppercase tracking-[0.3em] rounded-[10px] shadow-lg transition-all flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50">
-                      {loading ? <span className="flex items-center gap-2"><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> SYNCING...</span> : <>Initiate Session <ChevronRight className="w-4 h-4" /></>}
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="btn-primary w-full"
+                    >
+                      {loading ? (
+                        <span className="flex items-center gap-2">
+                          <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />{" "}
+                          SYNCING...
+                        </span>
+                      ) : (
+                        <>
+                          Initiate Session <ChevronRight className="w-4 h-4" />
+                        </>
+                      )}
                     </button>
                   </form>
                 </motion.div>
               ) : step === 2 ? (
-                <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
+                <motion.div
+                  key="step2"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="space-y-8"
+                >
                   <div className="space-y-5">
-                    <button onClick={() => setStep(1)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-400 hover:text-blue-600 transition-all border border-slate-100">
+                    <button
+                      onClick={() => setStep(1)}
+                      className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-400 hover:text-blue-600 transition-all border border-slate-100"
+                    >
                       <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
                     </button>
                     <div className="space-y-2">
-                      <h3 className="text-3xl md:text-4xl font-black text-slate-950 tracking-[-0.04em] leading-tight uppercase italic">Verify <br /> <span className="text-blue-600">Identity</span></h3>
-                      <p className="text-slate-500 text-xs font-medium">Enter the 6-digit transmission code sent to <br /><span className="text-blue-600 font-black">{phoneNumber}</span></p>
+                      <h3 className="text-3xl md:text-4xl font-black text-slate-950 tracking-[-0.04em] leading-tight uppercase italic">
+                        Verify <br /> <span className="text-blue-600">OTP</span>
+                      </h3>
+                      <p className="text-slate-500 text-xs font-medium">
+                        Enter the 6-digit transmission code sent to <br />
+                        <span className="text-blue-600 font-black">
+                          {phoneNumber}
+                        </span>
+                      </p>
                     </div>
                   </div>
 
                   <div className="flex justify-between gap-1 sm:gap-2">
                     {otp.map((data, index) => (
-                      <input key={index} type="text" maxLength="1" className="w-10 sm:w-11 h-12 text-center text-xl font-black rounded-lg border border-slate-200 bg-slate-50/50 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/5 outline-none transition-all" value={data} onChange={(e) => handleOtpChange(e.target, index)} onFocus={(e) => e.target.select()} />
+                      <input
+                        key={index}
+                        type="text"
+                        maxLength="1"
+                        className="w-10 sm:w-11 h-12 text-center text-xl font-black rounded-lg border border-slate-200 bg-slate-50/50 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/5 outline-none transition-all"
+                        value={data}
+                        onChange={(e) => handleOtpChange(e.target, index)}
+                        onFocus={(e) => e.target.select()}
+                      />
                     ))}
                   </div>
 
-                  {error && <div className="p-3 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-center border border-red-100">{error}</div>}
+                  {error && (
+                    <div className="p-3 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-center border border-red-100">
+                      {error}
+                    </div>
+                  )}
 
                   <div className="space-y-6">
-                    <button onClick={handleFinalSubmit} disabled={loading} className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] uppercase tracking-[0.3em] rounded-[10px] shadow-lg transition-all flex items-center justify-center gap-3 active:scale-95">
-                      {loading ? <span className="flex items-center gap-2"><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> VALIDATING...</span> : <>Complete Auth <ShieldCheck className="w-4 h-4" /></>}
+                    <button
+                      onClick={handleFinalSubmit}
+                      disabled={loading}
+                      className="btn-primary w-full"
+                    >
+                      {loading ? (
+                        <span className="flex items-center gap-2">
+                          <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />{" "}
+                          VALIDATING...
+                        </span>
+                      ) : (
+                        <>Verify OTP</>
+                      )}
                     </button>
-                    <p className="text-center text-[9px] font-black uppercase tracking-[0.3em] text-slate-300">Signal lost? <button onClick={() => { setError(null); sendEmailOtp(phoneNumber).catch((err) => setError(err.message)); }} className="text-blue-600 hover:text-blue-700">Resend</button></p>
+                    <p className="text-center text-[9px] font-black uppercase tracking-[0.3em] text-slate-300">
+                      Signal lost?{" "}
+                      <button
+                        onClick={() => {
+                          setError(null);
+                          sendEmailOtp(phoneNumber).catch((err) =>
+                            setError(err.message),
+                          );
+                        }}
+                        className="text-blue-600 hover:text-blue-700"
+                      >
+                        Resend
+                      </button>
+                    </p>
                   </div>
                 </motion.div>
               ) : (
-                <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
+                <motion.div
+                  key="step3"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="space-y-6"
+                >
                   <div className="space-y-2">
-                    <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center mb-2"><Layers className="w-5 h-5 stroke-[2.5]" /></div>
-                    <h3 className="text-3xl md:text-4xl font-black text-slate-950 tracking-[-0.04em] leading-tight uppercase italic">Profile <br /> <span className="text-blue-600">Completion</span></h3>
-                    <p className="text-slate-400 text-xs font-medium">One final step to personalize your experience.</p>
+                    <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center mb-2">
+                      <Layers className="w-5 h-5 stroke-[2.5]" />
+                    </div>
+                    <h3 className="text-3xl md:text-4xl font-black text-slate-950 tracking-[-0.04em] leading-tight uppercase italic">
+                      Profile <br />{" "}
+                      <span className="text-blue-600">Completion</span>
+                    </h3>
+                    <p className="text-slate-400 text-xs font-medium">
+                      One final step to personalize your experience.
+                    </p>
                   </div>
 
                   <form onSubmit={handleProfileSubmit} className="space-y-4">
                     <div className="space-y-2">
-                      <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2"><User className="w-3 h-3 text-blue-600" /> Full Identity</label>
-                      <input type="text" required placeholder="Legal name" className="w-full bg-slate-50/50 border border-slate-200 rounded-lg px-4 py-3 font-black text-sm text-slate-900 focus:outline-none focus:border-blue-600 transition-all" value={profileData.name} onChange={(e) => setProfileData({ ...profileData, name: e.target.value })} />
+                      <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
+                        Full Identity
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Legal name"
+                        className="w-full h-12 bg-white border border-slate-200 rounded-xl px-5 font-medium text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all"
+                        value={profileData.name}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            name: e.target.value,
+                          })
+                        }
+                      />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-2">
-                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2"><Building className="w-3 h-3 text-blue-600" /> State</label>
-                        <select className="w-full bg-slate-50/50 border border-slate-200 rounded-lg px-3 py-3 font-black text-[11px] text-slate-900 focus:outline-none focus:border-blue-600 appearance-none cursor-pointer" value={profileData.state} onChange={(e) => setProfileData({ ...profileData, state: e.target.value, city: "" })}>
-                          <option value="">Region</option>
-                          {states.map((st) => <option key={st} value={st}>{st}</option>)}
-                        </select>
+                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
+                          State
+                        </label>
+                        <div className="relative">
+                          <select
+                            className="w-full h-12 bg-white border border-slate-200 rounded-xl px-5 font-medium text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all appearance-none cursor-pointer"
+                            value={profileData.state}
+                            onChange={(e) =>
+                              setProfileData({
+                                ...profileData,
+                                state: e.target.value,
+                                city: "",
+                              })
+                            }
+                          >
+                            <option value="">Region</option>
+                            {states.map((st) => (
+                              <option key={st} value={st}>
+                                {st}
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300 pointer-events-none" />
+                        </div>
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2"><MapPin className="w-3 h-3 text-blue-600" /> City</label>
-                        <select className="w-full bg-slate-50/50 border border-slate-200 rounded-lg px-3 py-3 font-black text-[11px] text-slate-900 focus:outline-none focus:border-blue-600 appearance-none cursor-pointer" value={profileData.city} onChange={(e) => setProfileData({ ...profileData, city: e.target.value })} disabled={!profileData.state}>
-                          <option value="">Locality</option>
-                          {cities.map((ct) => <option key={ct} value={ct}>{ct}</option>)}
-                        </select>
+                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
+                          City
+                        </label>
+                        <div className="relative">
+                          <select
+                            className="w-full h-12 bg-white border border-slate-200 rounded-xl px-5 font-medium text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all appearance-none cursor-pointer"
+                            value={profileData.city}
+                            onChange={(e) =>
+                              setProfileData({
+                                ...profileData,
+                                city: e.target.value,
+                              })
+                            }
+                            disabled={!profileData.state}
+                          >
+                            <option value="">Locality</option>
+                            {cities.map((ct) => (
+                              <option key={ct} value={ct}>
+                                {ct}
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300 pointer-events-none" />
+                        </div>
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2"><Globe className="w-3 h-3 text-blue-600" /> Country</label>
-                      <select className="w-full bg-slate-50/50 border border-slate-200 rounded-lg px-4 py-3 font-black text-[11px] text-slate-900 focus:outline-none appearance-none" value={profileData.country} onChange={(e) => setProfileData({ ...profileData, country: e.target.value })}>
-                        <option value="India">India</option>
-                      </select>
+                      <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                        <Globe className="w-3 h-3 text-blue-600" /> Country
+                      </label>
+                      <div className="relative">
+                        <select
+                          className="w-full h-12 bg-white border border-slate-200 rounded-xl px-4 font-medium text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all appearance-none"
+                          value={profileData.country}
+                          onChange={(e) =>
+                            setProfileData({
+                              ...profileData,
+                              country: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="India">India</option>
+                        </select>
+                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300 pointer-events-none" />
+                      </div>
                     </div>
 
-                    {error && <div className="p-3 bg-red-50 text-red-600 rounded-lg text-[10px] font-black uppercase tracking-widest text-center border border-red-100">{error}</div>}
+                    {error && (
+                      <div className="p-3 bg-red-50 text-red-600 rounded-lg text-[10px] font-black uppercase tracking-widest text-center border border-red-100">
+                        {error}
+                      </div>
+                    )}
 
-                    <button type="submit" className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] uppercase tracking-[0.3em] rounded-[10px] shadow-lg transition-all flex items-center justify-center gap-3 active:scale-95 group">
-                      Establish Account <CheckCircle2 className="w-4 h-4 text-white group-hover:scale-110 transition-transform" />
+                    <button type="submit" className="btn-primary w-full">
+                      Establish Account{" "}
+                      <CheckCircle2 className="w-4 h-4 text-white group-hover:scale-110 transition-transform" />
                     </button>
                   </form>
                 </motion.div>

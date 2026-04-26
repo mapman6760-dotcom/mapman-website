@@ -29,7 +29,7 @@ const API_BASE_URL = "https://mapman-production.up.railway.app";
 const fetchShops = async (input = "") => {
   try {
     console.log(input);
-    
+
     const token = localStorage.getItem("token");
     const response = await fetch(`${API_BASE_URL}/shop/search?input=${input}`, {
       headers: { usertoken: token },
@@ -61,7 +61,10 @@ const MapExplore = ({ isCollapsed, initialSearch }) => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          const coords = {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+          };
           setUserPos(coords);
         },
         (err) => console.log("Geolocation error:", err),
@@ -72,11 +75,14 @@ const MapExplore = ({ isCollapsed, initialSearch }) => {
   // Re-sort shops whenever user position becomes available
   useEffect(() => {
     if (userPos && shops.length > 0) {
-      const sorted = [...shops].sort((a, b) =>
-        getRawDistance(a.lat, a.long) - getRawDistance(b.lat, b.long)
+      const sorted = [...shops].sort(
+        (a, b) => getRawDistance(a.lat, a.long) - getRawDistance(b.lat, b.long),
       );
       // Only update if the order actually changed (to avoid unnecessary renders)
-      if (JSON.stringify(sorted.map(s => s.id)) !== JSON.stringify(shops.map(s => s.id))) {
+      if (
+        JSON.stringify(sorted.map((s) => s.id)) !==
+        JSON.stringify(shops.map((s) => s.id))
+      ) {
         setShops(sorted);
       }
     }
@@ -111,7 +117,10 @@ const MapExplore = ({ isCollapsed, initialSearch }) => {
     );
     // Sort by distance if user position is available
     const sortedShops = userPos
-      ? validShops.sort((a, b) => getRawDistance(a.lat, a.long) - getRawDistance(b.lat, b.long))
+      ? validShops.sort(
+        (a, b) =>
+          getRawDistance(a.lat, a.long) - getRawDistance(b.lat, b.long),
+      )
       : validShops;
 
     setShops(sortedShops);
@@ -198,14 +207,13 @@ const MapExplore = ({ isCollapsed, initialSearch }) => {
             <div className="relative flex-1 group">
               <div className="absolute inset-0 bg-blue-600/5 blur-2xl group-hover:bg-blue-600/10 transition-all duration-500 rounded-[1.5rem]"></div>
               <div className="relative flex items-center bg-white/95 backdrop-blur-2xl border border-white/40 rounded-2xl shadow-[0_20px_40px_rgba(30,41,59,0.06)] overflow-hidden transition-all focus-within:ring-4 focus-within:ring-blue-600/5 focus-within:border-blue-600/20">
-                <Search className="ml-5 w-4 h-4 text-slate-400" />
                 <input
                   type="text"
                   placeholder="Search name, category..."
                   value={searchInput}
                   onFocus={() => setShowSuggestions(true)}
                   onChange={(e) => setSearchInput(e.target.value)}
-                  className="flex-1 h-11 lg:h-12 pl-4 pr-10 bg-transparent outline-none text-[12px] font-bold text-slate-800 placeholder:text-slate-400 uppercase tracking-tighter"
+                  className="flex-1 h-12 px-5 pr-10 bg-transparent outline-none text-sm font-medium text-slate-800 placeholder:text-slate-300 uppercase tracking-tighter"
                 />
                 {searchInput && (
                   <button
@@ -241,11 +249,31 @@ const MapExplore = ({ isCollapsed, initialSearch }) => {
                               parseFloat(shop.lat),
                               parseFloat(shop.long),
                             ]);
+                            navigate(`/shop-detail/${shop.id}`);
                           }}
                           className="w-full flex items-center gap-4 p-3 hover:bg-slate-50 rounded-xl transition-all group text-left border border-transparent hover:border-slate-100"
                         >
-                          <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-lg group-hover:scale-110 transition-transform border border-slate-100">
-                            {getCategoryIcon(shop.category)}
+                          <div className="w-10 h-10 rounded-xl bg-slate-50 shadow-sm flex items-center justify-center overflow-hidden border border-slate-100 group-hover:scale-105 transition-transform">
+                            {shop.shopImage ? (
+                              <img
+                                src={`${API_BASE_URL}${shop.shopImage}`}
+                                alt={shop.shopName}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.target.style.display = "none";
+                                  e.target.nextSibling.style.display = "flex";
+                                }}
+                              />
+                            ) : null}
+                            <div
+                              className={`${shop.shopImage ? "hidden" : "flex"} w-full h-full items-center justify-center bg-white`}
+                            >
+                              <img
+                                src="https://cdn-icons-png.flaticon.com/128/14104/14104037.png"
+                                alt="placeholder"
+                                className="w-6 h-6 opacity-30 object-contain"
+                              />
+                            </div>
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between mb-0.5">
@@ -267,12 +295,6 @@ const MapExplore = ({ isCollapsed, initialSearch }) => {
                       <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
                         Matched {suggestions.length} Hubs
                       </span>
-                      <button
-                        onClick={handleSearch}
-                        className="text-[8px] font-black text-blue-600 uppercase tracking-widest hover:underline flex items-center gap-1"
-                      >
-                        Show All <ChevronRight className="w-2.5 h-2.5" />
-                      </button>
                     </div>
                   </motion.div>
                 )}
@@ -370,7 +392,7 @@ const MapExplore = ({ isCollapsed, initialSearch }) => {
                   onClick={() => {
                     setSelectedShop(shop);
                     setCenter([parseFloat(shop.lat), parseFloat(shop.long)]);
-                    // navigate("/shop-detail"); // Uncomment if you want immediate navigation
+                    navigate(`/shop-detail/${shop.id}`);
                   }}
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -380,35 +402,30 @@ const MapExplore = ({ isCollapsed, initialSearch }) => {
                   {/* Left: Enhanced Image Frame */}
                   <div className="w-[85px] h-full flex-shrink-0 relative overflow-hidden rounded-[1.2rem] bg-slate-50 border border-slate-100/50 group-hover:shadow-md transition-all duration-700">
                     {shop.shopImage ? (
-                      <>
+                      <img
+                        src={`${API_BASE_URL}${shop.shopImage}`}
+                        alt={shop.shopName}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                          e.target.nextSibling.style.display = "flex";
+                        }}
+                      />
+                    ) : null}
+                    <div
+                      className={`${shop.shopImage ? "hidden" : "flex"} w-full h-full flex-col items-center justify-center bg-slate-50`}
+                    >
+                      <div className="p-3 bg-white rounded-2xl shadow-sm mb-2">
                         <img
-                          src={`${API_BASE_URL}${shop.shopImage}`}
-                          alt={shop.shopName}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
-                          onError={(e) => {
-                            e.target.style.display = "none";
-                            e.target.nextSibling.style.display = "flex";
-                          }}
+                          src="https://cdn-icons-png.flaticon.com/128/14104/14104037.png"
+                          alt="placeholder"
+                          className="w-8 h-8 opacity-40 object-contain"
                         />
-                        <div className="hidden w-full h-full flex-col items-center justify-center bg-slate-50">
-                          <div className="p-3 bg-white rounded-2xl shadow-sm mb-2">
-                            <ImageIcon className="w-6 h-6 text-slate-200" />
-                          </div>
-                          <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest text-center">
-                            Empty Hub
-                          </span>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-slate-50">
-                        <div className="p-3 bg-white rounded-2xl shadow-sm mb-2">
-                          <ImageIcon className="w-6 h-6 text-slate-200" />
-                        </div>
-                        <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest text-center">
-                          Empty Hub
-                        </span>
                       </div>
-                    )}
+                      <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest text-center">
+                        Local Hub
+                      </span>
+                    </div>
                     <div className="absolute top-2 left-2 px-2.5 py-1 bg-blue-600/10 backdrop-blur-sm rounded-lg text-[7px] font-black text-blue-600 uppercase tracking-widest border border-blue-600/10">
                       {shop.category}
                     </div>
@@ -475,14 +492,45 @@ const getCategoryIcon = (category = "") => {
 
   // Mapping provided by USER list: theater, restaurant, hospital, bars, grocery, textile, resort, bunk, spa, hotel, others
   if (cat.includes("theater") || cat.includes("cinema")) iconName = "Theater";
-  else if (cat.includes("restaurant") || cat.includes("food") || cat.includes("eating")) iconName = "Restaurant";
-  else if (cat.includes("hospital") || cat.includes("medical") || cat.includes("health")) iconName = "Hospital";
-  else if (cat.includes("bars") || cat.includes("pub") || cat.includes("drink")) iconName = "Bars";
-  else if (cat.includes("grocery") || cat.includes("shopping") || cat.includes("store")) iconName = "Grocery";
-  else if (cat.includes("textile") || cat.includes("cloth") || cat.includes("fashion")) iconName = "Textile";
+  else if (
+    cat.includes("restaurant") ||
+    cat.includes("food") ||
+    cat.includes("eating")
+  )
+    iconName = "Restaurant";
+  else if (
+    cat.includes("hospital") ||
+    cat.includes("medical") ||
+    cat.includes("health")
+  )
+    iconName = "Hospital";
+  else if (cat.includes("bars") || cat.includes("pub") || cat.includes("drink"))
+    iconName = "Bars";
+  else if (
+    cat.includes("grocery") ||
+    cat.includes("shopping") ||
+    cat.includes("store")
+  )
+    iconName = "Grocery";
+  else if (
+    cat.includes("textile") ||
+    cat.includes("cloth") ||
+    cat.includes("fashion")
+  )
+    iconName = "Textile";
   else if (cat.includes("resort") || cat.includes("park")) iconName = "Resorts";
-  else if (cat.includes("bunk") || cat.includes("fuel") || cat.includes("petrol")) iconName = "Bunk";
-  else if (cat.includes("spa") || cat.includes("salon") || cat.includes("beauty")) iconName = "Spa";
+  else if (
+    cat.includes("bunk") ||
+    cat.includes("fuel") ||
+    cat.includes("petrol")
+  )
+    iconName = "Bunk";
+  else if (
+    cat.includes("spa") ||
+    cat.includes("salon") ||
+    cat.includes("beauty")
+  )
+    iconName = "Spa";
   else if (cat.includes("hotel") || cat.includes("stay")) iconName = "Hotel";
 
   return (

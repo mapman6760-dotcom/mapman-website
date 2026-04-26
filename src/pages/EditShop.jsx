@@ -45,13 +45,12 @@ const InputField = ({
   onClick,
 }) => (
   <div className="group space-y-2">
-    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-      {Icon && <Icon className="w-3 h-3 text-blue-500" />}
+    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
       {label}
     </label>
     <div
       onClick={onClick}
-      className={`relative overflow-hidden rounded-2xl bg-white border border-slate-100 shadow-sm transition-all duration-300 group-focus-within:border-blue-500 group-focus-within:ring-4 group-focus-within:ring-blue-500/5 group-hover:border-slate-200 group-hover:shadow-md ${onClick ? "cursor-pointer" : ""}`}
+      className={`relative overflow-hidden h-12 rounded-xl bg-white border border-slate-200 shadow-sm transition-all duration-300 group-focus-within:border-blue-600 group-focus-within:ring-4 group-focus-within:ring-blue-600/5 group-hover:border-slate-300 group-hover:shadow-md ${onClick ? "cursor-pointer" : ""}`}
     >
       <input
         type={type}
@@ -59,28 +58,25 @@ const InputField = ({
         readOnly={readOnly}
         placeholder={placeholder}
         onChange={(e) => !readOnly && onChange?.(e.target.value)}
-        className={`w-full px-5 py-4 text-sm font-bold text-slate-800 bg-transparent outline-none placeholder:text-slate-200 ${onClick ? "cursor-pointer" : ""}`}
+        className={`w-full h-full px-5 text-sm font-medium text-slate-900 bg-transparent outline-none placeholder:text-slate-300 ${onClick ? "cursor-pointer" : ""}`}
       />
-      <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-blue-600 transition-all duration-500 group-focus-within:w-full" />
     </div>
   </div>
 );
 
 const TextAreaField = ({ label, value, icon: Icon, onChange, placeholder }) => (
   <div className="group space-y-2">
-    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-      {Icon && <Icon className="w-3 h-3 text-blue-500" />}
+    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
       {label}
     </label>
-    <div className="relative overflow-hidden rounded-2xl bg-white border border-slate-100 shadow-sm transition-all duration-300 group-focus-within:border-blue-500 group-focus-within:ring-4 group-focus-within:ring-blue-500/5 group-hover:border-slate-200 group-hover:shadow-md">
+    <div className="relative overflow-hidden rounded-xl bg-white border border-slate-200 shadow-sm transition-all duration-300 group-focus-within:border-blue-600 group-focus-within:ring-4 group-focus-within:ring-blue-600/5 group-hover:border-slate-300 group-hover:shadow-md">
       <textarea
         rows={4}
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange?.(e.target.value)}
-        className="w-full px-5 py-4 text-sm font-bold text-slate-800 bg-transparent outline-none resize-none placeholder:text-slate-200 leading-relaxed"
+        className="w-full px-5 py-3 text-sm font-medium text-slate-900 bg-transparent outline-none resize-none placeholder:text-slate-300 leading-relaxed"
       />
-      <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-blue-600 transition-all duration-500 group-focus-within:w-full" />
     </div>
   </div>
 );
@@ -709,11 +705,11 @@ const EditShop = () => {
                       onClick={() =>
                         setShowCategoryDropdown(!showCategoryDropdown)
                       }
-                      className="w-full h-14 bg-slate-50 border border-slate-100 rounded-2xl px-5 flex items-center justify-between group-hover:bg-slate-100 transition-all"
+                      className="w-full h-12 bg-white border border-slate-200 rounded-xl px-5 flex items-center justify-between hover:bg-slate-50 transition-all focus:ring-4 focus:ring-blue-600/5 shadow-sm"
                     >
                       <div className="flex items-center">
                         <span
-                          className={`text-[11px] font-bold uppercase tracking-tight ${shopData.category ? "text-slate-800" : "text-slate-300"}`}
+                          className={`text-sm font-medium ${shopData.category ? "text-slate-900" : "text-slate-300"}`}
                         >
                           {shopData.category || "Select Classification"}
                         </span>
@@ -871,7 +867,7 @@ const EditShop = () => {
                 whileTap={{ scale: 0.98 }}
                 onClick={handleSave}
                 disabled={saving}
-                className="px-10 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-[10px] font-black text-[10px] transition-all shadow-xl shadow-blue-600/20 group relative overflow-hidden uppercase tracking-[0.2em]"
+                className="btn-primary px-10 shadow-blue-600/20 group relative overflow-hidden"
               >
                 <AnimatePresence mode="wait">
                   {saving ? (
@@ -954,13 +950,13 @@ const EditShop = () => {
               <div className="grid grid-cols-2 gap-4 pt-2">
                 <button
                   onClick={() => setShowDeleteShopModal(false)}
-                  className="h-14 rounded-[10px] bg-slate-50 text-slate-500 font-black text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all active:scale-95"
+                  className="btn-secondary"
                 >
                   Terminate
                 </button>
                 <button
                   onClick={handleDeleteShop}
-                  className="h-14 rounded-[10px] bg-rose-600 text-white font-black text-[10px] uppercase tracking-widest shadow-xl shadow-rose-600/30 hover:bg-rose-700 transition-all active:scale-95"
+                  className="btn-discard"
                 >
                   Confirm Delete
                 </button>
@@ -1018,14 +1014,14 @@ const EditShop = () => {
                 <div className="grid grid-cols-2 gap-4 pt-4">
                   <button
                     onClick={() => setShowAddCategoryModal(false)}
-                    className="h-14 rounded-[10px] bg-slate-50 text-slate-500 font-black text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all"
+                    className="btn-secondary"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleCreateCategory}
                     disabled={catLoading}
-                    className="h-14 rounded-[10px] bg-blue-600 text-white font-black text-[10px] uppercase tracking-widest shadow-xl shadow-blue-600/20 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-70"
+                    className="btn-primary"
                   >
                     {catLoading ? (
                       <>

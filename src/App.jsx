@@ -280,9 +280,8 @@ const Dashboard = ({ onLogout }) => {
             <button className="lg:hidden p-2.5 -ml-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all" onClick={() => setSidebarOpen(true)}>
               <Menu className="w-6 h-6 stroke-[2.5]" />
             </button>
-            <div className="relative hidden md:block lg:w-96">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 font-bold" />
-              <input type="text" placeholder="Search services, places..." className="w-full h-11 pl-11 pr-4 bg-slate-100/50 border border-transparent focus:bg-white focus:border-blue-500/20 rounded-xl focus:ring-4 focus:ring-blue-500/5 outline-none transition-all font-medium text-sm" />
+            <div className="relative hidden md:block lg:w-96 group">
+              <input type="text" placeholder="Search services, places..." className="w-full h-12 px-5 bg-white border border-slate-200 focus:border-blue-600 rounded-xl focus:ring-4 focus:ring-blue-600/5 outline-none transition-all font-medium text-sm shadow-sm" />
             </div>
           </div>
 

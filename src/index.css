@@ -40,16 +40,39 @@ body {
     @apply bg-white/80 backdrop-blur-xl border border-white/20 shadow-2xl;
   }
 
-  .input-field {
-    @apply w-full px-4 py-3 rounded-xl border border-slate-200 bg-white/50 focus:bg-white focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 outline-none transition-all duration-200;
-  }
-
   .btn-primary {
-    @apply w-full py-4 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98];
+    @apply h-[45px] px-8 rounded-[10px] bg-blue-600 hover:bg-blue-700 text-white font-black text-[11px] uppercase tracking-[0.3em] shadow-lg shadow-blue-600/20 transition-all duration-200 flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply w-full py-3 px-6 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium transition-all duration-200 flex items-center justify-center gap-3;
+    @apply h-[45px] px-8 rounded-[10px] border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 font-black text-[11px] uppercase tracking-[0.3em] transition-all duration-200 flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-discard {
+    @apply h-[45px] px-8 rounded-[10px] border border-rose-100 bg-rose-50 hover:bg-rose-100 text-rose-600 font-black text-[11px] uppercase tracking-[0.3em] transition-all duration-200 flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+}
+
+@layer base {
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"],
+  input[type="number"],
+  input[type="search"],
+  input[type="url"],
+  select,
+  textarea {
+    @apply w-full h-12 px-4 rounded-xl border border-slate-200 bg-white text-slate-900 font-medium text-sm focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 outline-none transition-all duration-200 shadow-sm !important;
+  }
+
+  textarea {
+    @apply h-auto py-3 min-h-[100px] !important;
+  }
+
+  select {
+    @apply appearance-none cursor-pointer pr-10 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%222%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.75rem_center] bg-no-repeat !important;
   }
 }
 
