@@ -19,8 +19,9 @@ import {
   Eye,
   ImageIcon,
   ArrowUpRight,
+  X,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Map, Marker as MapMarker } from "pigeon-maps";
 
 const API_BASE_URL = "https://mapman-production.up.railway.app";
@@ -34,6 +35,8 @@ const fetchShops = async (input = "") => {
     const response = await fetch(`${API_BASE_URL}/shop/search?input=${input}`, {
       headers: { usertoken: token },
     });
+    console.log(`${API_BASE_URL}/shop/search?input=${input}`);
+
     const result = await response.json();
     console.log(result.data);
     if (result.status === 200) return result.data;
@@ -44,11 +47,14 @@ const fetchShops = async (input = "") => {
   }
 };
 
-const MapExplore = ({ isCollapsed, initialSearch }) => {
+const MapExplore = ({ isCollapsed }) => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialSearch = searchParams.get("query") || "";
+
   const [shops, setShops] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchInput, setSearchInput] = useState(initialSearch || "");
+  const [searchInput, setSearchInput] = useState(initialSearch);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedShop, setSelectedShop] = useState(null);
@@ -57,7 +63,8 @@ const MapExplore = ({ isCollapsed, initialSearch }) => {
   const [center, setCenter] = useState([11.02, 77.0]);
 
   useEffect(() => {
-    loadShops(initialSearch || "");
+    loadShops(initialSearch);
+    setSearchInput(initialSearch);
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -118,9 +125,9 @@ const MapExplore = ({ isCollapsed, initialSearch }) => {
     // Sort by distance if user position is available
     const sortedShops = userPos
       ? validShops.sort(
-        (a, b) =>
-          getRawDistance(a.lat, a.long) - getRawDistance(b.lat, b.long),
-      )
+          (a, b) =>
+            getRawDistance(a.lat, a.long) - getRawDistance(b.lat, b.long),
+        )
       : validShops;
 
     setShops(sortedShops);
@@ -148,9 +155,9 @@ const MapExplore = ({ isCollapsed, initialSearch }) => {
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(userPos.lat * (Math.PI / 180)) *
-      Math.cos(parseFloat(targetLat) * (Math.PI / 180)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+        Math.cos(parseFloat(targetLat) * (Math.PI / 180)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   };
@@ -173,9 +180,7 @@ const MapExplore = ({ isCollapsed, initialSearch }) => {
       <div
         className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-4 bg-slate-900 text-white px-4 py-2 rounded-2xl shadow-2xl transition-all whitespace-nowrap ${isActive ? "opacity-100 scale-100" : "opacity-0 scale-90 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:visible"}`}
       >
-        <span className="text-[10px] font-black uppercase tracking-widest">
-          {label}
-        </span>
+        <span className="text-[10px] font-black  tracking-widest">{label}</span>
         <div className="absolute top-full left-1/2 -translate-x-1/2 border-[8px] border-transparent border-t-slate-900"></div>
       </div>
       <div className="relative">
@@ -206,27 +211,43 @@ const MapExplore = ({ isCollapsed, initialSearch }) => {
           <form onSubmit={handleSearch} className="flex items-center">
             <div className="relative flex-1 group">
               <div className="absolute inset-0 bg-blue-600/5 blur-2xl group-hover:bg-blue-600/10 transition-all duration-500 rounded-[1.5rem]"></div>
-              <div className="relative flex items-center bg-white/95 backdrop-blur-2xl border border-white/40 rounded-2xl shadow-[0_20px_40px_rgba(30,41,59,0.06)] overflow-hidden transition-all focus-within:ring-4 focus-within:ring-blue-600/5 focus-within:border-blue-600/20">
+              <div className="relative flex items-center bg-white border border-slate-200/60 rounded-3xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] transition-all duration-500 focus-within:ring-8 focus-within:ring-blue-600/5 focus-within:border-blue-600/20 px-1.5">
+                <div className="w-10 h-10 flex items-center justify-center text-slate-400">
+                  <Search className="w-5 h-5 stroke-[2.5]" />
+                </div>
                 <input
                   type="text"
-                  placeholder="Search name, category..."
+                  placeholder="Seach shops..."
                   value={searchInput}
                   onFocus={() => setShowSuggestions(true)}
                   onChange={(e) => setSearchInput(e.target.value)}
-                  className="flex-1 h-12 px-5 pr-10 bg-transparent outline-none text-sm font-medium text-slate-800 placeholder:text-slate-300 uppercase tracking-tighter"
+                  className="flex-1 h-12 bg-transparent outline-none text-[11px] font-black text-slate-900 placeholder:text-slate-300  tracking-[0.15em] ml-1"
                 />
-                {searchInput && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSearchInput("");
-                      setSuggestions([]);
-                    }}
-                    className="absolute right-4 p-2 text-slate-300 hover:text-slate-600 transition-colors"
-                  >
-                    <Clock className="w-3.5 h-3.5" />
-                  </button>
-                )}
+                <AnimatePresence>
+                  {searchInput && (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      type="button"
+                      onClick={() => {
+                        setSearchInput("");
+                        setSuggestions([]);
+                        loadShops("");
+                        navigate("/map");
+                      }}
+                      className="w-10 h-10 flex items-center justify-center text-slate-300 hover:text-red-500 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </motion.button>
+                  )}
+                </AnimatePresence>
+                <button
+                  type="submit"
+                  className="w-10 h-10 bg-blue-600 text-white rounded-[1.25rem] flex items-center justify-center shadow-lg shadow-blue-600/30 hover:bg-blue-700 active:scale-90 transition-all ml-1"
+                >
+                  <ArrowUpRight className="w-4 h-4" />
+                </button>
               </div>
 
               {/* --- COMPACT AUTOCOMPLETE DROPDOWN --- */}
@@ -359,7 +380,7 @@ const MapExplore = ({ isCollapsed, initialSearch }) => {
             { icon: ZoomIn, action: () => setZoom((z) => Math.min(z + 1, 20)) },
             { icon: ZoomOut, action: () => setZoom((z) => Math.max(z - 1, 1)) },
             { icon: Maximize, action: () => setZoom(12) },
-            { icon: Navigation, action: () => { } },
+            { icon: Navigation, action: () => {} },
           ].map((item, i) => (
             <button
               key={i}
@@ -387,96 +408,96 @@ const MapExplore = ({ isCollapsed, initialSearch }) => {
           <div className="flex gap-5 overflow-x-auto no-scrollbar pb-6 -mx-2 px-2 snap-x scroll-smooth">
             {shops.length > 0
               ? shops.map((shop, i) => (
-                <motion.div
-                  key={shop.id}
-                  onClick={() => {
-                    setSelectedShop(shop);
-                    setCenter([parseFloat(shop.lat), parseFloat(shop.long)]);
-                    navigate(`/shop-detail/${shop.id}`);
-                  }}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.08 }}
-                  className={`min-w-[280px] sm:min-w-[320px] lg:min-w-[340px] h-[115px] bg-white border flex items-center p-3 rounded-[1.5rem] transition-all duration-500 cursor-pointer group snap-center relative ${selectedShop?.id === shop.id ? "border-blue-600 ring-4 ring-blue-500/5 shadow-[0_30px_60px_-15px_rgba(37,99,235,0.12)] scale-[1.02] z-10" : "border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.04)] hover:border-blue-200"}`}
-                >
-                  {/* Left: Enhanced Image Frame */}
-                  <div className="w-[85px] h-full flex-shrink-0 relative overflow-hidden rounded-[1.2rem] bg-slate-50 border border-slate-100/50 group-hover:shadow-md transition-all duration-700">
-                    {shop.shopImage ? (
-                      <img
-                        src={`${API_BASE_URL}${shop.shopImage}`}
-                        alt={shop.shopName}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                          e.target.nextSibling.style.display = "flex";
-                        }}
-                      />
-                    ) : null}
-                    <div
-                      className={`${shop.shopImage ? "hidden" : "flex"} w-full h-full flex-col items-center justify-center bg-slate-50`}
-                    >
-                      <div className="p-3 bg-white rounded-2xl shadow-sm mb-2">
+                  <motion.div
+                    key={shop.id}
+                    onClick={() => {
+                      setSelectedShop(shop);
+                      setCenter([parseFloat(shop.lat), parseFloat(shop.long)]);
+                      navigate(`/shop-detail/${shop.id}`);
+                    }}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.08 }}
+                    className={`min-w-[280px] sm:min-w-[320px] lg:min-w-[340px] h-[115px] bg-white border flex items-center p-3 rounded-[1.5rem] transition-all duration-500 cursor-pointer group snap-center relative ${selectedShop?.id === shop.id ? "border-blue-600 ring-4 ring-blue-500/5 shadow-[0_30px_60px_-15px_rgba(37,99,235,0.12)] scale-[1.02] z-10" : "border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.04)] hover:border-blue-200"}`}
+                  >
+                    {/* Left: Enhanced Image Frame */}
+                    <div className="w-[85px] h-full flex-shrink-0 relative overflow-hidden rounded-[1.2rem] bg-slate-50 border border-slate-100/50 group-hover:shadow-md transition-all duration-700">
+                      {shop.shopImage ? (
                         <img
-                          src="https://cdn-icons-png.flaticon.com/128/14104/14104037.png"
-                          alt="placeholder"
-                          className="w-8 h-8 opacity-40 object-contain"
+                          src={`${API_BASE_URL}${shop.shopImage}`}
+                          alt={shop.shopName}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                            e.target.nextSibling.style.display = "flex";
+                          }}
                         />
-                      </div>
-                      <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest text-center">
-                        Local Hub
-                      </span>
-                    </div>
-                    <div className="absolute top-2 left-2 px-2.5 py-1 bg-blue-600/10 backdrop-blur-sm rounded-lg text-[7px] font-black text-blue-600 uppercase tracking-widest border border-blue-600/10">
-                      {shop.category}
-                    </div>
-                  </div>
-
-                  {/* Right: Refined Info Section */}
-                  <div className="flex-1 ml-4 flex flex-col h-full py-0.5">
-                    <div className="mb-0.5">
-                      <h4 className="text-[13px] font-black text-slate-900 tracking-tighter uppercase group-hover:text-blue-600 transition-colors flex items-center gap-2">
-                        {shop.shopName}
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                      </h4>
-                    </div>
-
-                    <p className="text-[10px] text-slate-500 font-medium line-clamp-2 uppercase tracking-tight leading-relaxed mb-auto">
-                      {shop.address ||
-                        "Sector mapman, local discovery zone, india"}
-                    </p>
-
-                    <div className="flex items-center justify-between mt-auto pt-2 border-t border-slate-50">
-                      <div className="flex items-center gap-2 bg-blue-50/50 px-2 py-1 rounded-lg border border-blue-100/20">
-                        <Navigation className="w-3 h-3 text-blue-600" />
-                        <span className="text-[9px] font-black text-slate-800 tracking-tight">
-                          {getDistance(
-                            parseFloat(shop.lat),
-                            parseFloat(shop.long),
-                          )}
+                      ) : null}
+                      <div
+                        className={`${shop.shopImage ? "hidden" : "flex"} w-full h-full flex-col items-center justify-center bg-slate-50`}
+                      >
+                        <div className="p-3 bg-white rounded-2xl shadow-sm mb-2">
+                          <img
+                            src="https://cdn-icons-png.flaticon.com/128/14104/14104037.png"
+                            alt="placeholder"
+                            className="w-8 h-8 opacity-40 object-contain"
+                          />
+                        </div>
+                        <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest text-center">
+                          Local Hub
                         </span>
                       </div>
-                      <div
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/shop-detail/${shop.id}`);
-                        }}
-                        className="flex items-center gap-1 text-blue-600 font-black text-[9px] uppercase tracking-widest group/btn"
-                      >
-                        Go Now{" "}
-                        <ArrowUpRight className="w-3 h-3 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                      <div className="absolute top-2 left-2 px-2.5 py-1 bg-blue-600/10 backdrop-blur-sm rounded-lg text-[7px] font-black text-blue-600 uppercase tracking-widest border border-blue-600/10">
+                        {shop.category}
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))
+
+                    {/* Right: Refined Info Section */}
+                    <div className="flex-1 ml-4 flex flex-col h-full py-0.5">
+                      <div className="mb-0.5">
+                        <h4 className="text-[13px] font-black text-slate-900 tracking-tighter uppercase group-hover:text-blue-600 transition-colors flex items-center gap-2">
+                          {shop.shopName}
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        </h4>
+                      </div>
+
+                      <p className="text-[10px] text-slate-500 font-medium line-clamp-2 uppercase tracking-tight leading-relaxed mb-auto">
+                        {shop.address ||
+                          "Sector mapman, local discovery zone, india"}
+                      </p>
+
+                      <div className="flex items-center justify-between mt-auto pt-2 border-t border-slate-50">
+                        <div className="flex items-center gap-2 bg-blue-50/50 px-2 py-1 rounded-lg border border-blue-100/20">
+                          <Navigation className="w-3 h-3 text-blue-600" />
+                          <span className="text-[9px] font-black text-slate-800 tracking-tight">
+                            {getDistance(
+                              parseFloat(shop.lat),
+                              parseFloat(shop.long),
+                            )}
+                          </span>
+                        </div>
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/shop-detail/${shop.id}`);
+                          }}
+                          className="flex items-center gap-1 text-blue-600 font-black text-[9px] uppercase tracking-widest group/btn"
+                        >
+                          Go Now{" "}
+                          <ArrowUpRight className="w-3 h-3 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))
               : !loading && (
-                <div className="w-full h-[130px] flex flex-col items-center justify-center bg-white/80 backdrop-blur-xl rounded-[1.5rem] border-2 border-dashed border-slate-200">
-                  <Globe className="w-10 h-10 text-slate-200 mb-2 animate-pulse" />
-                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">
-                    Searching for Hubs in this sector...
-                  </p>
-                </div>
-              )}
+                  <div className="w-full h-[130px] flex flex-col items-center justify-center bg-white/80 backdrop-blur-xl rounded-[1.5rem] border-2 border-dashed border-slate-200">
+                    <Globe className="w-10 h-10 text-slate-200 mb-2 animate-pulse" />
+                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">
+                      Searching for Hubs in this sector...
+                    </p>
+                  </div>
+                )}
           </div>
         </div>
       </div>

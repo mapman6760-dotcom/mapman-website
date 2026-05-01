@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 const Support = () => {
   const navigate = useNavigate();
@@ -53,6 +53,8 @@ const Support = () => {
     {
       icon: "https://cdn-icons-png.flaticon.com/128/8945/8945503.png",
       title: "Privacy Policy",
+      label: "View",
+      labelColor: "text-indigo-600 bg-indigo-50 border-indigo-100",
       desc: "How we handle your data",
       action: () => navigate("/privacy-policy"),
       iconBg: "bg-indigo-50 border-indigo-200",
@@ -60,6 +62,8 @@ const Support = () => {
     {
       icon: "https://cdn-icons-png.flaticon.com/128/12864/12864506.png",
       title: "Terms & Conditions",
+      label: "View",
+      labelColor: "text-emerald-600 bg-emerald-50 border-emerald-100",
       desc: "Rules governing your account",
       action: () => navigate("/terms-conditions"),
       iconBg: "bg-emerald-50 border-emerald-200",
@@ -137,10 +141,10 @@ const Support = () => {
           <div className="flex items-center gap-3 px-1">
             <div className="w-1.5 h-5 bg-blue-600 rounded-full"></div>
             <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest italic">
-              Legal Registry
+              Legal Policies
             </h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {legalItems.map((item, i) => (
               <motion.button
                 key={i}
@@ -148,12 +152,12 @@ const Support = () => {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 + i * 0.07 }}
-                whileHover={{ y: -4, scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                className="flex items-center bg-white border border-slate-100 rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 group gap-6 text-left"
+                whileHover={{ y: -4, scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                className="flex flex-col items-center text-center bg-white border border-slate-100 rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 group gap-4"
               >
                 <div
-                  className={`w-16 h-16 rounded-2xl border shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 ${item.iconBg}`}
+                  className={`w-16 h-16 rounded-2xl border flex items-center justify-center group-hover:scale-110 transition-transform duration-300 ${item.iconBg}`}
                 >
                   <img
                     src={item.icon}
@@ -161,17 +165,19 @@ const Support = () => {
                     className="w-10 h-10 object-contain"
                   />
                 </div>
-                <div className="flex-1 min-w-0">
+                <div className="space-y-1">
                   <h4 className="text-sm font-black text-slate-800 tracking-tight uppercase">
                     {item.title}
                   </h4>
-                  <p className="text-[10px] text-slate-400 font-bold mt-0.5 opacity-70">
+                  <p className="text-[10px] text-slate-400 font-bold leading-snug">
                     {item.desc}
                   </p>
                 </div>
-                <div className="w-10 h-10 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center group-hover:bg-blue-50 group-hover:border-blue-100 transition-colors">
-                  <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-blue-500 transition-colors" />
-                </div>
+                <span
+                  className={`text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full border ${item.labelColor}`}
+                >
+                  {item.label}
+                </span>
               </motion.button>
             ))}
           </div>

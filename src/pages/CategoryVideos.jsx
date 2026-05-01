@@ -84,8 +84,8 @@ const CategoryVideos = () => {
         <div className="min-h-screen bg-[#F8FAFC] pb-32">
             {/* ── STICKY HEADER ── */}
 
-            <header className="sticky top-0 z-[60] bg-white/70 backdrop-blur-2xl border-b border-slate-200/60 transition-all">
-                <div className="max-w-[1440px] mx-auto px-6 h-20 md:h-24 flex items-center justify-between">
+            <header className="sticky top-0 z-[60] backdrop-blur-2xl border-b border-slate-200/60 transition-all">
+                <div className="max-w-[1440px] mx-auto px-6 h-14 md:h-16 flex items-center justify-between">
                     <div className="flex items-center gap-6">
                         <button
                             onClick={() => navigate(-1)}
@@ -131,7 +131,7 @@ const CategoryVideos = () => {
                                                 state: { videos: videos, index: i, isMyVideos: false },
                                             })
                                         }
-                                        className="group relative flex flex-col bg-white rounded-[15px] overflow-hidden border border-slate-200/60 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.12)] transition-all duration-700 cursor-pointer shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_4px_6px_-2px_rgba(0,0,0,0.05)]"
+                                        className="group relative flex flex-col rounded-[15px] overflow-hidden border border-slate-200/60 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.12)] transition-all duration-700 cursor-pointer"
                                     >
                                         {/* Immersive Visual Hub */}
                                         <div className="relative aspect-video overflow-hidden">
