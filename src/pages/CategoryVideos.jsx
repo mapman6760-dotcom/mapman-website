@@ -27,12 +27,29 @@ const CategoryVideos = () => {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [fetchingMore, setFetchingMore] = useState(false);
+    const [userPoints, setUserPoints] = useState(0);
 
     useEffect(() => {
         if (category) {
             fetchCategoryVideos(1, false);
         }
+        fetchPoints();
     }, [category]);
+
+    const fetchPoints = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`${API_BASE_URL}/shop/fetchPoints`, {
+                headers: { usertoken: token }
+            });
+            const result = await response.json();
+            if (result.status === 200) {
+                setUserPoints(result.data || 0);
+            }
+        } catch (error) {
+            console.error("Error fetching points:", error);
+        }
+    };
 
     const fetchCategoryVideos = async (pageNum, isLoadMore = false) => {
         if (isLoadMore) setFetchingMore(true);
@@ -103,6 +120,19 @@ const CategoryVideos = () => {
                                     Curated Experiences
                                 </p>
                             </div>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                        <div className="bg-white px-5 py-2.5 rounded-full flex items-center gap-3 shadow-sm border border-slate-100 hover:shadow-md transition-all active:scale-95 group">
+                            <img
+                                src="https://cdn-icons-png.flaticon.com/128/7892/7892416.png"
+                                className="w-5 h-5 object-contain group-hover:rotate-12 transition-transform"
+                                alt="Coins"
+                            />
+                            <span className="text-sm font-black text-slate-900 tracking-tighter">
+                                {userPoints}
+                            </span>
                         </div>
                     </div>
                 </div>

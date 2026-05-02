@@ -3,7 +3,7 @@ import { Clock, MoreHorizontal, Bell } from "lucide-react";
 
 const API_BASE_URL = "https://mapman-production.up.railway.app";
 
-const NotificationList = ({ notifications = [] }) => {
+const NotificationList = ({ notifications = [], onNotificationClick }) => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {notifications.map((notif) => {
@@ -11,14 +11,15 @@ const NotificationList = ({ notifications = [] }) => {
                     ? (notif.msgImage.startsWith('http') ? notif.msgImage : `${API_BASE_URL}${notif.msgImage}`)
                     : "https://cdn-icons-png.flaticon.com/128/726/726498.png"; // Updated fallback icon
 
-                const isOpened = notif.openStatus === 'opened';
+                const isNotOpened = notif.openStatus === 'notOpened';
                 const indicatorColor = notif.msgStatus === 'accepted' ? 'bg-emerald-500' : 'bg-red-500';
 
                 return (
                     <div
                         key={notif.id}
-                        className={`group relative bg-white rounded-[15px] border-b border-slate-200 hover:bg-slate-50 transition-all duration-300 flex flex-col p-4 
-                            ${isOpened ? 'border-l-4 border-l-emerald-500/80' : 'border-l-4 border-l-transparent'}`}
+                        onClick={() => onNotificationClick && onNotificationClick(notif)}
+                        className={`group relative bg-white rounded-[15px] border-b border-slate-200 hover:bg-slate-50 transition-all duration-300 flex flex-col p-4 cursor-pointer
+                            ${isNotOpened ? 'border-l-4 border-l-red-500' : 'border-l-4 border-l-emerald-500'}`}
                     >
                         <div className="flex flex-col h-full">
                             {/* Header Hub */}

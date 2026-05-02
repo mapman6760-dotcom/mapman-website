@@ -22,21 +22,25 @@ const Notifications = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_BASE_URL}/shop/fetchNotifications?page=${pageNum}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "usertoken": token,
+      const response = await fetch(
+        `${API_BASE_URL}/shop/fetchNotifications?page=${pageNum}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            usertoken: token,
+          },
         },
-      });
+      );
 
       const result = await response.json();
+
       if (result.status === 200) {
         const newData = result.data || [];
         if (pageNum === 1) {
           setNotifications(newData);
         } else {
-          setNotifications(prev => [...prev, ...newData]);
+          setNotifications((prev) => [...prev, ...newData]);
         }
 
         // If we got fewer than 30 items, there are no more notifications to load
@@ -55,6 +59,37 @@ const Notifications = () => {
     const nextPage = page + 1;
     setPage(nextPage);
     fetchNotifications(nextPage);
+  };
+
+  const handleNotificationClick = async (notif) => {
+    // 1. Mark as opened locally for immediate feedback
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === notif.id ? { ...n, openStatus: "opened" } : n)),
+    );
+
+    // 2. Call the API to update status on server
+    try {
+      const token = localStorage.getItem("token");
+      await fetch(`${API_BASE_URL}/shop/notificationOpenStatus`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          usertoken: token,
+        },
+        body: JSON.stringify({ notificationId: notif.id }),
+      });
+    } catch (err) {
+      console.error("Failed to update notification status:", err);
+    }
+
+    // 3. Navigation logic
+    if (notif.msgType === "newShop") {
+      const shopId = parseInt(notif.msgLink);
+      navigate(`/shop-detail/${shopId}`);
+    } else {
+      // Professionally navigate to video player
+      navigate(`/video-player/${notif.msgLink}`);
+    }
   };
 
   return (
@@ -132,13 +167,25 @@ const Notifications = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-8 md:px-12 -mt-4 md:-mt-8 relative z-20 space-y-12 pb-32">
         <div className="flex items-center justify-between px-2"></div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-        >
-          <NotificationList notifications={notifications} />
-        </motion.div>
+        {loading && notifications.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-4">
+            <Loader2 className="w-10 h-10 animate-spin text-blue-600" />
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest animate-pulse">
+              Fetching synchronization...
+            </p>
+          </div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            <NotificationList
+              notifications={notifications}
+              onNotificationClick={handleNotificationClick}
+            />
+          </motion.div>
+        )}
 
         {notifications.length > 0 && (
           <div className="pt-10 flex flex-col items-center gap-4">
@@ -161,7 +208,9 @@ const Notifications = () => {
 
         {notifications.length === 0 && !loading && (
           <div className="text-center py-20 opacity-40">
-            <p className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">No Notifications Logged</p>
+            <p className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">
+              No Notifications Logged
+            </p>
           </div>
         )}
       </main>
@@ -170,3 +219,4 @@ const Notifications = () => {
 };
 
 export default Notifications;
+

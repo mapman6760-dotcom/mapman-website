@@ -130,7 +130,7 @@ const ViewedVideos = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.05, duration: 0.5 }}
-                    onClick={() => navigate(`/video-player/${video.id}`, { state: { videos: [video], index: 0 } })}
+                    onClick={() => navigate(`/video-player/${video.id}`, { state: { videos: [video], index: 0, isMyVideos: true } })}
                     className="group relative overflow-hidden rounded-[20px] bg-white border border-slate-100 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.06)] hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.1)] transition-all duration-500 cursor-pointer"
                   >
                     <div className="aspect-[16/12] relative overflow-hidden bg-slate-900">

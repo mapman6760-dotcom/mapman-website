@@ -58,9 +58,27 @@ const VideoFeed = () => {
     shopName: "",
   });
 
+  const [userPoints, setUserPoints] = useState(0);
+
   useEffect(() => {
     fetchData();
+    fetchPoints();
   }, [activeTab]);
+
+  const fetchPoints = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/shop/fetchPoints`, {
+        headers: { usertoken: token }
+      });
+      const result = await response.json();
+      if (result.status === 200) {
+        setUserPoints(result.data || 0);
+      }
+    } catch (error) {
+      console.error("Error fetching points:", error);
+    }
+  };
 
   const handleRegisterVideo = async () => {
     if (!videoFile || !uploadForm.videoTitle || !shopInfo) return;
@@ -304,7 +322,7 @@ const VideoFeed = () => {
               alt="Coins"
             />
             <span className="text-sm font-black text-slate-900 tracking-tighter">
-              4
+              {userPoints}
             </span>
           </button>
 

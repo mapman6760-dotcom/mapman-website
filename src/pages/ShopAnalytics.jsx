@@ -177,7 +177,8 @@ const ShopAnalytics = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 * (idx % 4) }}
-                  className="group bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden hover:shadow-xl transition-all duration-500 flex flex-col"
+                  onClick={() => navigate(`/video-player/${video.id}`, { state: { videos: data.totalVideos, index: idx, isMyVideos: true } })}
+                  className="group bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden hover:shadow-xl transition-all duration-500 flex flex-col cursor-pointer"
                 >
                   <div className="relative aspect-video overflow-hidden bg-slate-900 flex items-center justify-center">
                     <video

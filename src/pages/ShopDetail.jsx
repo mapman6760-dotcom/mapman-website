@@ -93,25 +93,46 @@ const ShopDetail = () => {
 
   if (error || !shopInfo) {
     return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center gap-8 p-12 bg-white rounded-3xl border border-slate-100 shadow-xl max-w-2xl mx-auto">
-        <div className="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center border border-red-100 shadow-inner">
-          <AlertTriangle className="w-10 h-10 text-red-500" />
+      <div className="max-w-6xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-20 px-4">
+        {/* ── EMPTY DATA CARD ── */}
+        <div className="min-h-[50vh] flex flex-col items-center justify-center gap-8 p-12 bg-white rounded-[2.5rem] border border-slate-100 shadow-2xl max-w-4xl mx-auto relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-slate-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+
+          <div className="w-24 h-24 bg-slate-50 rounded-3xl flex items-center justify-center border border-slate-100 shadow-inner group-hover:scale-110 transition-transform duration-500">
+            <AlertTriangle className="w-10 h-10 text-slate-300" />
+          </div>
+
+          <div className="text-center space-y-4 relative z-10">
+            <h2 className="text-3xl font-black text-slate-900 tracking-tighter uppercase italic leading-none">
+              Store Profile Empty
+            </h2>
+            <p className="text-sm text-slate-500 max-w-sm mx-auto font-medium leading-relaxed">
+              We couldn't retrieve any data for this business hub. The profile
+              might be inactive or undergoing synchronization.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md pt-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="flex-1 px-8 py-4 btn-primary hover:btn-primary text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-3 transition-all shadow-xl active:scale-95"
+            >
+              <ArrowLeft className="w-4 h-4" /> Return Back
+            </button>
+            <button
+              onClick={() => navigate("/map")}
+              className="flex-1 px-8 py-4 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-3 transition-all border border-blue-100 shadow-sm active:scale-95"
+            >
+              Explore Map
+            </button>
+          </div>
+
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-slate-200" />
+            <div className="w-1.5 h-1.5 rounded-full bg-slate-200" />
+            <div className="w-1.5 h-1.5 rounded-full bg-slate-200" />
+          </div>
         </div>
-        <div className="text-center space-y-3">
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
-            {error || "Connection Interrupted"}
-          </h2>
-          <p className="text-sm text-slate-500 max-w-xs mx-auto">
-            We encountered an issue while retrieving the store details. Please
-            try again later.
-          </p>
-        </div>
-        <button
-          onClick={() => navigate(-1)}
-          className="px-8 py-4 bg-slate-900 hover:bg-black text-white rounded-2xl font-bold text-sm flex items-center gap-3 transition-all shadow-xl active:scale-95"
-        >
-          <ArrowLeft className="w-4 h-4" /> Return to Previous
-        </button>
       </div>
     );
   }
@@ -191,10 +212,11 @@ const ShopDetail = () => {
 
         <div className="flex items-center gap-3">
           <button
-            className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all border ${isSaved
-              ? "bg-amber-500 border-amber-500 text-white shadow-lg"
-              : "bg-white border-slate-200 text-slate-400 hover:text-amber-500 hover:border-amber-200"
-              }`}
+            className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all border ${
+              isSaved
+                ? "bg-amber-500 border-amber-500 text-white shadow-lg"
+                : "bg-white border-slate-200 text-slate-400 hover:text-amber-500 hover:border-amber-200"
+            }`}
             onClick={() => setIsSaved(!isSaved)}
           >
             <Bookmark
@@ -287,10 +309,11 @@ const ShopDetail = () => {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-3 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 ${activeTab === tab.id
-              ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
-              : "text-slate-500 hover:bg-slate-100"
-              }`}
+            className={`flex items-center gap-3 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+              activeTab === tab.id
+                ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
+                : "text-slate-500 hover:bg-slate-100"
+            }`}
           >
             {tab.icon} {tab.label}
           </button>
@@ -337,7 +360,6 @@ const ShopDetail = () => {
                       color: "indigo",
                       desc: "Market Sector",
                     },
-
                   ].map((item, i) => (
                     <div
                       key={i}
@@ -443,34 +465,40 @@ const ShopDetail = () => {
                           target="_blank"
                           rel="noreferrer"
                           className={`flex items-center justify-between p-5 rounded-[2rem] border transition-all group/link active:scale-[0.98] shadow-sm hover:shadow-md
-                            ${link.color === "emerald"
-                              ? "bg-emerald-50/30 border-emerald-100 lg:hover:bg-emerald-50 lg:hover:border-emerald-200"
-                              : ""
+                            ${
+                              link.color === "emerald"
+                                ? "bg-emerald-50/30 border-emerald-100 lg:hover:bg-emerald-50 lg:hover:border-emerald-200"
+                                : ""
                             }
-                            ${link.color === "blue"
-                              ? "bg-blue-50/30 border-blue-100 lg:hover:bg-blue-50 lg:hover:border-blue-200"
-                              : ""
+                            ${
+                              link.color === "blue"
+                                ? "bg-blue-50/30 border-blue-100 lg:hover:bg-blue-50 lg:hover:border-blue-200"
+                                : ""
                             }
-                            ${link.color === "rose"
-                              ? "bg-rose-50/30 border-rose-100 lg:hover:bg-rose-50 lg:hover:border-rose-200"
-                              : ""
+                            ${
+                              link.color === "rose"
+                                ? "bg-rose-50/30 border-rose-100 lg:hover:bg-rose-50 lg:hover:border-rose-200"
+                                : ""
                             }
                           `}
                         >
                           <div className="flex items-center gap-5">
                             <div
                               className={`w-14 h-14 bg-white rounded-2xl flex items-center justify-center border transition-all group-hover/link:scale-110
-                                ${link.color === "emerald"
-                                  ? "border-emerald-100 shadow-emerald-100/50"
-                                  : ""
+                                ${
+                                  link.color === "emerald"
+                                    ? "border-emerald-100 shadow-emerald-100/50"
+                                    : ""
                                 }
-                                ${link.color === "blue"
-                                  ? "border-blue-100 shadow-blue-100/50"
-                                  : ""
+                                ${
+                                  link.color === "blue"
+                                    ? "border-blue-100 shadow-blue-100/50"
+                                    : ""
                                 }
-                                ${link.color === "rose"
-                                  ? "border-rose-100 shadow-rose-100/50"
-                                  : ""
+                                ${
+                                  link.color === "rose"
+                                    ? "border-rose-100 shadow-rose-100/50"
+                                    : ""
                                 }
                               `}
                             >
