@@ -902,8 +902,8 @@ const EditShop = () => {
                     >
                       <span>
                         {viewState === "register"
-                          ? "Register Shop Registry"
-                          : "Update Shop Configuration"}
+                          ? "Register Shop"
+                          : "Update Shop"}
                       </span>
                     </motion.div>
                   )}

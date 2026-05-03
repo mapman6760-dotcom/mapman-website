@@ -8,7 +8,7 @@ const PrivacyPolicy = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 16 }}
             transition={{ duration: 0.3 }}
-            className="w-full max-w-4xl mx-auto px-2 py-6"
+            className="w-full max-w-4xl mx-auto px-1 md:px-2 py-4 md:py-6"
         >
             {/* ── HEADER ── */}
             <div className="mb-8">

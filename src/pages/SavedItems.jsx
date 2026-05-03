@@ -212,11 +212,31 @@ const SavedItems = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isLoading, hasMoreData]);
 
+  if (isLoading && savedShops.length === 0 && savedVideos.length === 0) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-slate-50/50">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+          className="w-12 h-12 border-4 border-slate-200 border-t-blue-600 rounded-full shadow-inner"
+        />
+        <div className="space-y-2 text-center">
+          <p className="text-[10px] font-black text-slate-900 uppercase tracking-[0.4em] animate-pulse">
+            Retrieving Registry
+          </p>
+          <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest opacity-60">
+            Please wait while we sync your data
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50/50 pb-32">
       {/* ── PREMIUM HEADER ── */}
 
-      <main className="max-w-7xl mx-auto px-4 md:px-10 py-10 space-y-16">
+      <main className="max-w-7xl mx-auto px-2 md:px-6 py-6 md:py-10 space-y-10 md:space-y-16">
         {/* ── INTERACTIVE ENROLLMENT CARD ── */}
         <section className="relative overflow-hidden rounded-[1rem] bg-slate-900 shadow-2xl p-6 md:p-9">
           <div className="absolute inset-0">

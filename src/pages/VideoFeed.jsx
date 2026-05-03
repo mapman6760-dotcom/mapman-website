@@ -286,30 +286,31 @@ const VideoFeed = () => {
   return (
     <div className="flex flex-col h-full bg-transparent no-scrollbar relative">
       {/* 1. PROFESSIONAL HEADER & TABS */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10 px-8 pt-6 relative z-10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6 md:mb-10 px-4 md:px-8 pt-4 md:pt-6 relative z-10">
         <div className="flex flex-col gap-1">
           <h2 className="text-3xl font-black text-slate-900 tracking-tighter uppercase leading-none">
-            Discovery Hub
+            Videos
           </h2>
           <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">
             Explore Hub experiences through live motion
           </p>
         </div>
 
-        <div className="flex items-center gap-2 bg-white/60 backdrop-blur-xl p-1.5 rounded-2xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
+        <div className="flex items-center gap-1.5 bg-white/60 backdrop-blur-xl p-1 md:p-1.5 rounded-2xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
           <button
             onClick={() => setActiveTab("all")}
-            className={`px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all duration-300 ${activeTab === "all" ? "bg-slate-900 text-white shadow-xl scale-105" : "text-slate-500 hover:text-slate-700"}`}
+            className={`flex-1 md:flex-none px-4 md:px-6 py-2 md:py-2.5 rounded-xl font-black text-[9px] md:text-[10px] uppercase tracking-widest transition-all duration-300 ${activeTab === "all" ? "bg-slate-900 text-white shadow-xl scale-105" : "text-slate-500 hover:text-slate-700"}`}
           >
             All Videos
           </button>
           <button
             onClick={() => setActiveTab("my")}
-            className={`px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all duration-300 ${activeTab === "my" ? "bg-slate-900 text-white shadow-xl scale-105" : "text-slate-500 hover:text-slate-700"}`}
+            className={`flex-1 md:flex-none px-4 md:px-6 py-2 md:py-2.5 rounded-xl font-black text-[9px] md:text-[10px] uppercase tracking-widest transition-all duration-300 ${activeTab === "my" ? "bg-slate-900 text-white shadow-xl scale-105" : "text-slate-500 hover:text-slate-700"}`}
           >
             My Videos
           </button>
         </div>
+
 
         <div className="flex items-center gap-4">
           <button
@@ -365,7 +366,7 @@ const VideoFeed = () => {
               <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center">
                 <Plus className="w-4 h-4 text-white" />
               </div>
-              <span className="flex items-center gap-2">Capture Reel</span>
+              <span className="flex items-center gap-2">Upload Video</span>
             </motion.button>
           )}
         </div>
@@ -381,7 +382,7 @@ const VideoFeed = () => {
         </div>
       ) : videos.length > 0 ? (
         <div
-          className={`${activeTab === "all" ? "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6" : "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 px-4"} gap-5 bg-transparent pb-20 no-scrollbar`}
+          className={`${activeTab === "all" ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6" : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 px-2 md:px-4"} gap-3 md:gap-5 bg-transparent pb-20 no-scrollbar`}
         >
           <AnimatePresence mode="popLayout">
             {videos.map((vid, i) => {

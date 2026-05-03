@@ -167,7 +167,7 @@ const Home = ({ onSelectCategory }) => {
     );
 
   return (
-    <div className="space-y-16 lg:space-y-24 py-6">
+    <div className="space-y-8 md:space-y-16 lg:space-y-24 py-2 md:py-6">
       {/* --- SLEEK COMPACT BRAND BANNER --- */}
       <section className="relative group px-1">
         <motion.div
@@ -179,7 +179,7 @@ const Home = ({ onSelectCategory }) => {
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
           <div className="absolute -top-[20%] -right-[5%] w-[60%] h-[140%] bg-blue-600/20 blur-[80px] rounded-full animate-pulse"></div>
 
-          <div className="relative z-10 flex flex-col md:flex-row items-center min-h-[160px] lg:min-h-[200px] p-6 lg:p-10 gap-8">
+          <div className="relative z-10 flex flex-col md:flex-row items-center min-h-[140px] md:min-h-[160px] lg:min-h-[200px] p-4 md:p-6 lg:p-10 gap-6 md:gap-8 text-center md:text-left">
             <div className="flex-1 space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-400 text-[10px] font-black uppercase tracking-widest">
                 <Zap className="w-3 h-3 fill-current" />
@@ -195,7 +195,7 @@ const Home = ({ onSelectCategory }) => {
               </p>
             </div>
 
-            <div className="flex items-center gap-4 lg:gap-6 shrink-0">
+            <div className="flex items-center gap-3 md:gap-4 lg:gap-6 shrink-0">
               <button
                 onClick={() => onSelectCategory("")}
                 className="group px-6 py-3 bg-primary-600 hover:bg-primary-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-primary-600/20 flex items-center gap-2"
@@ -228,7 +228,7 @@ const Home = ({ onSelectCategory }) => {
       </section>
 
       {/* --- COMPACT PROMOTION SECTION --- */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 px-1">
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8 px-1">
         <motion.div
           whileHover={{ y: -5 }}
           transition={{ duration: 0.4 }}
@@ -240,13 +240,14 @@ const Home = ({ onSelectCategory }) => {
             className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700"
             alt="Promo 1"
           />
-          <div className="relative z-20 h-full flex flex-col justify-center p-8 lg:p-10 space-y-3 lg:space-y-4">
+          <div className="relative z-20 h-full flex flex-col justify-center p-6 md:p-8 lg:p-10 space-y-3 lg:space-y-4">
             <span className="px-2.5 py-1 bg-primary-600 rounded-lg text-white text-[9px] lg:text-[10px] font-black uppercase tracking-widest w-fit">
               Merchant Special
             </span>
-            <h3 className="text-2xl lg:text-3xl font-black text-white tracking-tighter leading-tight">
+            <h3 className="text-2xl lg:text-3xl font-black text-white tracking-tighter leading-[1.1] italic">
               Boost Your Shop's <br /> With Mapman
             </h3>
+
             <p className="text-slate-400 text-xs lg:text-sm font-medium max-w-[240px]">
               Best and affordable way to get new customers.
             </p>
@@ -258,41 +259,68 @@ const Home = ({ onSelectCategory }) => {
         </motion.div>
 
         <motion.div
-          whileHover={{ y: -5 }}
-          transition={{ duration: 0.4 }}
-          className="relative group h-64 lg:h-72 rounded-2xl lg:rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-blue-600 to-indigo-900 border border-white/5 shadow-2xl shadow-blue-900/10"
+          whileHover={{ y: -8 }}
+          transition={{ duration: 0.5 }}
+          className="relative group h-64 lg:h-72 rounded-2xl lg:rounded-[2rem] overflow-hidden bg-slate-950 border border-white/10 shadow-2xl"
         >
-          <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')]"></div>
-          <div className="relative z-20 h-full flex flex-col justify-center p-8 lg:p-10 space-y-3 lg:space-y-4">
-            <span className="px-2.5 py-1 bg-white/10 backdrop-blur-md rounded-lg text-white text-[9px] lg:text-[10px] font-black uppercase tracking-widest w-fit">
-              Live Tracking
-            </span>
-            <h3 className="text-2xl lg:text-3xl font-black text-white tracking-tighter leading-tight">
-              Upload video <br />& Promote
-            </h3>
-            <p className="text-blue-100 text-xs lg:text-sm font-medium max-w-[240px] opacity-80">
-              Best and affordable way to get new customers.
-            </p>
+          {/* MOBILE ONLY BACKGROUND IMAGE */}
+          <div className="md:hidden absolute inset-0 z-0">
+            <img 
+              src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=2066&auto=format&fit=crop" 
+              className="w-full h-full object-cover opacity-40 mix-blend-overlay"
+              alt="Mobile Background"
+            />
+          </div>
+
+          {/* INTELLECTUAL OVERLAY ACCENTS */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(37,99,235,0.15),transparent_70%)]"></div>
+          <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+          <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-600/10 rounded-full blur-[100px]"></div>
+
+          <div className="relative z-20 h-full flex flex-col justify-center p-8 md:p-10 lg:p-12 space-y-4 lg:space-y-6">
+            <div className="flex items-center gap-3">
+              <span className="px-3 py-1.5 bg-blue-600/20 backdrop-blur-md rounded-xl border border-blue-500/30 text-blue-400 text-[8px] lg:text-[9px] font-black uppercase tracking-[0.2em] shadow-lg shadow-blue-900/20">
+                Live Tracking
+              </span>
+              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-2xl lg:text-4xl font-black text-white tracking-tighter leading-[1.1] italic">
+                Upload video <br />&{" "}
+                <span className="text-blue-500">Promote</span>
+              </h3>
+              <p className="text-slate-400 text-xs lg:text-sm font-medium max-w-[240px] leading-relaxed opacity-80">
+                Best and affordable way to get new customers.
+              </p>
+            </div>
+
             <button
               onClick={() => onSelectCategory("")}
-              className="flex items-center gap-2 text-white font-black text-[10px] lg:text-xs uppercase tracking-widest group/btn underline decoration-white/30 underline-offset-8"
+              className="group/btn flex items-center gap-3 px-6 py-3 bg-white hover:bg-blue-600 text-slate-950 hover:text-white rounded-xl font-black text-[9px] lg:text-[10px] uppercase tracking-[0.2em] transition-all duration-300 shadow-xl shadow-white/5 active:scale-95 w-fit"
             >
-              Open Map Explorer{" "}
-              <MapPin className="w-3.5 lg:w-4 h-3.5 lg:h-4 group-hover/btn:scale-125 transition-transform" />
+              Open Map Explorer
+              <MapPin className="w-4 h-4 group-hover/btn:scale-125 transition-transform" />
             </button>
           </div>
-          <div className="absolute right-[-5%] bottom-[-5%] w-1/2 h-4/5">
-            <img
-              src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=600&q=80"
-              className="w-full h-full object-cover rounded-tl-2xl lg:rounded-tl-[3rem] border-t border-l border-white/20 group-hover:rotate-[-2deg] transition-transform duration-700"
-              alt="Promo 2"
-            />
+
+          {/* ASYMMETRIC IMAGE HUB */}
+          <div className="absolute right-[-2%] bottom-[-5%] w-[45%] h-[85%] z-10 hidden sm:block">
+            <div className="relative w-full h-full transform rotate-[-4deg] group-hover:rotate-0 transition-transform duration-700">
+              <div className="absolute inset-0 bg-blue-600/10 blur-3xl rounded-tl-[3rem] group-hover:bg-blue-600/20 transition-all"></div>
+              <img
+                src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=600&q=80"
+                className="w-full h-full object-cover rounded-tl-[3rem] border-t border-l border-white/20 shadow-2xl transition-all duration-700 brightness-[0.7] group-hover:brightness-100"
+                alt="Promo 2"
+              />
+              <div className="absolute inset-0 bg-gradient-to-tr from-black/60 via-transparent to-transparent opacity-80"></div>
+            </div>
           </div>
         </motion.div>
       </section>
 
       {/* --- PREMIUM CATEGORIES HUB --- */}
-      <section className="space-y-12 lg:space-y-16 px-1 relative">
+      <section className="space-y-8 md:space-y-12 lg:space-y-16 px-1 relative">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 lg:gap-10">
           <div className="space-y-4 lg:space-y-6">
             <div className="flex items-center gap-4">
@@ -307,7 +335,7 @@ const Home = ({ onSelectCategory }) => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 lg:gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-6 lg:gap-8">
           {categories
             .filter((cat) => cat.categoryImage != null)
             .map((cat, i) => {
@@ -335,7 +363,7 @@ const Home = ({ onSelectCategory }) => {
                       className={`absolute top-0 left-0 w-full h-[5px] ${colors.dot} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
                     />
 
-                    <div className="p-6 lg:p-8 flex flex-col items-center flex-1 gap-6">
+                    <div className="p-4 md:p-6 lg:p-8 flex flex-col items-center justify-center flex-1 gap-4 md:gap-6">
                       <div
                         className={`relative w-24 h-24 rounded-3xl ${colors.bg} flex items-center justify-center transition-all duration-700 shadow-inner`}
                       >
@@ -432,7 +460,7 @@ const Home = ({ onSelectCategory }) => {
             <motion.div
               key={i}
               whileHover={{ y: -8 }}
-              className="group relative bg-slate-50/50 hover:bg-white p-8 lg:p-10 rounded-[2.5rem] border border-slate-100/50 hover:shadow-[0_40px_80px_-15px_rgba(30,58,138,0.1)] transition-all duration-500 overflow-hidden"
+              className="group relative bg-slate-50/50 hover:bg-white p-6 md:p-8 lg:p-10 rounded-[2.5rem] border border-slate-100/50 hover:shadow-[0_40px_80px_-15px_rgba(30,58,138,0.1)] transition-all duration-500 overflow-hidden"
             >
               <div
                 className={`absolute top-0 right-0 w-32 h-32 ${feat.bg} rounded-bl-[5rem] opacity-20 -mr-8 -mt-8 transition-transform duration-700 group-hover:scale-110`}

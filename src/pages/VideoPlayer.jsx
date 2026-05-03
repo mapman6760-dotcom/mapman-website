@@ -14,6 +14,7 @@ import {
   VolumeX,
   Pause,
   Play,
+  Phone,
 } from "lucide-react";
 
 const API_BASE_URL = "https://mapman-production.up.railway.app";
@@ -39,7 +40,8 @@ const VideoPlayer = () => {
         v.reelDesc ||
         "This video show the simple tricks for beginners",
       shopName: v.shopName || v.categoryName || "Mapman Merchant",
-      whatsappNumber: v.whatsappNumber,
+      whatsappNumber: v.whatsappNumber || v.shopWhatsapp,
+      shopNumber: v.shopNumber || v.number || v.shopNumber,
       videoUrl:
         v.videoUrl ||
         (v.categoryVideo ? `${API_BASE_URL}${v.categoryVideo}` : null) ||
@@ -66,6 +68,17 @@ const VideoPlayer = () => {
   const isMyVideos = location.state?.isMyVideos || false;
   const trackedVideos = useRef(new Set());
   const pointsTracked = useRef(new Set());
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    setProgress(0);
+  }, [currentIndex]);
+
+  const handleTimeUpdate = (e) => {
+    if (e.target.duration) {
+      setProgress((e.target.currentTime / e.target.duration) * 100);
+    }
+  };
   const containerRef = useRef(null);
   const videoRefs = useRef([]);
 
@@ -88,49 +101,49 @@ const VideoPlayer = () => {
     }
   };
 
-    const [toastMsg, setToastMsg] = useState("");
+  const [toastMsg, setToastMsg] = useState("");
 
-    const showToast = (msg) => {
-        setToastMsg(msg);
-        setTimeout(() => setToastMsg(""), 3000);
-    };
+  const showToast = (msg) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(""), 3000);
+  };
 
-    const handleVideoEnd = async (video) => {
-        // Track the view when fully played
-        await trackView(video.id);
-        
-        // Add points and refresh balance only if fully played and not in restricted view
-        if (!isMyVideos && !pointsTracked.current.has(video.id)) {
-            try {
-                const token = localStorage.getItem("token");
-                await fetch(`${API_BASE_URL}/shop/addPoints`, {
-                    method: "POST",
-                    headers: { 
-                        "Content-Type": "application/json",
-                        usertoken: token 
-                    }
-                });
-                pointsTracked.current.add(video.id);
-                fetchPoints(); // Refresh the points count display
-            } catch (error) {
-                console.error("Error adding points:", error);
-            }
-        }
+  const handleVideoEnd = async (video) => {
+    // Track the view when fully played
+    await trackView(video.id);
 
-        // Auto-scroll to the next video
-        if (currentIndex < normalizedVideos.length - 1) {
-            const nextIndex = currentIndex + 1;
-            const height = containerRef.current.offsetHeight;
-            containerRef.current.scrollTo({
-                top: nextIndex * height,
-                behavior: 'smooth'
-            });
-            // Note: handleScroll will catch the scroll and update currentIndex
-        } else {
-            // Show toast if it's the final video in the feed
-            showToast("this is last video");
-        }
-    };
+    // Add points and refresh balance only if fully played and not in restricted view
+    if (!isMyVideos && !pointsTracked.current.has(video.id)) {
+      try {
+        const token = localStorage.getItem("token");
+        await fetch(`${API_BASE_URL}/shop/addPoints`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            usertoken: token
+          }
+        });
+        pointsTracked.current.add(video.id);
+        fetchPoints(); // Refresh the points count display
+      } catch (error) {
+        console.error("Error adding points:", error);
+      }
+    }
+
+    // Auto-scroll to the next video
+    if (currentIndex < normalizedVideos.length - 1) {
+      const nextIndex = currentIndex + 1;
+      const height = containerRef.current.offsetHeight;
+      containerRef.current.scrollTo({
+        top: nextIndex * height,
+        behavior: 'smooth'
+      });
+      // Note: handleScroll will catch the scroll and update currentIndex
+    } else {
+      // Show toast if it's the final video in the feed
+      showToast("this is last video");
+    }
+  };
 
   const trackView = async (videoId) => {
     if (isMyVideos || trackedVideos.current.has(videoId)) return;
@@ -260,14 +273,25 @@ const VideoPlayer = () => {
           </div>
 
           {!isMyVideos && (
-            <button
+            <motion.button
+              animate={{
+                scale: [1, 1.05, 1],
+                boxShadow: ["0px 0px 0px rgba(255,255,255,0)", "0px 0px 20px rgba(255,255,255,0.2)", "0px 0px 0px rgba(255,255,255,0)"]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
               onClick={(e) => {
                 e.stopPropagation();
                 setShowRewardsModal(true);
               }}
               className="h-12 bg-white/20 backdrop-blur-xl border border-white/20 rounded-full flex items-center gap-3 px-4 text-white active:scale-90 transition-transform shadow-xl"
             >
-              <img
+              <motion.img
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
                 src="https://cdn-icons-png.flaticon.com/128/7892/7892416.png"
                 className="w-5 h-5 object-contain"
                 alt="Coins"
@@ -275,7 +299,7 @@ const VideoPlayer = () => {
               <span className="text-xs font-black tracking-tighter">
                 {userPoints}
               </span>
-            </button>
+            </motion.button>
           )}
 
           <button
@@ -315,10 +339,10 @@ const VideoPlayer = () => {
                 ref={(el) => (videoRefs.current[idx] = el)}
                 src={video.videoUrl}
                 className="w-full h-full object-cover lg:object-contain relative z-10"
-                loop
                 playsInline
                 muted={isMuted}
                 onEnded={() => handleVideoEnd(video)}
+                onTimeUpdate={handleTimeUpdate}
               />
 
               {/* PLAY/PAUSE OVERLAY INDICATOR */}
@@ -354,24 +378,20 @@ const VideoPlayer = () => {
 
               {/* PROGRESS BAR - MOVED TO ABSOLUTE BOTTOM */}
               <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-white/10 overflow-hidden z-[60]">
-                <motion.div
-                  className="h-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.8)]"
-                  initial={{ width: "0%" }}
-                  animate={{
-                    width: idx === currentIndex && isPlaying ? "100%" : "0%",
-                  }}
-                  transition={{ duration: 15, ease: "linear" }}
+                <div
+                  className="h-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.8)] transition-all duration-300 ease-linear"
+                  style={{ width: `${idx === currentIndex ? progress : 0}%` }}
                 />
               </div>
             </div>
 
             {/* ── OVERLAY INTERFACE ── */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/95 flex flex-col justify-end p-6 pb-26 md:pb-14 pointer-events-none">
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/95 flex flex-col justify-end p-4 md:p-6 pb-20 md:pb-14 pointer-events-none z-30">
               <div className="flex items-end justify-between gap-6 pointer-events-auto">
                 {/* VIDEO INFO */}
                 <div className="space-y-4 flex-1">
                   <div className="flex items-center gap-3">
-                    <h3 className="text-2xl font-black text-white uppercase tracking-tighter drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)] leading-none">
+                    <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)] leading-none">
                       {video.shopName}
                     </h3>
                     {!isMyVideos &&
@@ -386,27 +406,35 @@ const VideoPlayer = () => {
                       )}
                   </div>
 
-                  <p className="text-[12px] font-bold text-white/80 uppercase tracking-widest leading-relaxed drop-shadow-md max-w-[300px]">
+                  <p className="text-[11px] md:text-[12px] font-bold text-white/80 uppercase tracking-widest leading-relaxed drop-shadow-md max-w-[280px] md:max-w-[300px]">
                     {video.description}
                   </p>
                 </div>
 
                 {/* ACTION BUTTONS */}
-                <div className="flex flex-col md:flex-row items-center gap-4">
+                <div className="flex flex-col items-center gap-3 md:gap-4">
                   {!isMyVideos && (
                     <>
                       <button
                         onClick={() => handleWhatsApp(video.whatsappNumber)}
-                        className="w-14 h-14 bg-white rounded-full flex items-center justify-center text-emerald-600 shadow-[0_20px_40px_rgba(0,0,0,0.3)] active:scale-90 transition-transform group"
+                        className="w-12 h-12 md:w-14 md:h-14 bg-white rounded-full flex items-center justify-center text-emerald-600 shadow-2xl active:scale-90 transition-transform group"
                       >
-                        <img src="https://cdn-icons-png.flaticon.com/128/4423/4423697.png" alt="whatsapp" className="w-7 h-7" />
+                        <img src="https://cdn-icons-png.flaticon.com/128/4423/4423697.png" alt="whatsapp" className="w-6 h-6 md:w-7 md:h-7" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (video.shopNumber) window.open(`tel:${video.shopNumber}`);
+                        }}
+                        className="w-12 h-12 md:w-14 md:h-14 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-2xl active:scale-90 transition-transform group"
+                      >
+                        <Phone className="w-6 h-6 md:w-7 md:h-7 fill-current" />
                       </button>
                       <button
                         onClick={() => setShowSaveConfirm(true)}
-                        className={`w-14 h-14 backdrop-blur-3xl border border-white/20 rounded-full flex items-center justify-center shadow-[0_20px_40px_rgba(0,0,0,0.3)] active:scale-90 transition-transform hover:bg-white/20 group ${video.savedAlready ? "bg-blue-600 text-white" : "bg-white/10 text-white"}`}
+                        className={`w-12 h-12 md:w-14 md:h-14 backdrop-blur-3xl border border-white/20 rounded-full flex items-center justify-center shadow-2xl active:scale-90 transition-transform hover:bg-white/20 group ${video.savedAlready ? "bg-amber-500 text-white" : "bg-white/10 text-white"}`}
                       >
                         <Bookmark
-                          className="w-7 h-7 group-hover:scale-110 group-hover:rotate-6 transition-transform"
+                          className="w-6 h-6 md:w-7 md:h-7 group-hover:scale-110 group-hover:rotate-6 transition-transform"
                           fill={video.savedAlready ? "currentColor" : "none"}
                         />
                       </button>

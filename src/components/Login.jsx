@@ -15,6 +15,7 @@ import {
   Shield,
   Layers,
   Sparkles,
+  ChevronDown,
 } from "lucide-react";
 import { sendEmailOtp, verifyEmailOtp } from "../api/auth";
 import { getProfile } from "../api/shop";
@@ -43,14 +44,15 @@ const Login = ({ onLogin, logo }) => {
   const handleNext = async (e) => {
     e.preventDefault();
     if (step === 1 && phoneNumber) {
-      if (!/^91\d{10}$/.test(phoneNumber)) {
-        setError("Please enter mobile number in 91XXXXXXXXXX format");
+      if (!/^\d{10}$/.test(phoneNumber)) {
+        setError("Please enter a valid 10-digit mobile number");
         return;
       }
       setLoading(true);
       setError(null);
       try {
-        await sendEmailOtp(phoneNumber);
+        const fullNumber = `91${phoneNumber}`;
+        await sendEmailOtp(fullNumber);
         setStep(2);
       } catch (err) {
         setError(err.message || "Failed to send OTP. Please try again.");
@@ -68,7 +70,8 @@ const Login = ({ onLogin, logo }) => {
       if (otpStr.length < 6) {
         throw new Error("Please enter the full 6-digit code");
       }
-      const response = await verifyEmailOtp(phoneNumber, parseInt(otpStr, 10));
+      const fullNumber = `91${phoneNumber}`;
+      const response = await verifyEmailOtp(fullNumber, parseInt(otpStr, 10));
       if (response.status === 200 && response.data?.token) {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("userId", response.data.userId);
@@ -138,7 +141,7 @@ const Login = ({ onLogin, logo }) => {
   const cities = profileData.state ? indiaData[profileData.state] : [];
 
   return (
-    <div className="h-screen w-full flex flex-col md:flex-row bg-[#ffffff] overflow-hidden font-sans">
+    <div className="h-[100dvh] w-full flex flex-col md:flex-row bg-[#ffffff] overflow-hidden font-sans">
       {/* Toast Notification */}
       <AnimatePresence>
         {toast && (
@@ -211,24 +214,27 @@ const Login = ({ onLogin, logo }) => {
       </div>
 
       {/* Right Section: Auth Forms */}
-      <div className="w-full md:w-[60%] lg:w-[45%] h-full flex flex-col bg-white overflow-y-auto relative no-scrollbar">
-        {/* Mobile Sticky Header */}
-        <div className="md:hidden sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-50 shrink-0">
-          <div className="px-6 py-4 flex items-center justify-between">
+      <div className="w-full md:w-[60%] lg:w-[45%] h-full flex flex-col bg-gradient-to-br from-blue-50/30 via-white to-white md:from-white md:to-white overflow-y-auto relative no-scrollbar">
+        {/* Mobile Sticky Header - Refined */}
+        <div className="md:hidden sticky top-0 z-50 bg-white/70 backdrop-blur-2xl border-b border-slate-100/50 shrink-0">
+          <div className="px-6 h-16 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img src={logo} alt="Logo" className="w-8 h-8 object-contain" />
-              <span className="text-lg font-black text-slate-900 tracking-tighter uppercase italic">
+              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center p-1.5 shadow-lg">
+                <img src={logo} alt="Logo" className="w-full h-full object-contain" />
+              </div>
+              <span className="text-base font-black text-slate-900 tracking-tighter uppercase italic">
                 Mapman
               </span>
             </div>
-            <div className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[9px] font-black uppercase tracking-widest">
+            <div className="flex items-center gap-2 px-3 py-1 bg-blue-600/5 border border-blue-600/10 text-blue-600 rounded-full text-[8px] font-black uppercase tracking-widest">
+              <div className="w-1 h-1 bg-blue-600 rounded-full animate-pulse" />
               Digital ID
             </div>
           </div>
         </div>
 
-        <div className="flex-1 flex items-center justify-center p-6 sm:p-12 md:p-8 lg:p-16">
-          <div className="w-full max-w-[340px] sm:max-w-[360px] space-y-10">
+        <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 md:p-8 lg:p-16">
+          <div className="w-full max-w-[340px] sm:max-w-[360px] space-y-10 py-8">
             <AnimatePresence mode="wait">
               {step === 1 ? (
                 <motion.div
@@ -260,7 +266,7 @@ const Login = ({ onLogin, logo }) => {
                         <input
                           type="tel"
                           required
-                          placeholder="91XXXXXXXXXX"
+                          placeholder="Enter 10-digit number"
                           className="w-full h-12 bg-white border border-slate-200 rounded-xl px-5 font-medium text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all"
                           value={phoneNumber}
                           onChange={(e) => setPhoneNumber(e.target.value)}
@@ -360,7 +366,8 @@ const Login = ({ onLogin, logo }) => {
                       <button
                         onClick={() => {
                           setError(null);
-                          sendEmailOtp(phoneNumber).catch((err) =>
+                          const fullNumber = `91${phoneNumber}`;
+                          sendEmailOtp(fullNumber).catch((err) =>
                             setError(err.message),
                           );
                         }}

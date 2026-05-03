@@ -89,9 +89,9 @@ const ShopAnalytics = () => {
   }
 
   return (
-    <div className="min-h-screen no-scrollbar bg-white">
+    <div className="min-h-screen no-scrollbar bg-slate-50/50">
       {/* ── TOP HEADER ── */}
-      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 p-4 md:px-10 flex items-center justify-between">
+      <div className="sticky top-0 z-50 bg-slate-50/80 backdrop-blur-xl border-b border-slate-200/60 p-4 md:px-10 flex items-center justify-between">
         <div className="flex items-center gap-4 lg:gap-8">
           <button
             onClick={() => navigate("/profile")}
@@ -113,7 +113,7 @@ const ShopAnalytics = () => {
       <div className="p-4 md:p-8 lg:p-10 max-w-[1400px] mx-auto space-y-10">
 
         {error && (
-          <div className="bg-red-50 border border-red-100 p-4 rounded-2xl flex items-center justify-between">
+          <div className="bg-red-50 border border-red-100 p-4 rounded-1xl flex items-center justify-between">
             <p className="text-xs font-black text-red-600 uppercase tracking-widest">{error}</p>
             <button onClick={fetchData} className="text-[10px] font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl transition-all shadow-md active:scale-95 uppercase tracking-wider">Retry</button>
           </div>
@@ -128,7 +128,7 @@ const ShopAnalytics = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
               whileHover={{ scale: 1.01 }}
-              className={`relative group p-6 rounded-[2rem] overflow-hidden border border-white/20 shadow-xl transition-all duration-500
+              className={`relative group p-6 rounded-[1rem] overflow-hidden border border-white/20 shadow-xl transition-all duration-500
                                 ${i === 0 ? "bg-gradient-to-br from-blue-600 via-indigo-600 to-indigo-700 shadow-blue-500/20" : "bg-gradient-to-br from-emerald-500 via-teal-600 to-teal-700 shadow-emerald-500/20"}
                             `}
             >

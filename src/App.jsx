@@ -275,7 +275,7 @@ const Dashboard = ({ onLogout }) => {
 
       {/* 2. MAIN AREA */}
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-        <header className="h-20 lg:h-24 bg-white/80 backdrop-blur-md border-b border-slate-200/60 px-6 lg:px-10 flex items-center justify-between shrink-0 z-40">
+        <header className="h-16 lg:h-20 bg-white/80 backdrop-blur-md border-b border-slate-200/60 px-4 md:px-6 lg:px-10 flex items-center justify-between shrink-0 z-40">
           <div className="flex items-center gap-4 lg:gap-0">
             <button className="lg:hidden p-2.5 -ml-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all" onClick={() => setSidebarOpen(true)}>
               <Menu className="w-6 h-6 stroke-[2.5]" />
@@ -283,7 +283,7 @@ const Dashboard = ({ onLogout }) => {
             <div className="relative hidden md:flex items-center gap-3">
               <div className="flex items-center">
                 <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase italic">
-                  Map<span className="text-blue-600">Man</span>
+                  Map <span className="text-blue-600">Man</span>
                 </h1>
               </div>
               <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-50 border border-slate-100 rounded-full shadow-sm">
@@ -320,7 +320,7 @@ const Dashboard = ({ onLogout }) => {
           </div>
         </header>
 
-        <main className="p-4 lg:p-6 max-w-screen-2xl mx-auto w-full flex-1 min-h-0 overflow-y-auto">
+        <main className="p-2 md:p-4 lg:p-6 max-w-screen-2xl mx-auto w-full flex-1 min-h-0 overflow-y-auto no-scrollbar">
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<Home onSelectCategory={navigateToMap} />} />

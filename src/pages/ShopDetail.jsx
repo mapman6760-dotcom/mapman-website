@@ -95,11 +95,11 @@ const ShopDetail = () => {
     return (
       <div className="max-w-6xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-20 px-4">
         {/* ── EMPTY DATA CARD ── */}
-        <div className="min-h-[50vh] flex flex-col items-center justify-center gap-8 p-12 bg-white rounded-[2.5rem] border border-slate-100 shadow-2xl max-w-4xl mx-auto relative overflow-hidden">
+        <div className="min-h-[50vh] flex flex-col items-center justify-center gap-8 p-12 bg-white rounded-[1rem] border border-slate-100 shadow-2xl max-w-4xl mx-auto relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-slate-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 
           <div className="w-24 h-24 bg-slate-50 rounded-3xl flex items-center justify-center border border-slate-100 shadow-inner group-hover:scale-110 transition-transform duration-500">
-            <AlertTriangle className="w-10 h-10 text-slate-300" />
+           <img src="https://cdn-icons-png.flaticon.com/128/869/869432.png" alt="empty-shop" className="h-[40px] w-[40px]" />
           </div>
 
           <div className="text-center space-y-4 relative z-10">
@@ -178,7 +178,7 @@ const ShopDetail = () => {
   );
 
   return (
-    <div className="max-w-6xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-20 px-4">
+    <div className="max-w-6xl mx-auto w-full space-y-4 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-20 px-2 md:px-4">
       <AnimatePresence>
         {selectedImage && (
           <ImageDialog
@@ -190,29 +190,29 @@ const ShopDetail = () => {
 
       {/* ── REFINED HEADER ── */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-3 md:gap-5">
           <button
             onClick={() => navigate(-1)}
-            className="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-300 hover:bg-blue-50 transition-all group active:scale-90"
+            className="p-2.5 md:p-3.5 bg-white border border-slate-200 rounded-xl md:rounded-2xl shadow-sm hover:border-blue-300 hover:bg-blue-50 transition-all group active:scale-90"
           >
             <ArrowLeft className="w-5 h-5 text-slate-800 group-hover:text-blue-600" />
           </button>
           <div>
-            <h1 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">
+            <h1 className="text-lg md:text-2xl font-bold text-slate-900 tracking-tight line-clamp-1">
               {shopInfo.shopName}
             </h1>
-            <div className="flex items-center gap-2 mt-1">
-              <ShieldCheck className="w-4 h-4 text-emerald-500" />
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+            <div className="flex items-center gap-2 mt-0.5 md:mt-1">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+              <span className="text-[9px] md:text-[11px] font-bold text-slate-500 uppercase tracking-widest">
                 Verified Premium Business
               </span>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 md:gap-3">
           <button
-            className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all border ${
+            className={`w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center transition-all border ${
               isSaved
                 ? "bg-amber-500 border-amber-500 text-white shadow-lg"
                 : "bg-white border-slate-200 text-slate-400 hover:text-amber-500 hover:border-amber-200"
@@ -220,18 +220,15 @@ const ShopDetail = () => {
             onClick={() => setIsSaved(!isSaved)}
           >
             <Bookmark
-              className="w-5 h-5"
+              className="w-4 h-4 md:w-5 md:h-5"
               fill={isSaved ? "currentColor" : "none"}
             />
-          </button>
-          <button className="w-12 h-12 bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-slate-400 hover:text-blue-600 hover:border-blue-200 transition-all shadow-sm active:scale-95">
-            <Maximize2 className="w-5 h-5" />
           </button>
         </div>
       </div>
 
       {/* ── PREMIUM HERO SECTION ── */}
-      <section className="relative group overflow-hidden bg-slate-900 rounded-[2.5rem] shadow-2xl aspect-[21/9] md:aspect-[24/8]">
+      <section className="relative group overflow-hidden bg-slate-900 rounded-2xl md:rounded-[2.5rem] shadow-2xl aspect-video md:aspect-[24/8]">
         <img
           src={shopBanner}
           className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 cursor-pointer"
@@ -240,13 +237,13 @@ const ShopDetail = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
 
-        <div className="absolute bottom-10 left-10 right-10 z-10 flex items-end justify-between">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-white/90 text-sm font-medium">
-              <MapPin className="w-4 h-4 text-rose-500 shadow-glow shadow-rose-500/50" />
+        <div className="absolute bottom-4 md:bottom-10 left-4 md:left-10 right-4 md:right-10 z-10 flex items-end justify-between">
+          <div className="space-y-1 md:space-y-2">
+            <div className="flex items-center gap-2 text-white/90 text-[10px] md:text-sm font-medium">
+              <MapPin className="w-3 md:w-4 h-3 md:h-4 text-rose-500" />
               {shopInfo.address.split(",").slice(0, 3).join(", ")}
             </div>
-            <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-none drop-shadow-2xl">
+            <h2 className="text-xl md:text-5xl font-black text-white tracking-tight leading-none drop-shadow-2xl">
               {shopInfo.shopName}
             </h2>
           </div>
@@ -261,17 +258,17 @@ const ShopDetail = () => {
 
       {/* ── REFINED GALLERY ROW ── */}
       {gallery.length > 0 && (
-        <section className="px-2">
-          <div className="bg-white p-4 rounded-[2rem] border border-slate-100 shadow-xl overflow-hidden">
+        <section className="px-0">
+          <div className="bg-white p-2 md:p-4 rounded-3xl md:rounded-[2rem] border border-slate-100 shadow-xl overflow-hidden">
             <Swiper
               modules={[Pagination, Autoplay, Navigation]}
-              spaceBetween={16}
+              spaceBetween={12}
               slidesPerView={"auto"}
               autoplay={{ delay: 3000, disableOnInteraction: false }}
-              className="w-full h-[140px] md:h-[180px]"
+              className="w-full h-[120px] md:h-[180px]"
             >
               {gallery.map((img, i) => (
-                <SwiperSlide key={i} className="!w-[200px] md:!w-[280px]">
+                <SwiperSlide key={i} className="!w-[160px] md:!w-[280px]">
                   <div
                     className="w-full h-full rounded-2xl overflow-hidden shadow-md border border-slate-50 group cursor-pointer relative"
                     onClick={() => setSelectedImage(img)}
@@ -293,23 +290,23 @@ const ShopDetail = () => {
       )}
 
       {/* ── NAVIGATION TABS ── */}
-      <nav className="sticky top-4 z-40 bg-white/80 backdrop-blur-xl py-3 px-3 rounded-2xl border border-slate-200 shadow-lg flex items-center gap-2 max-w-fit mx-auto md:mx-0">
+      <nav className="sticky top-4 z-40 bg-white/80 backdrop-blur-xl py-2 md:py-3 px-2 md:px-3 rounded-xl md:rounded-2xl border border-slate-200 shadow-lg flex items-center gap-1 md:gap-2 max-w-fit mx-auto md:mx-0">
         {[
           {
             id: "details",
             label: "Store Info",
-            icon: <Info className="w-4 h-4" />,
+            icon: <Info className="w-3.5 h-3.5" />,
           },
           {
             id: "videos",
             label: "Store Reel",
-            icon: <Video className="w-4 h-4" />,
+            icon: <Video className="w-3.5 h-3.5" />,
           },
         ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-3 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+            className={`flex items-center gap-2 md:gap-3 px-4 md:px-6 py-2 md:py-2.5 rounded-lg md:rounded-xl text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
               activeTab === tab.id
                 ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
                 : "text-slate-500 hover:bg-slate-100"
@@ -328,23 +325,23 @@ const ShopDetail = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
-              className="grid grid-cols-1 lg:grid-cols-12 gap-10"
+              className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10"
             >
-              <div className="lg:col-span-8 space-y-12">
-                <section className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-1.5 h-8 bg-blue-600 rounded-full" />
-                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-[0.3em]">
+              <div className="lg:col-span-8 space-y-8 md:space-y-12">
+                <section className="space-y-4 md:space-y-6">
+                  <div className="flex items-center gap-3 md:gap-4">
+                    <div className="w-1 h-6 md:w-1.5 md:h-8 bg-blue-600 rounded-full" />
+                    <h3 className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-[0.3em]">
                       Business Story
                     </h3>
                   </div>
-                  <p className="text-xl md:text-2xl font-semibold text-slate-800 leading-relaxed tracking-tight">
+                  <p className="text-base md:text-2xl font-semibold text-slate-800 leading-relaxed tracking-tight">
                     {shopInfo.description ||
                       "Welcome to our premium establishment. We are committed to providing exceptional service and quality to our community. Visit us to experience our unique offerings firsthand."}
                   </p>
                 </section>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                   {[
                     {
                       icon: <Clock className="w-5 h-5" />,
@@ -363,56 +360,50 @@ const ShopDetail = () => {
                   ].map((item, i) => (
                     <div
                       key={i}
-                      className="group p-6 bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-blue-100 transition-all duration-300"
+                      className="group p-5 md:p-6 bg-white rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-blue-100 transition-all duration-300"
                     >
                       <div
-                        className={`w-12 h-12 mb-6 rounded-2xl flex items-center justify-center bg-${item.color}-50 text-${item.color}-600 group-hover:scale-110 transition-transform`}
+                        className={`w-10 h-10 md:w-12 md:h-12 mb-4 md:mb-6 rounded-xl md:rounded-2xl flex items-center justify-center bg-blue-50 text-blue-600 group-hover:scale-110 transition-transform`}
                       >
                         {item.icon}
                       </div>
-                      <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                      <h4 className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
                         {item.label}
                       </h4>
-                      <p className="text-lg font-bold text-slate-900 leading-tight">
+                      <p className="text-base md:text-lg font-bold text-slate-900 leading-tight">
                         {item.value}
                       </p>
-                      <p className="text-[10px] text-slate-400 mt-2 font-medium">
+                      <p className="text-[9px] md:text-[10px] text-slate-400 mt-2 font-medium">
                         {item.desc}
                       </p>
                     </div>
                   ))}
                 </div>
 
-                <section className="p-10 bg-slate-900 rounded-[3rem] text-white shadow-2xl relative overflow-hidden group">
+                <section className="p-6 md:p-10 bg-slate-900 rounded-1xl md:rounded-[1rem] text-white shadow-2xl relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-500/20 transition-all duration-700" />
-                  <div className="relative z-10 space-y-8">
+                  <div className="relative z-10 space-y-6 md:space-y-8">
                     <div className="flex items-center gap-4">
-                      <div className="p-3 bg-white/10 rounded-2xl border border-white/10 shadow-xl">
-                        <MapPin className="w-6 h-6 text-blue-400" />
+                      <div className="p-2.5 md:p-3 bg-white/10 rounded-xl md:rounded-2xl border border-white/10 shadow-xl">
+                        <MapPin className="w-5 md:w-6 h-5 md:h-6 text-blue-400" />
                       </div>
                       <div>
-                        <h3 className="text-xs font-bold uppercase tracking-[0.4em] text-blue-400">
+                        <h3 className="text-[10px] md:text-xs font-bold uppercase tracking-[0.4em] text-blue-400">
                           Location Details
                         </h3>
-                        <p className="text-[10px] text-white/40 uppercase font-medium">
+                        <p className="text-[9px] text-white/40 uppercase font-medium">
                           Verified Physical Address
                         </p>
                       </div>
                     </div>
-                    <p className="text-xl font-bold leading-relaxed opacity-95 max-w-xl">
+                    <p className="text-lg md:text-xl font-bold leading-relaxed opacity-95 max-w-xl">
                       {shopInfo.address}
                     </p>
-                    <div className="pt-6 border-t border-white/10 flex flex-wrap gap-6">
+                    <div className="pt-4 md:pt-6 border-t border-white/10 flex flex-wrap gap-4 md:gap-6">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/50">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-white/50">
                           Directions Ready
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-blue-500" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/50">
-                          Mapman Integrated
                         </span>
                       </div>
                     </div>
@@ -422,20 +413,20 @@ const ShopDetail = () => {
 
               <aside className="lg:col-span-4">
                 <div className="sticky top-24 space-y-6">
-                  <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-2xl space-y-8">
-                    <div className="text-center pb-6 border-b border-slate-50">
-                      <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Phone className="w-8 h-8 text-blue-600" />
+                  <div className="bg-white p-6 md:p-8 rounded-3xl md:rounded-[1rem] border border-slate-100 shadow-2xl space-y-6 md:space-y-8">
+                    <div className="text-center pb-4 md:pb-6 border-b border-slate-50">
+                      <div className="w-12 h-12 md:w-16 md:h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
+                        <Phone className="w-6 md:w-8 h-6 md:h-8 text-blue-600" />
                       </div>
-                      <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest mb-1">
+                      <h3 className="text-xs md:text-sm font-bold text-slate-900 uppercase tracking-widest mb-1">
                         Get in Touch
                       </h3>
-                      <p className="text-[10px] text-slate-400 font-medium uppercase tracking-[0.1em]">
+                      <p className="text-[9px] md:text-[10px] text-slate-400 font-medium uppercase tracking-[0.1em]">
                         Responds quickly to inquiries
                       </p>
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="space-y-3 md:space-y-4">
                       {[
                         {
                           title: "WhatsApp",
@@ -464,68 +455,35 @@ const ShopDetail = () => {
                           href={link.action}
                           target="_blank"
                           rel="noreferrer"
-                          className={`flex items-center justify-between p-5 rounded-[2rem] border transition-all group/link active:scale-[0.98] shadow-sm hover:shadow-md
-                            ${
-                              link.color === "emerald"
-                                ? "bg-emerald-50/30 border-emerald-100 lg:hover:bg-emerald-50 lg:hover:border-emerald-200"
-                                : ""
-                            }
-                            ${
-                              link.color === "blue"
-                                ? "bg-blue-50/30 border-blue-100 lg:hover:bg-blue-50 lg:hover:border-blue-200"
-                                : ""
-                            }
-                            ${
-                              link.color === "rose"
-                                ? "bg-rose-50/30 border-rose-100 lg:hover:bg-rose-50 lg:hover:border-rose-200"
-                                : ""
-                            }
-                          `}
+                          className={`flex items-center justify-between p-4 md:p-5 rounded-2xl md:rounded-[2rem] border transition-all group/link active:scale-[0.98] shadow-sm hover:shadow-md bg-slate-50/50 border-slate-100 lg:hover:bg-white`}
                         >
-                          <div className="flex items-center gap-5">
-                            <div
-                              className={`w-14 h-14 bg-white rounded-2xl flex items-center justify-center border transition-all group-hover/link:scale-110
-                                ${
-                                  link.color === "emerald"
-                                    ? "border-emerald-100 shadow-emerald-100/50"
-                                    : ""
-                                }
-                                ${
-                                  link.color === "blue"
-                                    ? "border-blue-100 shadow-blue-100/50"
-                                    : ""
-                                }
-                                ${
-                                  link.color === "rose"
-                                    ? "border-rose-100 shadow-rose-100/50"
-                                    : ""
-                                }
-                              `}
-                            >
+                          <div className="flex items-center gap-4 md:gap-5">
+                            <div className="w-10 h-10 md:w-14 md:h-14 bg-white rounded-xl md:rounded-2xl flex items-center justify-center border border-slate-100 shadow-sm transition-all group-hover/link:scale-110">
                               <img
                                 src={link.img}
-                                className="w-8 h-8 object-contain"
+                                className="w-6 md:w-8 h-6 md:h-8 object-contain"
                                 alt={link.title}
                               />
                             </div>
                             <div>
-                              <p className="text-[11px] font-bold text-slate-900 uppercase tracking-widest leading-none mb-1">
+                              <p className="text-[10px] md:text-[11px] font-bold text-slate-900 uppercase tracking-widest leading-none mb-1">
                                 {link.title}
                               </p>
-                              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest opacity-70">
+                              <p className="text-[8px] md:text-[9px] text-slate-400 font-bold uppercase tracking-widest opacity-70">
                                 {link.label}
                               </p>
                             </div>
                           </div>
-                          <ChevronRight className="w-4 h-4 text-slate-300 group-hover/link:translate-x-1 group-hover/link:text-slate-600 transition-all" />
+                          <ChevronRight className="w-3.5 h-3.5 text-slate-300 group-hover/link:translate-x-1 group-hover/link:text-slate-600 transition-all" />
                         </a>
                       ))}
                     </div>
                     <button
                       onClick={() => window.open(`tel:${shopInfo.shopNumber}`)}
-                      className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-sm shadow-xl shadow-blue-600/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+                      className="w-full py-4 md:py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl md:rounded-2xl font-bold text-xs md:text-sm shadow-xl shadow-blue-600/20 transition-all active:scale-95 flex items-center justify-center gap-2"
                     >
-                      <Phone className="w-4 h-4" /> CONTACT NOW
+                      <Phone className="w-3.5 h-3.5 md:w-4 md:h-4" /> CONTACT
+                      NOW
                     </button>
                   </div>
                 </div>
@@ -537,7 +495,7 @@ const ShopDetail = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4"
             >
               {videos.length > 0 ? (
                 videos.map((video, idx) => (
@@ -551,7 +509,7 @@ const ShopDetail = () => {
                         state: { videos: videos, index: idx },
                       })
                     }
-                    className="relative aspect-[9/16] rounded-3xl overflow-hidden bg-slate-900 shadow-xl group cursor-pointer"
+                    className="relative aspect-[3/4] rounded-xl md:rounded-2xl overflow-hidden bg-slate-900 shadow-xl group cursor-pointer"
                   >
                     <video
                       src={`${API_BASE_URL}${video.video}`}
@@ -567,11 +525,8 @@ const ShopDetail = () => {
                       }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-100 group-hover:opacity-40 transition-opacity" />
-                    <div className="absolute bottom-5 left-4 right-4 text-xs font-bold text-white leading-tight line-clamp-2 drop-shadow-lg">
+                    <div className="absolute bottom-4 md:bottom-5 left-3 md:left-4 right-3 md:right-4 text-[10px] md:text-xs font-bold text-white leading-tight line-clamp-2 drop-shadow-lg">
                       {video.videoTitle}
-                    </div>
-                    <div className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-md rounded-full border border-white/20 opacity-0 group-hover:opacity-100 transition-all">
-                      <Video className="w-4 h-4 text-white" />
                     </div>
                   </motion.div>
                 ))

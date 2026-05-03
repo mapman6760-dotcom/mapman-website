@@ -72,23 +72,7 @@ const Support = () => {
 
   return (
     <div className="w-full min-h-screen bg-[#F5F5F5] pb-16 px-4 md:px-8 pt-6 space-y-6">
-      <div className="flex items-center justify-between max-w-4xl mx-auto">
-        <button
-          onClick={() => navigate("/profile")}
-          className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors text-xs font-semibold"
-        >
-          <div className="w-8 h-8 bg-white border border-slate-200 rounded-xl flex items-center justify-center shadow-sm">
-            <ArrowLeft className="w-4 h-4" />
-          </div>
-          Back to Profile
-        </button>
-        <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-            Help & Support Active
-          </span>
-        </div>
-      </div>
+     
 
       <div className="max-w-4xl mx-auto space-y-10">
         <div className="space-y-4">
