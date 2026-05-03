@@ -102,7 +102,7 @@ const CategoryVideos = () => {
       {/* ── STICKY HEADER ── */}
 
       <header className="sticky top-0 z-[60] bg-slate-50/80 backdrop-blur-2xl border-b border-slate-200/60 transition-all">
-        <div className="max-w-[1440px] mx-auto px-6 h-14 md:h-16 flex items-center justify-between">
+        <div className="max-w-[1440px] mx-auto px-2 md:px-6 h-14 md:h-16 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <button
               onClick={() => navigate(-1)}
@@ -138,7 +138,7 @@ const CategoryVideos = () => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-10">
+      <main className="max-w-7xl mx-auto px-2 md:px-6 py-6 lg:py-10">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-40">
             <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
@@ -148,7 +148,7 @@ const CategoryVideos = () => {
           </div>
         ) : videos.length > 0 ? (
           <div className="space-y-12">
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-6">
               <AnimatePresence mode="popLayout">
                 {videos.map((vid, i) => (
                   <motion.div

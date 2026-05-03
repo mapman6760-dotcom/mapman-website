@@ -107,9 +107,13 @@ const Dashboard = ({ onLogout }) => {
 
   useEffect(() => {
     // Scroll the main content area to top whenever path changes
-    const mainContent = document.querySelector('main');
-    if (mainContent) {
-      mainContent.scrollTo({ top: 0, behavior: "smooth" });
+    try {
+      const mainContent = document.querySelector('main');
+      if (mainContent) {
+        mainContent.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    } catch (err) {
+      console.warn("Scroll to top failed:", err);
     }
   }, [location.pathname]);
 

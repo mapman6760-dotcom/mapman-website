@@ -85,11 +85,9 @@ const MapExplore = ({ isCollapsed }) => {
       const sorted = [...shops].sort(
         (a, b) => getRawDistance(a.lat, a.long) - getRawDistance(b.lat, b.long),
       );
-      // Only update if the order actually changed (to avoid unnecessary renders)
-      if (
-        JSON.stringify(sorted.map((s) => s.id)) !==
-        JSON.stringify(shops.map((s) => s.id))
-      ) {
+      
+      // Compare by first and last IDs to detect meaningful changes without full stringify
+      if (sorted[0]?.id !== shops[0]?.id || sorted[sorted.length - 1]?.id !== shops[shops.length - 1]?.id) {
         setShops(sorted);
       }
     }

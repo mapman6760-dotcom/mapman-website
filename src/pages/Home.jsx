@@ -358,7 +358,7 @@ const Home = ({ onSelectCategory }) => {
                   }
                   className="group cursor-pointer"
                 >
-                  <div className="relative h-full bg-white rounded-[2rem] border border-slate-100 shadow-[0_8px_30px_-10px_rgba(0,0,0,0.04)] hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] transition-all duration-700 overflow-hidden flex flex-col">
+                  <div className="relative h-full bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_-10px_rgba(0,0,0,0.04)] hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] transition-all duration-700 overflow-hidden flex flex-col">
                     <div
                       className={`absolute top-0 left-0 w-full h-[5px] ${colors.dot} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
                     />

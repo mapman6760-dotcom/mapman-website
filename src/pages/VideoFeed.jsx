@@ -69,7 +69,7 @@ const VideoFeed = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`${API_BASE_URL}/shop/fetchPoints`, {
-        headers: { usertoken: token }
+        headers: { usertoken: token },
       });
       const result = await response.json();
       if (result.status === 200) {
@@ -311,7 +311,6 @@ const VideoFeed = () => {
           </button>
         </div>
 
-
         <div className="flex items-center gap-4">
           <button
             onClick={() => setShowRewardsModal(true)}
@@ -382,7 +381,7 @@ const VideoFeed = () => {
         </div>
       ) : videos.length > 0 ? (
         <div
-          className={`${activeTab === "all" ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6" : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 px-2 md:px-4"} gap-3 md:gap-5 bg-transparent pb-20 no-scrollbar`}
+          className={`${activeTab === "all" ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6" : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 px-1 md:px-2"} gap-1.5 md:gap-5 bg-transparent pb-20 no-scrollbar`}
         >
           <AnimatePresence mode="popLayout">
             {videos.map((vid, i) => {
@@ -406,7 +405,7 @@ const VideoFeed = () => {
                       });
                     }
                   }}
-                  className={`relative group cursor-pointer transition-all duration-500 ${activeTab === "all" ? "flex flex-col aspect-[3/4] overflow-hidden bg-white border-r border-b border-slate-100" : "flex flex-col bg-white rounded-[2rem] p-4 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 border border-slate-100"}`}
+                  className={`relative group cursor-pointer transition-all duration-500 ${activeTab === "all" ? "flex flex-col aspect-[3/4] overflow-hidden bg-white border-r border-b border-slate-100" : "flex flex-col bg-white rounded-xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 border border-slate-100"}`}
                 >
                   {activeTab === "all" ? (
                     <>
@@ -436,47 +435,63 @@ const VideoFeed = () => {
                       </div>
                     </>
                   ) : (
-                    <>
-                      <div className="w-full aspect-video rounded-[1.5rem] overflow-hidden bg-slate-950 mb-4 relative group-hover:shadow-xl h-36 border border-slate-900 shadow-inner">
+                    <div className="relative h-full flex flex-col bg-white border border-slate-100 rounded-xl overflow-hidden group/card hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] transition-all duration-500">
+                      {/* VIDEO THUMBNAIL AREA */}
+                      <div className="relative w-full aspect-video bg-slate-950 overflow-hidden">
                         <video
                           src={`${API_BASE_URL}${vid.video}`}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+                          className="w-full h-full object-cover opacity-80 group-hover/card:opacity-100 transition-all duration-700 group-hover/card:scale-105"
                           muted
                           loop
                         />
-                        <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/80 backdrop-blur-md rounded-lg text-[8px] font-black text-white/90 uppercase tracking-widest leading-none border border-white/10">
-                          {vid.id % 2 === 0 ? "LIVE" : "HD"}
-                        </div>
-                      </div>
-                      <div className="flex gap-4">
-                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-800 to-black p-0.5 shadow-lg group-hover:rotate-6 transition-transform">
-                          <div className="w-full h-full rounded-[0.5rem] bg-slate-900 flex items-center justify-center text-white font-black text-[10px]">
-                            {vid.shopName?.charAt(0) || "M"}
-                          </div>
-                        </div>
-                        <div className="flex flex-col gap-1 min-w-0 flex-1 relative pr-8">
-                          <h4 className="text-[12px] font-black text-slate-900 uppercase tracking-tight line-clamp-2 leading-tight transition-colors uppercase">
-                            {vid.videoTitle}
-                          </h4>
-                          <div className="flex items-center gap-1.5 text-slate-400 text-[9px] font-bold uppercase tracking-tight opacity-70">
-                            <span className="truncate">{vid.shopName}</span>
-                            <div className="w-1 h-1 rounded-full bg-slate-200"></div>
-                            <span>{vid.views || 0} views</span>
-                          </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
 
-                          {/* Edit Menu Button */}
+                        {/* TOP ACTIONS BADGE */}
+                        <div className="absolute top-2 left-3 right-3 flex items-center justify-between">
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               handleOpenEdit(vid);
                             }}
-                            className="absolute right-0 top-0 w-8 h-8 flex items-center justify-center hover:bg-slate-100 rounded-lg transition-colors text-slate-400 hover:text-blue-600"
+                            className="w-8 h-8 bg-white/20 hover:bg-white/40 backdrop-blur-md rounded-lg flex items-center justify-center text-white transition-all shadow-xl border border-white/10"
                           >
                             <MoreVertical className="w-4 h-4" />
                           </button>
                         </div>
                       </div>
-                    </>
+
+                      {/* DATA CONTENT */}
+                      <div className="p-5 flex-1 flex flex-col">
+                        <div className="flex-1 space-y-2">
+                          <h4 className="text-[13px] font-black text-slate-900 uppercase tracking-tight leading-tight line-clamp-2 transition-colors group-hover/card:text-blue-600">
+                            {vid.videoTitle}
+                          </h4>
+                          <p className="text-[10px] text-slate-400 font-medium line-clamp-1 opacity-70">
+                            {vid.description ||
+                              "No description provided for this motion asset."}
+                          </p>
+                        </div>
+
+                        {/* ANALYTICS BAR */}
+                        <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-1.5">
+                              <Eye className="w-3 h-3 text-slate-300" />
+                              <span className="text-[10px] font-black text-slate-600">
+                                {vid.views || 0}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="px-2 py-1 bg-blue-50 rounded-md">
+                              <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest italic">
+                                Live Feed
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   )}
                 </motion.div>
               );
@@ -580,7 +595,11 @@ const VideoFeed = () => {
                       {videoFile || (editingVideo && !videoFile) ? (
                         <>
                           <video
-                            src={videoFile ? URL.createObjectURL(videoFile) : `${API_BASE_URL}${editingVideo.video}`}
+                            src={
+                              videoFile
+                                ? URL.createObjectURL(videoFile)
+                                : `${API_BASE_URL}${editingVideo.video}`
+                            }
                             className="w-full h-full object-cover opacity-80 group-hover/picker:opacity-100 transition-opacity"
                             autoPlay
                             muted
@@ -589,7 +608,9 @@ const VideoFeed = () => {
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
                           <div className="absolute bottom-4 left-5 right-5 flex items-center justify-between">
                             <span className="text-[10px] font-black text-white uppercase tracking-widest truncate max-w-[70%]">
-                              {videoFile ? videoFile.name : editingVideo.videoTitle}
+                              {videoFile
+                                ? videoFile.name
+                                : editingVideo.videoTitle}
                             </span>
                             <div className="w-6 h-6 bg-emerald-500 text-white rounded-lg flex items-center justify-center shadow-lg border border-emerald-400/50">
                               <CheckCircle2 className="w-3.5 h-3.5" />
@@ -712,11 +733,12 @@ const VideoFeed = () => {
                 </button>
                 <button
                   className={`btn-primary flex-[1.5] shadow-xl transition-all
-                                        ${uploadForm.videoTitle &&
-                      (videoFile || editingVideo)
-                      ? ""
-                      : "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none hover:bg-slate-200"
-                    }`}
+                                        ${
+                                          uploadForm.videoTitle &&
+                                          (videoFile || editingVideo)
+                                            ? ""
+                                            : "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none hover:bg-slate-200"
+                                        }`}
                   disabled={
                     (!videoFile && !editingVideo) ||
                     !uploadForm.videoTitle ||
@@ -730,7 +752,7 @@ const VideoFeed = () => {
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
                     <span className="relative z-10">
-                      {editingVideo ? "Update Details" : "Confirm Release"}
+                      {editingVideo ? "Update" : "Upload"}
                     </span>
                   )}
                 </button>

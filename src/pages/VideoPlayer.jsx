@@ -131,7 +131,7 @@ const VideoPlayer = () => {
     }
 
     // Auto-scroll to the next video
-    if (currentIndex < normalizedVideos.length - 1) {
+    if (currentIndex < normalizedVideos.length - 1 && containerRef.current) {
       const nextIndex = currentIndex + 1;
       const height = containerRef.current.offsetHeight;
       containerRef.current.scrollTo({
@@ -207,9 +207,11 @@ const VideoPlayer = () => {
   useEffect(() => {
     if (containerRef.current) {
       const height = containerRef.current.offsetHeight;
-      containerRef.current.scrollTop = startIndex * height;
+      if (height > 0) {
+        containerRef.current.scrollTop = startIndex * height;
+      }
     }
-  }, [startIndex]);
+  }, [startIndex, normalizedVideos.length]);
 
   const handleScroll = (e) => {
     const height = e.currentTarget.offsetHeight;
