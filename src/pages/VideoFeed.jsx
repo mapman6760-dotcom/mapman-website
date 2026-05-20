@@ -255,7 +255,17 @@ const VideoFeed = () => {
       });
       const result = await response.json();
       if (result.status === 200 && Array.isArray(result.data)) {
-        setVideos(result.data);
+        let sortedData = result.data;
+        if (activeTab === "all") {
+          sortedData.sort((a, b) => {
+            const isAOthers = a.categoryName?.toLowerCase() === "others";
+            const isBOthers = b.categoryName?.toLowerCase() === "others";
+            if (isAOthers && !isBOthers) return 1;
+            if (!isAOthers && isBOthers) return -1;
+            return 0;
+          });
+        }
+        setVideos(sortedData);
       } else {
         setVideos([]);
       }

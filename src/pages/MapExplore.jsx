@@ -209,17 +209,17 @@ const MapExplore = ({ isCollapsed }) => {
           <form onSubmit={handleSearch} className="flex items-center">
             <div className="relative flex-1 group">
               <div className="absolute inset-0 bg-blue-600/5 blur-2xl group-hover:bg-blue-600/10 transition-all duration-500 rounded-[1.5rem]"></div>
-              <div className="relative flex items-center bg-white border border-slate-200/60 rounded-3xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] transition-all duration-500 focus-within:ring-8 focus-within:ring-blue-600/5 focus-within:border-blue-600/20 px-1.5">
-                <div className="w-10 h-10 flex items-center justify-center text-slate-400">
-                  <Search className="w-5 h-5 stroke-[2.5]" />
+              <div className="relative flex items-center bg-white border border-slate-100 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.08)] transition-all duration-300 focus-within:shadow-[0_10px_40px_-10px_rgba(37,99,235,0.15)] focus-within:border-blue-500/30 px-2 py-1 gap-2">
+                <div className="w-8 h-8 flex items-center justify-center text-slate-400">
+                  <Search className="w-4 h-4 stroke-[2.5]" />
                 </div>
                 <input
                   type="text"
-                  placeholder="Seach shops..."
+                  placeholder="Search hubs..."
                   value={searchInput}
                   onFocus={() => setShowSuggestions(true)}
                   onChange={(e) => setSearchInput(e.target.value)}
-                  className="flex-1 h-12 bg-transparent outline-none text-[11px] font-black text-slate-900 placeholder:text-slate-300  tracking-[0.15em] ml-1"
+                  className="flex-1 h-10 bg-transparent outline-none text-[13px] font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-medium"
                 />
                 <AnimatePresence>
                   {searchInput && (
@@ -234,7 +234,7 @@ const MapExplore = ({ isCollapsed }) => {
                         loadShops("");
                         navigate("/map");
                       }}
-                      className="w-10 h-10 flex items-center justify-center text-slate-300 hover:text-red-500 transition-colors"
+                      className="w-8 h-8 flex items-center justify-center text-slate-300 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
                     >
                       <X className="w-4 h-4" />
                     </motion.button>
@@ -242,7 +242,7 @@ const MapExplore = ({ isCollapsed }) => {
                 </AnimatePresence>
                 <button
                   type="submit"
-                  className="w-10 h-10 bg-blue-600 text-white rounded-[1.25rem] flex items-center justify-center shadow-lg shadow-blue-600/30 hover:bg-blue-700 active:scale-90 transition-all ml-1"
+                  className="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-md hover:bg-blue-600 hover:shadow-blue-600/30 active:scale-95 transition-all"
                 >
                   <ArrowUpRight className="w-4 h-4" />
                 </button>

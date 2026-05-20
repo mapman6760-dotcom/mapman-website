@@ -139,19 +139,19 @@ const Dashboard = ({ onLogout }) => {
       {/* 1. PROFESSIONAL COLLAPSIBLE SIDEBAR */}
       <aside
         className={`
-          fixed inset-y-4 left-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
-          lg:inset-y-0 lg:rounded-none lg:static lg:flex lg:flex-col lg:h-screen lg:shadow-none shrink-0
+          fixed inset-y-0 left-0 z-50 transition-transform duration-300 ease-out
+          lg:static lg:flex lg:flex-col lg:h-screen lg:shadow-none shrink-0 lg:transition-all lg:duration-500 lg:ease-[cubic-bezier(0.23,1,0.32,1)]
           ${isCollapsed ? "lg:w-[84px]" : "lg:w-64"}
           ${isSidebarOpen ? "translate-x-0 w-[280px]" : "-translate-x-full lg:translate-x-0"}
         `}
       >
         <div className={`
-          flex flex-col h-full overflow-hidden relative bg-white/75 backdrop-blur-xl border-r border-white/40 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.1)]
-          transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
+          flex flex-col h-full overflow-hidden relative bg-white lg:bg-white/75 lg:backdrop-blur-xl border-r border-slate-200/50 lg:border-white/40 shadow-2xl lg:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.1)]
+          transition-all duration-300 lg:duration-500 lg:ease-[cubic-bezier(0.23,1,0.32,1)]
           ${showFullMenu ? "w-[280px] lg:w-64" : "w-[84px]"}
         `}>
-          <div className="absolute top-0 right-0 w-32 h-64 bg-blue-500/5 blur-[100px] pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-32 h-64 bg-indigo-500/5 blur-[100px] pointer-events-none" />
+          <div className="absolute top-0 right-0 w-32 h-64 bg-blue-500/5 blur-[100px] pointer-events-none hidden lg:block" />
+          <div className="absolute bottom-0 left-0 w-32 h-64 bg-indigo-500/5 blur-[100px] pointer-events-none hidden lg:block" />
 
           {/* Brand Header & Toggle */}
           <div className={`p-8 lg:p-7 pb-4 lg:pb-3 flex items-center transition-all duration-500 ${!showFullMenu ? "lg:flex-col lg:gap-4" : "justify-between"}`}>

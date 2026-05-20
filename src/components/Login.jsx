@@ -17,7 +17,14 @@ import {
   Sparkles,
   ChevronDown,
 } from "lucide-react";
-import { sendEmailOtp, verifyEmailOtp } from "../api/auth";
+import {
+  sendEmailOtp,
+  verifyEmailOtp,
+  sendEmailRecoveryOtp,
+  verifyEmailRecoveryOtp,
+  updatePhoneSendOtp,
+  updatePhoneVerifyOtp
+} from "../api/auth";
 import { getProfile } from "../api/shop";
 import indiaData from "../assets/india_states_districts.json";
 
@@ -35,6 +42,12 @@ const Login = ({ onLogin, logo }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [toast, setToast] = useState(null);
+
+  // Recovery Flow State
+  const [lostStep, setLostStep] = useState(0); // 0: hidden, 1-6: recovery steps
+  const [recoveryEmail, setRecoveryEmail] = useState("");
+  const [newPhone, setNewPhone] = useState("");
+  const [recoveryOtp, setRecoveryOtp] = useState(["", "", "", "", "", ""]);
 
   const showToast = (message) => {
     setToast(message);
@@ -55,6 +68,7 @@ const Login = ({ onLogin, logo }) => {
         await sendEmailOtp(fullNumber);
         setStep(2);
       } catch (err) {
+        showToast(err.message || "Failed to send OTP. Please try again.");
         setError(err.message || "Failed to send OTP. Please try again.");
       } finally {
         setLoading(false);
@@ -106,6 +120,7 @@ const Login = ({ onLogin, logo }) => {
         );
       }
     } catch (err) {
+      showToast(err.message || "Verification failed. Please check your code.");
       setError(err.message || "Verification failed. Please check your code.");
     } finally {
       setLoading(false);
@@ -127,13 +142,89 @@ const Login = ({ onLogin, logo }) => {
     navigate("/dashboard");
   };
 
-  const handleOtpChange = (element, index) => {
+  const handleOtpChange = (element, index, isRecovery = false) => {
     if (isNaN(element.value)) return false;
-    const newOtp = [...otp];
-    newOtp[index] = element.value;
-    setOtp(newOtp);
+    if (isRecovery) {
+      const newOtp = [...recoveryOtp];
+      newOtp[index] = element.value;
+      setRecoveryOtp(newOtp);
+    } else {
+      const newOtp = [...otp];
+      newOtp[index] = element.value;
+      setOtp(newOtp);
+    }
     if (element.nextSibling && element.value) {
       element.nextSibling.focus();
+    }
+  };
+
+  // Recovery API Handlers
+  const handleRecoveryEmailOtp = async () => {
+    if (!recoveryEmail) return setError("Please enter your registered email");
+    setLoading(true);
+    setError(null);
+    try {
+      await sendEmailRecoveryOtp(recoveryEmail);
+      setLostStep(3);
+    } catch (err) {
+      showToast(err.message || "Failed to send email OTP.");
+      setError(err.message || "Failed to send email OTP.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyRecoveryEmailOtp = async () => {
+    const otpStr = recoveryOtp.join("");
+    if (otpStr.length < 6) return setError("Please enter the full 6-digit code");
+    setLoading(true);
+    setError(null);
+    try {
+      await verifyEmailRecoveryOtp(recoveryEmail, parseInt(otpStr, 10));
+      setRecoveryOtp(["", "", "", "", "", ""]); // Reset for next step
+      setLostStep(4);
+    } catch (err) {
+      showToast(err.message || "Failed to verify email OTP.");
+      setError(err.message || "Failed to verify email OTP.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdatePhoneOtp = async () => {
+    if (!/^\d{10}$/.test(newPhone)) return setError("Please enter a valid 10-digit mobile number");
+    setLoading(true);
+    setError(null);
+    try {
+      await updatePhoneSendOtp(recoveryEmail, `91${newPhone}`);
+      setLostStep(5);
+    } catch (err) {
+      showToast(err.message || "Failed to send OTP to new number.");
+      setError(err.message || "Failed to send OTP to new number.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyUpdatePhoneOtp = async () => {
+    const otpStr = recoveryOtp.join("");
+    if (otpStr.length < 6) return setError("Please enter the full 6-digit code");
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await updatePhoneVerifyOtp(recoveryEmail, `91${newPhone}`, parseInt(otpStr, 10));
+      if (res.status === 200 && res.data?.token) {
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("userId", res.data.userId);
+        setLostStep(6); // Success screen
+      } else {
+        throw new Error(res.message || "Verification failed");
+      }
+    } catch (err) {
+      showToast(err.message || "Failed to verify new phone OTP.");
+      setError(err.message || "Failed to verify new phone OTP.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -236,7 +327,147 @@ const Login = ({ onLogin, logo }) => {
         <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 md:p-8 lg:p-16">
           <div className="w-full max-w-[340px] sm:max-w-[360px] space-y-10 py-8">
             <AnimatePresence mode="wait">
-              {step === 1 ? (
+              {lostStep > 0 ? (
+                <motion.div
+                  key="recoveryFlow"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="space-y-8"
+                >
+                  <div className="space-y-5">
+                    {lostStep < 6 && (
+                      <button
+                        onClick={() => {
+                          setError(null);
+                          if (lostStep === 1) setLostStep(0);
+                          else setLostStep(lostStep - 1);
+                        }}
+                        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-400 hover:text-blue-600 transition-all border border-slate-100"
+                      >
+                        <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
+                      </button>
+                    )}
+                    <div className="space-y-2">
+                      <h3 className="text-2xl md:text-3xl font-black text-slate-950 tracking-tight leading-tight uppercase italic">
+                        {lostStep === 1 && "Change Number"}
+                        {lostStep === 2 && "Email Verification"}
+                        {lostStep === 3 && "Check Your Email"}
+                        {lostStep === 4 && "New Phone Number"}
+                        {lostStep === 5 && "Verify New Number"}
+                        {lostStep === 6 && ""}
+                      </h3>
+                    </div>
+                  </div>
+
+                  {lostStep === 1 && (
+                    <div className="space-y-6">
+                      <div className="p-4 bg-amber-50 border border-amber-200/50 rounded-xl flex gap-3">
+                        <Lock className="w-5 h-5 text-amber-500 shrink-0" />
+                        <p className="text-[11px] text-amber-800 font-medium">Verify your identity first before changing your phone number.</p>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Verify VIA</label>
+                        <button onClick={() => setLostStep(2)} className="w-full p-4 bg-white border border-slate-200 rounded-xl hover:border-blue-300 hover:shadow-md transition-all flex items-center gap-4 text-left group">
+                          <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0 group-hover:scale-110 transition-transform">
+                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                          </div>
+                          <div>
+                            <p className="text-[13px] font-bold text-slate-900 group-hover:text-blue-600 flex items-center gap-1">Recover via Email <ChevronRight className="w-3.5 h-3.5" /></p>
+                            <p className="text-[10px] text-slate-500 mt-0.5">Verification link sent to your registered email</p>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {lostStep === 2 && (
+                    <div className="space-y-6">
+                      <div className="relative">
+                        <input type="email" required placeholder="Enter Registered Email" className="w-full h-12 bg-white border border-slate-200 rounded-xl px-10 font-medium text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all" value={recoveryEmail} onChange={(e) => setRecoveryEmail(e.target.value)} />
+                        <svg className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                      </div>
+                      {error && <div className="p-3 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-center border border-red-100">{error}</div>}
+                      <button onClick={handleRecoveryEmailOtp} disabled={loading} className="btn-primary w-full py-3">
+                        {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Get OTP"}
+                      </button>
+                    </div>
+                  )}
+
+                  {lostStep === 3 && (
+                    <div className="space-y-6">
+                      <div className="p-4 bg-blue-50 border-2 border-blue-400/50 rounded-xl flex items-center justify-between">
+                        <p className="text-[11px] font-bold text-slate-800">Verification OTP Sent</p>
+                        <p className="text-[11px] font-bold text-blue-600">{recoveryEmail}</p>
+                      </div>
+                      <div className="flex justify-between gap-1 sm:gap-2">
+                        {recoveryOtp.map((data, index) => (
+                          <input key={index} type="text" maxLength="1" className="w-10 sm:w-11 h-12 text-center text-xl font-black rounded-lg border border-slate-200 bg-slate-50/50 focus:border-blue-600 focus:bg-white outline-none transition-all" value={data} onChange={(e) => handleOtpChange(e.target, index, true)} onFocus={(e) => e.target.select()} />
+                        ))}
+                      </div>
+                      {error && <div className="p-3 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-center border border-red-100">{error}</div>}
+                      <button onClick={handleVerifyRecoveryEmailOtp} disabled={loading} className="btn-primary w-full py-3">
+                        {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Proceed"}
+                      </button>
+                    </div>
+                  )}
+
+                  {lostStep === 4 && (
+                    <div className="space-y-6">
+                      <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex gap-2 items-start">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                        <p className="text-[11px] text-emerald-800 font-medium leading-relaxed">Identity verified. Enter your new phone number below</p>
+                      </div>
+                      <div className="relative group">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-black">+91</span>
+                        <input type="tel" required placeholder="Enter New Phone Number" className="w-full h-12 bg-white border border-slate-200 rounded-xl pl-12 pr-5 font-medium text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all" value={newPhone} onChange={(e) => setNewPhone(e.target.value)} />
+                      </div>
+                      {error && <div className="p-3 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-center border border-red-100">{error}</div>}
+                      <button onClick={handleUpdatePhoneOtp} disabled={loading} className="btn-primary w-full py-3">
+                        {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Get OTP"}
+                      </button>
+                    </div>
+                  )}
+
+                  {lostStep === 5 && (
+                    <div className="space-y-6">
+                      <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between">
+                        <p className="text-[13px] font-black text-slate-900">+91{newPhone}</p>
+                        <button onClick={() => setLostStep(4)} className="text-[10px] font-bold text-blue-600 hover:underline flex items-center gap-1">
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg> Change Number
+                        </button>
+                      </div>
+                      <div className="flex justify-between gap-1 sm:gap-2">
+                        {recoveryOtp.map((data, index) => (
+                          <input key={index} type="text" maxLength="1" className="w-10 sm:w-11 h-12 text-center text-xl font-black rounded-lg border border-slate-200 bg-slate-50/50 focus:border-blue-600 focus:bg-white outline-none transition-all" value={data} onChange={(e) => handleOtpChange(e.target, index, true)} onFocus={(e) => e.target.select()} />
+                        ))}
+                      </div>
+                      {error && <div className="p-3 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-center border border-red-100">{error}</div>}
+                      <button onClick={handleVerifyUpdatePhoneOtp} disabled={loading} className="btn-primary w-full py-3">
+                        {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Confirm"}
+                      </button>
+                    </div>
+                  )}
+
+                  {lostStep === 6 && (
+                    <div className="space-y-6 text-center py-6">
+                      <div className="w-20 h-20 mx-auto bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mb-6">
+                        <CheckCircle2 className="w-12 h-12 stroke-[2.5]" />
+                      </div>
+                      <h3 className="text-2xl font-black text-slate-900 mb-2">Number Updated!</h3>
+                      <p className="text-sm text-slate-500 font-medium mb-6">Your phone number has been successfully changed.</p>
+                      <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex justify-center items-center gap-2 mb-8 text-emerald-700">
+                        <Smartphone className="w-4 h-4" />
+                        <span className="font-bold">+91{newPhone}</span>
+                      </div>
+                      <button onClick={() => { onLogin(); navigate("/dashboard"); }} className="btn-primary w-full py-3">
+                        Go to Dashboard
+                      </button>
+                    </div>
+                  )}
+
+                </motion.div>
+              ) : step === 1 ? (
                 <motion.div
                   key="step1"
                   initial={{ opacity: 0, x: 20 }}
@@ -271,6 +502,18 @@ const Login = ({ onLogin, logo }) => {
                           value={phoneNumber}
                           onChange={(e) => setPhoneNumber(e.target.value)}
                         />
+                      </div>
+                      <div className="flex justify-end pt-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setError(null);
+                            setLostStep(1);
+                          }}
+                          className="text-[10px] font-black text-slate-400 hover:text-blue-600 uppercase tracking-widest transition-colors"
+                        >
+                          Lost Mobile Number?
+                        </button>
                       </div>
                     </div>
 

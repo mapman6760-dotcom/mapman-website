@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronRight,
@@ -27,6 +28,7 @@ import {
 } from "lucide-react";
 
 const Home = ({ onSelectCategory }) => {
+  const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -146,8 +148,25 @@ const Home = ({ onSelectCategory }) => {
           },
         );
         const result = await response.json();
+        
+        if (result.status === 400 && result.error?.type === "UnauthorizedException") {
+          navigate("/login");
+          return;
+        }
+
         if (result.status === 200) {
-          const data = result.data.category || result.data.categories || [];
+          let data = result.data.category || result.data.categories || [];
+          
+          data = data.filter((cat) => cat.categoryType === "default");
+          
+          data.sort((a, b) => {
+            const isAOthers = a.categoryName?.toLowerCase() === "others";
+            const isBOthers = b.categoryName?.toLowerCase() === "others";
+            if (isAOthers && !isBOthers) return 1;
+            if (!isAOthers && isBOthers) return -1;
+            return 0;
+          });
+
           setCategories(data);
         }
       } catch (error) {
@@ -335,7 +354,7 @@ const Home = ({ onSelectCategory }) => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-6 lg:gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 lg:gap-8">
           {categories
             .filter((cat) => cat.categoryImage != null)
             .map((cat, i) => {
@@ -349,10 +368,9 @@ const Home = ({ onSelectCategory }) => {
               return (
                 <motion.div
                   key={cat.id || i}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.05 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
                   onClick={() =>
                     onSelectCategory(cat.categoryName.toLowerCase())
                   }
