@@ -725,40 +725,43 @@ const EditShop = () => {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 10 }}
-                          className="absolute z-[80] top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-50 overflow-hidden"
+                          className="absolute z-[80] top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden"
                         >
-                          <div className="max-h-60 overflow-y-auto no-scrollbar py-2">
-                            {categories.map((cat, idx) => (
-                              <button
-                                key={idx}
-                                onClick={() => {
-                                  setShopData({
-                                    ...shopData,
-                                    category: cat.categoryName,
-                                  });
-                                  setShowCategoryDropdown(false);
-                                }}
-                                className="w-full px-6 py-4 flex items-center hover:bg-slate-50 text-left transition-all"
-                              >
-                                <span className="text-[10px] font-black text-slate-800 uppercase tracking-tight italic">
-                                  {cat.categoryName}
-                                </span>
-                              </button>
-                            ))}
-                            <div className="px-2 pb-2 pt-1 border-t border-slate-50 mt-1">
-                              <button
-                                onClick={() => {
-                                  setShowCategoryDropdown(false);
-                                  setShowAddCategoryModal(true);
-                                }}
-                                className="w-full h-12 bg-blue-600 rounded-xl flex items-center justify-center gap-3 text-white shadow-lg shadow-blue-600/20 active:scale-95 transition-all"
-                              >
-                                <Plus className="w-4 h-4" />
-                                <span className="text-[10px] font-black uppercase tracking-widest">
-                                  Add Category
-                                </span>
-                              </button>
+                          <div className="max-h-72 overflow-y-auto no-scrollbar p-3">
+                            <div className="grid grid-cols-2 gap-2">
+                              {categories.map((cat, idx) => (
+                                <button
+                                  key={idx}
+                                  onClick={() => {
+                                    setShopData({ ...shopData, category: cat.categoryName });
+                                    setShowCategoryDropdown(false);
+                                  }}
+                                  className={`px-3 py-3 rounded-xl text-left transition-all border ${
+                                    shopData.category === cat.categoryName
+                                      ? "bg-blue-600 border-blue-600 text-white"
+                                      : "bg-slate-50 border-slate-100 text-slate-700 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700"
+                                  }`}
+                                >
+                                  <span className="text-[9px] font-black uppercase tracking-wider leading-none line-clamp-2">
+                                    {cat.categoryName}
+                                  </span>
+                                </button>
+                              ))}
                             </div>
+                          </div>
+                          <div className="px-3 pb-3 border-t border-slate-50">
+                            <button
+                              onClick={() => {
+                                setShowCategoryDropdown(false);
+                                setShowAddCategoryModal(true);
+                              }}
+                              className="w-full h-10 bg-blue-600 rounded-xl flex items-center justify-center gap-2 text-white shadow-lg shadow-blue-600/20 active:scale-95 transition-all mt-2"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                              <span className="text-[9px] font-black uppercase tracking-widest">
+                                Add Category
+                              </span>
+                            </button>
                           </div>
                         </motion.div>
                       )}

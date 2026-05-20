@@ -50,7 +50,7 @@ const fetchShops = async (input = "") => {
 const MapExplore = ({ isCollapsed }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const initialSearch = searchParams.get("query") || "";
+  const initialSearch = searchParams.get("category") || "";
 
   const [shops, setShops] = useState([]);
   const [loading, setLoading] = useState(true);

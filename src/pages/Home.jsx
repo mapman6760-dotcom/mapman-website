@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -26,11 +26,50 @@ import {
   TrendingUp,
   CheckCircle2,
 } from "lucide-react";
+import { fetchShop } from "../api/shop";
 
 const Home = ({ onSelectCategory }) => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
+  const [topBanners, setTopBanners] = useState([]);
+  const [categoryBanners, setCategoryBanners] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [toastMessage, setToastMessage] = useState(null);
+  const topBannerRef = useRef(null);
+
+  useEffect(() => {
+    if (topBanners.length > 0 && topBannerRef.current) {
+      const interval = setInterval(() => {
+        if (topBannerRef.current) {
+          const { scrollLeft, scrollWidth, clientWidth } = topBannerRef.current;
+          if (scrollLeft >= scrollWidth - clientWidth - 50) {
+            topBannerRef.current.scrollTo({ left: 0, behavior: "smooth" });
+          } else {
+            topBannerRef.current.scrollBy({
+              left: clientWidth * 0.8,
+              behavior: "smooth",
+            });
+          }
+        }
+      }, 3500);
+      return () => clearInterval(interval);
+    }
+  }, [topBanners]);
+
+  const handleRegisterClick = async () => {
+    try {
+      const res = await fetchShop();
+      if (res.status === 200 && res.data && Object.keys(res.data).length > 0) {
+        setToastMessage("You have already registtred.");
+        setTimeout(() => setToastMessage(null), 3000);
+      } else {
+        navigate("/edit-shop");
+      }
+    } catch (err) {
+      console.error(err);
+      navigate("/edit-shop");
+    }
+  };
 
   const iconMap = {
     theater: <Film />,
@@ -148,17 +187,20 @@ const Home = ({ onSelectCategory }) => {
           },
         );
         const result = await response.json();
-        
-        if (result.status === 400 && result.error?.type === "UnauthorizedException") {
+
+        if (
+          result.status === 400 &&
+          result.error?.type === "UnauthorizedException"
+        ) {
           navigate("/login");
           return;
         }
 
         if (result.status === 200) {
           let data = result.data.category || result.data.categories || [];
-          
+
           data = data.filter((cat) => cat.categoryType === "default");
-          
+
           data.sort((a, b) => {
             const isAOthers = a.categoryName?.toLowerCase() === "others";
             const isBOthers = b.categoryName?.toLowerCase() === "others";
@@ -168,6 +210,8 @@ const Home = ({ onSelectCategory }) => {
           });
 
           setCategories(data);
+          setTopBanners(result.data.topBanners || []);
+          setCategoryBanners(result.data.categoryBanners || []);
         }
       } catch (error) {
         console.error("Error fetching home data:", error);
@@ -186,7 +230,24 @@ const Home = ({ onSelectCategory }) => {
     );
 
   return (
-    <div className="space-y-8 md:space-y-16 lg:space-y-24 py-2 md:py-6">
+    <div className="space-y-8 md:space-y-16 lg:space-y-24 py-2 md:py-6 relative">
+      {/* --- TOAST --- */}
+      <AnimatePresence>
+        {toastMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: "-50%" }}
+            animate={{ opacity: 1, y: 0, x: "-50%" }}
+            exit={{ opacity: 0, y: -20, x: "-50%" }}
+            className="fixed top-20 left-1/2 z-[200] flex items-center gap-2 px-4 py-3 bg-slate-900 text-white rounded-xl shadow-2xl border border-slate-800"
+          >
+            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+            <span className="text-xs font-bold tracking-wide">
+              {toastMessage}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* --- SLEEK COMPACT BRAND BANNER --- */}
       <section className="relative group px-1">
         <motion.div
@@ -246,8 +307,63 @@ const Home = ({ onSelectCategory }) => {
         </motion.div>
       </section>
 
+      {/* --- TOP BANNERS SLIDER --- */}
+      {topBanners.length > 0 && (
+        <section className="relative px-1 mb-4 md:mb-8">
+          <div
+            ref={topBannerRef}
+            className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-3 md:gap-4 pb-4 scroll-smooth"
+          >
+            {topBanners.map((banner) => (
+              <motion.div
+                key={banner.id}
+                whileHover={{ scale: 0.98 }}
+                className="snap-center shrink-0 w-[85%] md:w-[60%] lg:w-[45%] relative h-[160px] md:h-[200px] lg:h-[220px] rounded-[20px] overflow-hidden shadow-xl flex-none bg-slate-900"
+                style={{
+                  backgroundImage: banner.backgroundImage
+                    ? `url(https://mapman-production.up.railway.app${banner.backgroundImage})`
+                    : "none",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/80 to-transparent/30 z-10"></div>
+
+                <div className="relative z-20 h-full flex items-center p-5 md:p-8 lg:p-10">
+                  <div className="flex-1 space-y-2 md:space-y-3">
+                    <h2 className="text-xl md:text-2xl lg:text-3xl font-black text-white tracking-tighter leading-[1.1] capitalize italic">
+                      {banner.title}
+                    </h2>
+                    <p className="text-slate-300 text-[10px] md:text-xs lg:text-sm font-medium max-w-[200px] md:max-w-[280px] leading-relaxed drop-shadow-md">
+                      {banner.subtitle}
+                    </p>
+                    {banner.contact && (
+                      <button
+                        onClick={handleRegisterClick}
+                        className="mt-2 md:mt-3 px-4 py-2 md:px-5 md:py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-[8px] md:text-[9px] uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20 active:scale-95"
+                      >
+                        {banner.contact}
+                      </button>
+                    )}
+                  </div>
+                  {banner.image && (
+                    <div className="hidden sm:flex w-[35%] h-full relative items-center justify-center">
+                      <img
+                        src={`https://mapman-production.up.railway.app${banner.image}`}
+                        alt="promo"
+                        className="w-full h-[120%] object-contain filter drop-shadow-2xl scale-110 translate-x-4"
+                      />
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* --- COMPACT PROMOTION SECTION --- */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8 px-1">
+      {/* <section className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8 px-1">
         <motion.div
           whileHover={{ y: -5 }}
           transition={{ duration: 0.4 }}
@@ -282,7 +398,7 @@ const Home = ({ onSelectCategory }) => {
           transition={{ duration: 0.5 }}
           className="relative group h-64 lg:h-72 rounded-2xl lg:rounded-[2rem] overflow-hidden bg-slate-950 border border-white/10 shadow-2xl"
         >
-          {/* MOBILE ONLY BACKGROUND IMAGE */}
+          
           <div className="md:hidden absolute inset-0 z-0">
             <img 
               src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=2066&auto=format&fit=crop" 
@@ -291,7 +407,7 @@ const Home = ({ onSelectCategory }) => {
             />
           </div>
 
-          {/* INTELLECTUAL OVERLAY ACCENTS */}
+          
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(37,99,235,0.15),transparent_70%)]"></div>
           <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
           <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-600/10 rounded-full blur-[100px]"></div>
@@ -323,7 +439,7 @@ const Home = ({ onSelectCategory }) => {
             </button>
           </div>
 
-          {/* ASYMMETRIC IMAGE HUB */}
+          
           <div className="absolute right-[-2%] bottom-[-5%] w-[45%] h-[85%] z-10 hidden sm:block">
             <div className="relative w-full h-full transform rotate-[-4deg] group-hover:rotate-0 transition-transform duration-700">
               <div className="absolute inset-0 bg-blue-600/10 blur-3xl rounded-tl-[3rem] group-hover:bg-blue-600/20 transition-all"></div>
@@ -336,7 +452,7 @@ const Home = ({ onSelectCategory }) => {
             </div>
           </div>
         </motion.div>
-      </section>
+      </section> */}
 
       {/* --- PREMIUM CATEGORIES HUB --- */}
       <section className="space-y-8 md:space-y-12 lg:space-y-16 px-1 relative">
@@ -447,6 +563,89 @@ const Home = ({ onSelectCategory }) => {
         </div>
       </section>
 
+      {/* --- CATEGORY BANNERS SLIDER --- */}
+      {categoryBanners.length > 0 && (
+        <section className="relative px-1 mt-6 md:mt-10 lg:mt-14">
+          <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-4 pb-4">
+            {categoryBanners.map((banner) => (
+              <motion.div
+                key={banner.id}
+                whileHover={{ y: 0 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                className="group relative snap-center shrink-0 w-[90%] sm:w-[60%] md:w-[42%] lg:w-[42%] h-[200px] md:h-[230px] rounded-3xl overflow-hidden bg-white border border-slate-200 shadow-[0_10px_40px_rgba(0,0,0,0.06)] flex-none"
+              >
+                {/* Subtle Gradient Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-50 opacity-100" />
+
+                {/* Accent Gradient Bar */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[var(--olive)] via-[var(--olive)]/60 to-transparent" />
+
+                {/* Background Image (subtle) */}
+                {banner.backgroundImage && (
+                  <img
+                    src={`https://mapman-production.up.railway.app${banner.backgroundImage}`}
+                    alt="background"
+                    className="absolute inset-0 w-full h-full object-cover opacity-3"
+                  />
+                )}
+
+                {/* Content */}
+                <div className="relative z-20 h-full flex flex-col p-6">
+                  {/* Top: Badge + Arrow */}
+                  <div className="flex items-start justify-between">
+                    <div className="inline-flex items-center gap-2 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg">
+                      <span className="w-2 h-2 rounded-full bg-[var(--olive)]" />
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600">
+                        Featured
+                      </span>
+                    </div>
+
+                    <div className="w-9 h-9 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center">
+                      <ArrowUpRight className="w-4 h-4 text-slate-700" />
+                    </div>
+                  </div>
+
+                  {/* Text Content */}
+                  <div className="flex-1 flex flex-col justify-center mt-3">
+                    <h2 className="text-base md:text-lg font-bold text-slate-900 leading-snug line-clamp-2 capitalize ">
+                      {banner.title}
+                    </h2>
+                    <p className="mt-2 text-[11px] md:text-xs text-slate-500 leading-relaxed line-clamp-2">
+                      {banner.subtitle}
+                    </p>
+                  </div>
+
+                  {/* Bottom: CTA */}
+                  <div className="mt-3 pt-3 border-t border-slate-100">
+                    {banner.contact && (
+                      <button
+                        onClick={() => navigate(`/map?category=${encodeURIComponent(banner.category)}`)}
+                        className="inline-flex items-center gap-2 rounded-lg bg-[var(--olive)] text-white px-4 py-2 text-[10px] font-bold uppercase tracking-widest shadow-md"
+                      >
+                        Explore now
+                        <ArrowUpRight className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Product Image */}
+                {banner.image && (
+                  <div className="absolute bottom-0 right-0 w-[45%] h-[80%] z-10">
+                    <img
+                      src={`https://mapman-production.up.railway.app${banner.image}`}
+                      alt="promo"
+                      className="w-full h-full object-contain drop-shadow-[0_15px_35px_rgba(0,0,0,0.12)]"
+                    />
+                  </div>
+                )}
+
+                {/* Shine Effect (removed) */}
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
       {/* --- PROFESSIONAL FEATURE SECTION (REDESIGNED) --- */}
       <section className="relative px-1 overflow-hidden pb-10">
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-50/30 blur-[120px] rounded-full"></div>
