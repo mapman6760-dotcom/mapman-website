@@ -63,9 +63,12 @@ const NotificationSettings = () => {
   const fetchSettings = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_BASE_URL}/shop/fetchNotificationPreference`, {
-        headers: { "usertoken": token }
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/shop/fetchNotificationPreference`,
+        {
+          headers: { usertoken: token },
+        },
+      );
       const result = await response.json();
       if (result.status === 200 && result.data) {
         setSettings({
@@ -96,14 +99,17 @@ const NotificationSettings = () => {
         newVideo: settings.newVideo ? 1 : 0,
       };
 
-      const response = await fetch(`${API_BASE_URL}/shop/notificationPreference`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "usertoken": token
+      const response = await fetch(
+        `${API_BASE_URL}/shop/notificationPreference`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            usertoken: token,
+          },
+          body: JSON.stringify(apiBody),
         },
-        body: JSON.stringify(apiBody)
-      });
+      );
 
       const result = await response.json();
       if (result.status === 200) {
@@ -151,7 +157,9 @@ const NotificationSettings = () => {
           <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
         <div className="space-y-1 sm:space-y-1.5 max-w-[180px] sm:max-w-[240px] md:max-w-none">
-          <h3 className={`font-bold text-[11px] sm:text-xs md:text-sm tracking-tight truncate ${active ? 'text-slate-900' : 'text-slate-700'}`}>
+          <h3
+            className={`font-bold text-[11px] sm:text-xs md:text-sm tracking-tight truncate ${active ? "text-slate-900" : "text-slate-700"}`}
+          >
             {title}
           </h3>
           <p className="text-[10px] sm:text-[11px] text-slate-500 truncate md:whitespace-normal leading-relaxed">
@@ -235,9 +243,6 @@ const NotificationSettings = () => {
           transition={{ delay: 0.3 }}
           className="bg-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200/60 overflow-hidden mt-10 md:mt-12 relative"
         >
-          {/* Top Gradient Line */}
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-500"></div>
-
           <div className="relative z-10 px-6 sm:px-8 py-6 sm:py-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
             <div className="space-y-2 pr-2">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-200 rounded-full text-slate-600 text-[10px] font-bold tracking-wide shadow-sm">
@@ -248,7 +253,8 @@ const NotificationSettings = () => {
                 Alert Management
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-sm">
-                Configure your touchpoints and control how you receive system notifications.
+                Configure your touchpoints and control how you receive system
+                notifications.
               </p>
             </div>
             <div className="hidden sm:flex shrink-0 w-12 h-12 sm:w-16 sm:h-16 bg-white border border-slate-100 rounded-2xl items-center justify-center shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
@@ -287,7 +293,8 @@ const NotificationSettings = () => {
               <Info className="w-4 h-4 text-blue-600" />
             </div>
             <p className="text-xs text-blue-900/70 font-medium leading-relaxed">
-              Preference modifications propagate across all system nodes instantly.
+              Preference modifications propagate across all system nodes
+              instantly.
             </p>
           </div>
         </motion.div>
@@ -358,9 +365,7 @@ const NotificationSettings = () => {
           </section>
 
           {/* Persistent Action Panel */}
-          <section
-            className="lg:col-span-12 xl:col-span-4 flex flex-col justify-end pb-1"
-          >
+          <section className="lg:col-span-12 xl:col-span-4 flex flex-col justify-end pb-1">
             <SaveButton saved={saved} loading={loading} onClick={handleSave} />
           </section>
         </div>

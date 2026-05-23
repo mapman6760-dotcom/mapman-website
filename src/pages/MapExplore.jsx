@@ -167,41 +167,36 @@ const MapExplore = ({ isCollapsed }) => {
   };
 
   // --- MARKER UI --- (Positioning now handled by MapMarker)
-  const MarkerUI = ({ label, icon, isActive, delay = 0, onClick }) => (
-    <motion.div
-      initial={{ opacity: 0, scale: 0, y: 10 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ type: "spring", stiffness: 300, damping: 15, delay }}
-      onClick={onClick}
-      className={`relative z-10 -translate-x-1/2 -translate-y-[80%] group cursor-pointer pointer-events-auto transition-all ${isActive ? "z-20 scale-125" : ""}`}
-    >
-      <div
-        className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-4 bg-slate-900 text-white px-4 py-2 rounded-2xl shadow-2xl transition-all whitespace-nowrap ${isActive ? "opacity-100 scale-100" : "opacity-0 scale-90 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:visible"}`}
+  const MarkerUI = ({ shop, isActive, delay = 0, onClick }) => {
+    const bgColorClass = getCategoryColor(shop.category);
+    const borderColorClass = getCategoryBorderColor(shop.category);
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 15, delay }}
+        onClick={onClick}
+        className={`relative z-10 -translate-x-1/2 -translate-y-1/2 group cursor-pointer pointer-events-auto transition-all ${isActive ? "z-20 scale-125" : ""}`}
       >
-        <span className="text-[10px] font-black  tracking-widest">{label}</span>
-        <div className="absolute top-full left-1/2 -translate-x-1/2 border-[8px] border-transparent border-t-slate-900"></div>
-      </div>
-      <div className="relative">
         <div
-          className={`absolute -inset-4 rounded-full opacity-0 transition-opacity ${isActive ? "bg-blue-600/30 opacity-100 animate-pulse" : "group-hover:bg-blue-500/10 group-hover:opacity-100"}`}
-        ></div>
-        <div
-          className={`w-9 h-9 rounded-xl border-[3px] border-white shadow-xl flex items-center justify-center transform transition-all active:scale-95 transition-all duration-300 ${isActive ? "bg-white ring-4 ring-blue-600/15 scale-110" : "bg-white"}`}
+          className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white border-2 ${borderColorClass} px-3 py-1.5 rounded-[10px] shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-all flex flex-col items-center justify-center min-w-[70px] ${isActive ? "scale-105 z-30 ring-2 ring-blue-500/20" : "scale-100 opacity-90 hover:opacity-100"}`}
         >
-          <div className="w-5 h-5 transition-all duration-500 group-hover:scale-110 flex items-center justify-center">
-            {icon}
-          </div>
+          <span className="text-[13px] font-black text-slate-800 leading-tight whitespace-nowrap">{shop.shopName}</span>
+          <span className="text-[11px] font-medium text-slate-500 leading-tight capitalize whitespace-nowrap">{shop.category}</span>
+          <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-white"></div>
         </div>
-        <div
-          className={`absolute left-1/2 -translate-x-1/2 top-full -mt-1.5 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] transition-all ${isActive ? "border-t-blue-600" : "border-t-white"}`}
-        ></div>
-      </div>
-    </motion.div>
-  );
+        <div className="relative flex items-center justify-center">
+          <div
+            className={`w-5 h-5 rounded-full border-[3px] border-white shadow-sm ${bgColorClass} transition-transform duration-300 ${isActive ? "ring-4 ring-blue-500/20" : ""}`}
+          ></div>
+        </div>
+      </motion.div>
+    );
+  };
 
   return (
     <div
-      className={`fixed inset-0 transition-all duration-500 ease-in-out bg-[#F8FAFC] z-10 flex flex-col overflow-hidden ${isCollapsed ? "lg:left-16" : "lg:left-60"} top-20 lg:top-24`}
+      className={`fixed inset-0 transition-all duration-500 ease-in-out bg-[#F8FAFC] z-10 flex flex-col overflow-hidden ${isCollapsed ? "lg:left-16" : "lg:left-60"} top-16 lg:top-20`}
     >
       {/* 1. LEFT-TOP COMPACT SEARCH & SMART AUTOCOMPLETE */}
       <div className="absolute top-6 left-6 z-40 pointer-events-none w-full max-w-[340px] lg:max-w-[400px]">
@@ -362,8 +357,7 @@ const MapExplore = ({ isCollapsed }) => {
                 }}
               >
                 <MarkerUI
-                  label={shop.shopName}
-                  icon={getCategoryIcon(shop.category)}
+                  shop={shop}
                   isActive={selectedShop?.id === shop.id}
                   delay={i * 0.05}
                 />
@@ -504,6 +498,38 @@ const MapExplore = ({ isCollapsed }) => {
 };
 
 // --- MARKER COMPONENT REMOVED ---
+
+const getCategoryColor = (category = "") => {
+  const cat = category.toLowerCase();
+  if (cat.includes("theater") || cat.includes("cinema")) return "bg-purple-500";
+  if (cat.includes("restaurant") || cat.includes("food") || cat.includes("eating")) return "bg-orange-500";
+  if (cat.includes("hospital") || cat.includes("medical") || cat.includes("health")) return "bg-red-500";
+  if (cat.includes("bars") || cat.includes("pub") || cat.includes("drink")) return "bg-amber-500";
+  if (cat.includes("grocery") || cat.includes("shopping") || cat.includes("store")) return "bg-green-500";
+  if (cat.includes("textile") || cat.includes("cloth") || cat.includes("fashion")) return "bg-pink-500";
+  if (cat.includes("resort") || cat.includes("park")) return "bg-emerald-500";
+  if (cat.includes("bunk") || cat.includes("fuel") || cat.includes("petrol")) return "bg-slate-700";
+  if (cat.includes("spa") || cat.includes("salon") || cat.includes("beauty")) return "bg-rose-400";
+  if (cat.includes("hotel") || cat.includes("stay")) return "bg-blue-500";
+  if (cat.includes("furniture") || cat.includes("wood")) return "bg-teal-500";
+  return "bg-indigo-500";
+};
+
+const getCategoryBorderColor = (category = "") => {
+  const cat = category.toLowerCase();
+  if (cat.includes("theater") || cat.includes("cinema")) return "border-purple-500";
+  if (cat.includes("restaurant") || cat.includes("food") || cat.includes("eating")) return "border-orange-500";
+  if (cat.includes("hospital") || cat.includes("medical") || cat.includes("health")) return "border-red-500";
+  if (cat.includes("bars") || cat.includes("pub") || cat.includes("drink")) return "border-amber-500";
+  if (cat.includes("grocery") || cat.includes("shopping") || cat.includes("store")) return "border-green-500";
+  if (cat.includes("textile") || cat.includes("cloth") || cat.includes("fashion")) return "border-pink-500";
+  if (cat.includes("resort") || cat.includes("park")) return "border-emerald-500";
+  if (cat.includes("bunk") || cat.includes("fuel") || cat.includes("petrol")) return "border-slate-700";
+  if (cat.includes("spa") || cat.includes("salon") || cat.includes("beauty")) return "border-rose-400";
+  if (cat.includes("hotel") || cat.includes("stay")) return "border-blue-500";
+  if (cat.includes("furniture") || cat.includes("wood")) return "border-teal-500";
+  return "border-indigo-500";
+};
 
 const getCategoryIcon = (category = "") => {
   const cat = category.toLowerCase();

@@ -33,6 +33,32 @@ import { fetchShop, registerShop } from "../api/shop";
 
 const API_BASE_URL = "https://mapman-production.up.railway.app";
 
+const parseTo24Hour = (timeStr) => {
+  if (!timeStr) return "";
+  if (/^\d{2}:\d{2}$/.test(timeStr)) return timeStr;
+  const match = timeStr.match(/(\d+):(\d+)\s?(AM|PM|am|pm)?/);
+  if (!match) return "";
+  let [_, hours, minutes, ampm] = match;
+  hours = parseInt(hours, 10);
+  if (ampm) {
+    ampm = ampm.toUpperCase();
+    if (ampm === "PM" && hours < 12) hours += 12;
+    if (ampm === "AM" && hours === 12) hours = 0;
+  }
+  return `${hours.toString().padStart(2, "0")}:${minutes.padStart(2, "0")}`;
+};
+
+const formatTo12Hour = (time24) => {
+  if (!time24) return "";
+  if (!/^\d{2}:\d{2}$/.test(time24)) return time24;
+  const [hours, minutes] = time24.split(":");
+  let h = parseInt(hours, 10);
+  const ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12;
+  if (h === 0) h = 12;
+  return `${h.toString().padStart(2, "0")}:${minutes} ${ampm}`;
+};
+
 /* ─── Reusable Components ─── */
 const InputField = ({
   label,
@@ -152,8 +178,8 @@ const EditShop = () => {
           whatsapp: d.whatsappNumber || "",
           contact: d.shopNumber || "",
           registerNumber: d.registerNumber || "",
-          openTime: d.openTime || "",
-          closeTime: d.closeTime || "",
+          openTime: parseTo24Hour(d.openTime) || "",
+          closeTime: parseTo24Hour(d.closeTime) || "",
           website: d.website || "",
           shopImage: null, // Reset to null so we don't try to upload a string
           shopImageUrl: currentShopImage,
@@ -376,8 +402,8 @@ const EditShop = () => {
       formData.append("lat", shopData.lat || "11.02");
       formData.append("long", shopData.long || "77.00");
       formData.append("description", shopData.description);
-      formData.append("openTime", shopData.openTime);
-      formData.append("closeTime", shopData.closeTime);
+      formData.append("openTime", formatTo12Hour(shopData.openTime));
+      formData.append("closeTime", formatTo12Hour(shopData.closeTime));
       formData.append("address", shopData.location);
       formData.append("registerNumber", shopData.registerNumber);
       formData.append("shopNumber", shopData.contact);
@@ -528,16 +554,16 @@ const EditShop = () => {
     <div className="min-h-screen bg-[#F8FAFC] pb-32">
       {/* ─── STICKY NAVIGATION ─── */}
       <header className="sticky top-0 z-[60] bg-white/70 backdrop-blur-2xl border-b border-slate-200/60 transition-all">
-        <div className="max-w-[1440px] mx-auto px-6 h-20 md:h-24 flex items-center justify-between">
-          <div className="flex items-center gap-6">
+        <div className="max-w-[1440px] mx-auto px-6 h-16 md:h-20 flex items-center justify-between">
+          <div className="flex items-center gap-4">
             <button
               onClick={() => {
                 if (viewState === "register") setViewState("empty");
                 else navigate(-1);
               }}
-              className="w-12 h-12 bg-white border border-slate-200 rounded-2xl flex items-center justify-center shadow-sm hover:shadow-md hover:scale-105 active:scale-95 transition-all text-slate-800"
+              className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center shadow-sm hover:shadow-md hover:scale-105 active:scale-95 transition-all text-slate-800"
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="w-5 h-5" />
             </button>
             <div className="space-y-1">
               <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tighter uppercase italic leading-none">
@@ -557,16 +583,16 @@ const EditShop = () => {
           <div className="hidden md:flex items-center gap-4">
             <button
               onClick={() => navigate("/shop-analytics")}
-              className="px-6 py-3 text-emerald-600 hover:text-emerald-700 font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center gap-2"
+              className="px-6 py-2 text-emerald-600 hover:text-emerald-700 font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center gap-2"
             >
               <Eye className="w-4 h-4" /> Analytics
             </button>
             {viewState === "edit" && (
               <button
                 onClick={() => setShowDeleteShopModal(true)}
-                className="w-12 h-12 bg-rose-50 border border-rose-100 rounded-2xl flex items-center justify-center text-rose-500 hover:bg-rose-100 transition-all shadow-sm active:scale-95"
+                className="w-10 h-10 bg-rose-50 border border-rose-100 rounded-xl flex items-center justify-center text-rose-500 hover:bg-rose-100 transition-all shadow-sm active:scale-95"
               >
-                <Trash2 className="w-5 h-5" />
+                <Trash2 className="w-4 h-4" />
               </button>
             )}
           </div>
@@ -693,78 +719,35 @@ const EditShop = () => {
                   onChange={(v) => setShopData({ ...shopData, name: v })}
                 />
 
-                {/* CUSTOM CATEGORY DROPDOWN */}
-                <div className="space-y-3 relative">
-                  <div className="flex items-center justify-between">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">
+                {/* CATEGORY TAGS */}
+                <div className="space-y-4 col-span-1 md:col-span-2">
+                  <div className="flex items-center justify-between px-1">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
                       Category Tag
                     </p>
                   </div>
-                  <div className="relative group">
+                  <div className="flex flex-wrap gap-2.5">
+                    {categories.map((cat, idx) => {
+                      const isSelected = shopData.category === cat.categoryName;
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => setShopData({ ...shopData, category: cat.categoryName })}
+                          className={`px-5 py-2.5 rounded-full text-[13px] font-bold transition-all border ${isSelected
+                            ? "bg-white border-blue-600 text-blue-600 shadow-[0_4px_12px_rgba(37,99,235,0.1)]"
+                            : "bg-[#F4F7FC] border-transparent text-slate-500 hover:bg-[#EAEFF6]"
+                            }`}
+                        >
+                          <span className="leading-none capitalize">{cat.categoryName}</span>
+                        </button>
+                      );
+                    })}
                     <button
-                      onClick={() =>
-                        setShowCategoryDropdown(!showCategoryDropdown)
-                      }
-                      className="w-full h-12 bg-white border border-slate-200 rounded-xl px-5 flex items-center justify-between hover:bg-slate-50 transition-all focus:ring-4 focus:ring-blue-600/5 shadow-sm"
+                      onClick={() => setShowAddCategoryModal(true)}
+                      className="px-5 py-2.5 rounded-full border border-dashed border-slate-300 text-slate-400 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all flex items-center gap-1.5 text-[13px] font-bold"
                     >
-                      <div className="flex items-center">
-                        <span
-                          className={`text-sm font-medium ${shopData.category ? "text-slate-900" : "text-slate-300"}`}
-                        >
-                          {shopData.category || "Select Classification"}
-                        </span>
-                      </div>
-                      <ChevronDown
-                        className={`w-4 h-4 text-slate-400 transition-transform ${showCategoryDropdown ? "rotate-180" : ""}`}
-                      />
+                      <Plus className="w-3.5 h-3.5" /> Add New
                     </button>
-
-                    <AnimatePresence>
-                      {showCategoryDropdown && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 10 }}
-                          className="absolute z-[80] top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden"
-                        >
-                          <div className="max-h-72 overflow-y-auto no-scrollbar p-3">
-                            <div className="grid grid-cols-2 gap-2">
-                              {categories.map((cat, idx) => (
-                                <button
-                                  key={idx}
-                                  onClick={() => {
-                                    setShopData({ ...shopData, category: cat.categoryName });
-                                    setShowCategoryDropdown(false);
-                                  }}
-                                  className={`px-3 py-3 rounded-xl text-left transition-all border ${shopData.category === cat.categoryName
-                                    ? "bg-blue-600 border-blue-600 text-white"
-                                    : "bg-slate-50 border-slate-100 text-slate-700 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700"
-                                    }`}
-                                >
-                                  <span className="text-[9px] font-black uppercase tracking-wider leading-none line-clamp-2">
-                                    {cat.categoryName}
-                                  </span>
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                          <div className="px-3 pb-3 border-t border-slate-50">
-                            <button
-                              onClick={() => {
-                                setShowCategoryDropdown(false);
-                                setShowAddCategoryModal(true);
-                              }}
-                              className="w-full h-10 bg-blue-600 rounded-xl flex items-center justify-center gap-2 text-white shadow-lg shadow-blue-600/20 active:scale-95 transition-all mt-2"
-                            >
-                              <Plus className="w-3.5 h-3.5" />
-                              <span className="text-[9px] font-black uppercase tracking-widest">
-                                Add Category
-                              </span>
-                            </button>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
                   </div>
                 </div>
               </div>
@@ -836,12 +819,14 @@ const EditShop = () => {
                   <InputField
                     label="Activation (Open)"
                     icon={Clock}
+                    type="time"
                     value={shopData.openTime}
                     onChange={(v) => setShopData({ ...shopData, openTime: v })}
                   />
                   <InputField
                     label="Termination (Close)"
                     icon={Clock}
+                    type="time"
                     value={shopData.closeTime}
                     onChange={(v) => setShopData({ ...shopData, closeTime: v })}
                   />
@@ -1041,114 +1026,105 @@ const EditShop = () => {
         )}
       </AnimatePresence>
 
-      {/* ─── MAP PICKER MODAL (SWIGGY STYLE) ─── */}
+      {/* ─── MAP PICKER MODAL (SMALL & PROFESSIONAL) ─── */}
       <AnimatePresence>
         {showMapPicker && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-20 md:p-32">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowMapPicker(false)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 40 }}
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 40 }}
-              className="relative w-full max-w-xl bg-white rounded-[10px] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.25)] overflow-hidden flex flex-col h-[70vh] md:h-[600px] border border-white"
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col h-[520px]"
             >
               {/* MODAL HEADER */}
-              <div className="p-6 border-b border-slate-50 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
-                    <MapPin className="w-6 h-6" />
+              <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-white z-20">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
+                    <MapPin className="w-4 h-4" />
                   </div>
-                  <h3 className="font-black text-slate-900 uppercase tracking-tighter italic">
-                    Mapman Geo-Picker
+                  <h3 className="font-bold text-slate-800 text-sm">
+                    Select Location
                   </h3>
                 </div>
                 <button
                   onClick={() => setShowMapPicker(false)}
-                  className="w-10 h-10 hover:bg-slate-50 rounded-full flex items-center justify-center transition-colors"
+                  className="w-8 h-8 hover:bg-slate-50 rounded-full flex items-center justify-center transition-colors"
                 >
-                  <X className="w-6 h-6 text-slate-400" />
+                  <X className="w-4 h-4 text-slate-400" />
                 </button>
+              </div>
+
+              {/* SEARCH BAR (Compact) */}
+              <div className="p-3 bg-white z-20 shadow-sm">
+                <div className="bg-slate-50 rounded-xl flex items-center border border-slate-100 p-1">
+                  <Search className="ml-3 w-4 h-4 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Search location..."
+                    className="flex-1 h-10 px-3 text-sm font-medium text-slate-700 bg-transparent outline-none placeholder:text-slate-400"
+                    value={mapSearch}
+                    onChange={(e) => setMapSearch(e.target.value)}
+                  />
+                  <button
+                    onClick={handleManualLocate}
+                    className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-white rounded-lg transition-colors"
+                  >
+                    <LocateFixed className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
 
               {/* MAP INTERFACE */}
               <div className="flex-1 relative bg-slate-100 overflow-hidden">
                 <div id="picker-map" className="w-full h-full z-10" />
 
-                {/* OVERLAYS ARE CENTERED */}
-
-                {/* FLOATING SEARCH & LOCATE */}
-                <div className="absolute top-6 left-1/2 -translate-x-1/2 w-[90%] z-20">
-                  <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 flex items-center">
-                    <Search className="ml-4 w-5 h-5 text-slate-300" />
-                    <input
-                      type="text"
-                      placeholder="Locality or brand area..."
-                      className="flex-1 h-12 px-4 text-sm font-bold text-slate-800 bg-transparent outline-none uppercase tracking-tight placeholder:text-slate-200"
-                      value={mapSearch}
-                      onChange={(e) => setMapSearch(e.target.value)}
-                    />
-                    <button
-                      onClick={handleManualLocate}
-                      className="w-12 h-12 flex items-center justify-center bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-colors mr-2"
-                    >
-                      <LocateFixed className="w-5 h-5" />
-                    </button>
-                    <button className="h-12 px-6 bg-slate-900 hover:bg-black text-white rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all">
-                      Search
-                    </button>
-                  </div>
-                </div>
-
                 {/* CENTER PIN MOCK (STAYS CENTERED) */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[calc(50%+20px)] z-30 pointer-events-none">
-                  <div className="relative flex flex-col items-center">
-                    <div className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center shadow-[0_20px_40px_rgba(37,99,235,0.4)] ring-4 ring-white transition-transform scale-110">
-                      <MapPin className="w-7 h-7 text-white" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[calc(50%+16px)] z-30 pointer-events-none">
+                  <div className="relative flex flex-col items-center drop-shadow-md mb-2">
+                    <div className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center shadow-lg border-2 border-white relative z-10">
+                      <MapPin className="w-5 h-5 text-white" />
                     </div>
-                    <div className="h-4 w-1 bg-blue-600 rounded-full mt-1 animate-bounce" />
+                    <div className="w-1.5 h-4 bg-slate-900 -mt-1 rounded-b-full z-0" />
+                    <div className="w-3 h-1 bg-black/20 rounded-full blur-[1px] mt-0.5" />
                   </div>
                 </div>
+              </div>
 
-                {/* BOTTOM ACTION CARD - CENTERED */}
-                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-[92%] z-40">
-                  <div className="bg-white/95 backdrop-blur-2xl rounded-3xl p-6 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 border border-white">
-                    <div className="flex items-center gap-5">
-                      <div className="w-14 h-14 bg-blue-50 border border-blue-100 rounded-2xl flex items-center justify-center shrink-0">
-                        <Navigation className="w-6 h-6 text-blue-600" />
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-[9px] font-black text-blue-500 uppercase tracking-widest leading-none">
-                          Pinned Hub Coordinate
-                        </p>
-                        {geocoding ? (
-                          <div className="flex items-center gap-2 py-1">
-                            <Loader2 className="w-3.5 h-3.5 text-blue-600 animate-spin" />
-                            <p className="text-[11px] font-black text-blue-600 uppercase tracking-widest animate-pulse">
-                              Syncing Registry Address...
-                            </p>
-                          </div>
-                        ) : (
-                          <p className="text-[11px] font-bold text-slate-800 line-clamp-2 uppercase tracking-tighter leading-relaxed">
-                            {mapSearch || "Targeting location..."}
-                          </p>
-                        )}
-                      </div>
+              {/* BOTTOM ACTION CARD */}
+              <div className="p-4 bg-white border-t border-slate-100 z-20">
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center shrink-0 border border-slate-100">
+                      <Navigation className="w-4 h-4 text-slate-500" />
                     </div>
-                    <button
-                      onClick={() => {
-                        setShowMapPicker(false);
-                      }}
-                      className="w-full md:w-auto px-10 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-[10px] font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-blue-600/30 transition-all flex items-center justify-center gap-3 active:scale-95"
-                    >
-                      <Check className="w-4 h-4" /> Confirm Global Map
-                    </button>
+                    <div className="flex-1 min-w-0">
+                      {geocoding ? (
+                        <div className="flex items-center gap-2">
+                          <Loader2 className="w-3 h-3 text-blue-600 animate-spin" />
+                          <p className="text-[10px] font-bold text-blue-600 uppercase tracking-wide">
+                            Loading address...
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="text-[13px] font-medium text-slate-700 line-clamp-2 leading-tight">
+                          {mapSearch || "Drag map to position"}
+                        </p>
+                      )}
+                    </div>
                   </div>
+                  <button
+                    onClick={() => setShowMapPicker(false)}
+                    className="w-full h-12 bg-slate-900 hover:bg-black text-white rounded-xl font-bold text-[13px] shadow-md shadow-slate-900/10 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+                  >
+                    <Check className="w-4 h-4" /> Confirm Location
+                  </button>
                 </div>
               </div>
             </motion.div>
