@@ -318,7 +318,7 @@ const Home = ({ onSelectCategory }) => {
               <motion.div
                 key={banner.id}
                 whileHover={{ scale: 0.98 }}
-                className="snap-center shrink-0 w-[85%] md:w-[60%] lg:w-[45%] relative h-[160px] md:h-[200px] lg:h-[220px] rounded-[20px] overflow-hidden shadow-xl flex-none bg-slate-900"
+                className="snap-center shrink-0 w-[90%] sm:w-[85%] md:w-[60%] lg:w-[45%] xl:w-[40%] relative h-[140px] sm:h-[160px] md:h-[200px] lg:h-[220px] rounded-[16px] sm:rounded-[20px] overflow-hidden shadow-xl flex-none bg-slate-900"
                 style={{
                   backgroundImage: banner.backgroundImage
                     ? `url(https://mapman-production.up.railway.app${banner.backgroundImage})`
@@ -329,29 +329,29 @@ const Home = ({ onSelectCategory }) => {
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/80 to-transparent/30 z-10"></div>
 
-                <div className="relative z-20 h-full flex items-center p-5 md:p-8 lg:p-10">
-                  <div className="flex-1 space-y-2 md:space-y-3">
-                    <h2 className="text-xl md:text-2xl lg:text-3xl font-black text-white tracking-tighter leading-[1.1] capitalize italic">
+                <div className="relative z-20 h-full flex items-center p-4 sm:p-5 md:p-8 lg:p-10">
+                  <div className="flex-1 space-y-1.5 sm:space-y-2 md:space-y-3">
+                    <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-black text-white tracking-tighter leading-[1.1] capitalize italic">
                       {banner.title}
                     </h2>
-                    <p className="text-slate-300 text-[10px] md:text-xs lg:text-sm font-medium max-w-[200px] md:max-w-[280px] leading-relaxed drop-shadow-md">
+                    <p className="text-slate-300 text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-medium max-w-[150px] sm:max-w-[200px] md:max-w-[280px] leading-relaxed drop-shadow-md line-clamp-2 sm:line-clamp-none">
                       {banner.subtitle}
                     </p>
                     {banner.contact && (
                       <button
                         onClick={handleRegisterClick}
-                        className="mt-2 md:mt-3 px-4 py-2 md:px-5 md:py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-black text-[8px] md:text-[9px] uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20 active:scale-95"
+                        className="mt-1.5 sm:mt-2 md:mt-3 px-3 py-1.5 sm:px-4 sm:py-2 md:px-5 md:py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg sm:rounded-xl font-black text-[7px] sm:text-[8px] md:text-[9px] uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20 active:scale-95 w-fit"
                       >
                         {banner.contact}
                       </button>
                     )}
                   </div>
                   {banner.image && (
-                    <div className="hidden sm:flex w-[35%] h-full relative items-center justify-center">
+                    <div className="flex w-[40%] sm:w-[35%] h-full relative items-center justify-center">
                       <img
                         src={`https://mapman-production.up.railway.app${banner.image}`}
                         alt="promo"
-                        className="w-full h-[120%] object-contain filter drop-shadow-2xl scale-110 translate-x-4"
+                        className="w-full h-[90%] sm:h-[120%] object-contain filter drop-shadow-2xl sm:scale-110 sm:translate-x-4"
                       />
                     </div>
                   )}
@@ -465,7 +465,7 @@ const Home = ({ onSelectCategory }) => {
               </p>
             </div>
             <h4 className="text-2xl lg:text-4xl font-black text-slate-900 tracking-tighter">
-              Explore by Categories
+              Categories
             </h4>
           </div>
         </div>
@@ -572,7 +572,7 @@ const Home = ({ onSelectCategory }) => {
                 key={banner.id}
                 whileHover={{ y: 0 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="group relative snap-center shrink-0 w-[90%] sm:w-[60%] md:w-[42%] lg:w-[42%] h-[200px] md:h-[230px] rounded-3xl overflow-hidden bg-white border border-slate-200 shadow-[0_10px_40px_rgba(0,0,0,0.06)] flex-none"
+                className="group relative snap-center shrink-0 w-[85%] sm:w-[60%] md:w-[45%] lg:w-[40%] xl:w-[35%] h-[160px] sm:h-[180px] md:h-[230px] rounded-2xl sm:rounded-3xl overflow-hidden bg-white border border-slate-200 shadow-[0_10px_40px_rgba(0,0,0,0.06)] flex-none"
               >
                 {/* Subtle Gradient Background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-50 opacity-100" />
@@ -590,40 +590,44 @@ const Home = ({ onSelectCategory }) => {
                 )}
 
                 {/* Content */}
-                <div className="relative z-20 h-full flex flex-col p-6">
+                <div className="relative z-20 h-full flex flex-col p-4 sm:p-5 md:p-6">
                   {/* Top: Badge + Arrow */}
                   <div className="flex items-start justify-between">
-                    <div className="inline-flex items-center gap-2 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg">
-                      <span className="w-2 h-2 rounded-full bg-[var(--olive)]" />
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600">
+                    <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-slate-100 border border-slate-200 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md sm:rounded-lg">
+                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[var(--olive)]" />
+                      <span className="text-[8px] sm:text-[10px] font-bold uppercase tracking-widest text-slate-600">
                         Featured
                       </span>
                     </div>
 
-                    <div className="w-9 h-9 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center">
-                      <ArrowUpRight className="w-4 h-4 text-slate-700" />
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-lg sm:rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center">
+                      <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-slate-700" />
                     </div>
                   </div>
 
                   {/* Text Content */}
-                  <div className="flex-1 flex flex-col justify-center mt-3">
-                    <h2 className="text-base md:text-lg font-bold text-slate-900 leading-snug line-clamp-2 capitalize ">
+                  <div className="flex-1 flex flex-col justify-center mt-2 sm:mt-3 w-[65%] sm:w-[60%]">
+                    <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-snug line-clamp-2 capitalize ">
                       {banner.title}
                     </h2>
-                    <p className="mt-2 text-[11px] md:text-xs text-slate-500 leading-relaxed line-clamp-2">
+                    <p className="mt-1 sm:mt-1.5 md:mt-2 text-[9px] sm:text-[10px] md:text-[11px] text-slate-500 leading-relaxed line-clamp-2">
                       {banner.subtitle}
                     </p>
                   </div>
 
                   {/* Bottom: CTA */}
-                  <div className="mt-3 pt-3 border-t border-slate-100">
+                  <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-slate-100">
                     {banner.contact && (
                       <button
-                        onClick={() => navigate(`/map?category=${encodeURIComponent(banner.category)}`)}
-                        className="inline-flex items-center gap-2 rounded-lg bg-[var(--olive)] text-white px-4 py-2 text-[10px] font-bold uppercase tracking-widest shadow-md"
+                        onClick={() =>
+                          navigate(
+                            `/map?category=${encodeURIComponent(banner.category)}`,
+                          )
+                        }
+                        className="inline-flex items-center gap-1.5 sm:gap-2 rounded-md sm:rounded-lg bg-[var(--olive)] text-white px-3 py-1.5 sm:px-4 sm:py-2 text-[8px] sm:text-[9px] md:text-[10px] font-bold uppercase tracking-widest shadow-md"
                       >
                         Explore now
-                        <ArrowUpRight className="w-3.5 h-3.5" />
+                        <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                       </button>
                     )}
                   </div>
@@ -631,7 +635,7 @@ const Home = ({ onSelectCategory }) => {
 
                 {/* Product Image */}
                 {banner.image && (
-                  <div className="absolute bottom-0 right-0 w-[45%] h-[80%] z-10">
+                  <div className="absolute bottom-0 right-0 w-[40%] sm:w-[42%] md:w-[45%] h-[80%] z-10">
                     <img
                       src={`https://mapman-production.up.railway.app${banner.image}`}
                       alt="promo"
@@ -639,8 +643,6 @@ const Home = ({ onSelectCategory }) => {
                     />
                   </div>
                 )}
-
-                {/* Shine Effect (removed) */}
               </motion.div>
             ))}
           </div>

@@ -381,17 +381,28 @@ const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    setIsLoggedIn(false);
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) setIsLoggedIn(true);
     setTimeout(() => setLoading(false), 1200);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    setIsLoggedIn(false);
-  };
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      handleLogout();
+    };
+    window.addEventListener("unauthorized", handleUnauthorized);
+    return () => {
+      window.removeEventListener("unauthorized", handleUnauthorized);
+    };
+  }, []);
+
 
   if (loading) return (
     <div className="min-h-screen bg-[#f0f9ff] flex items-center justify-center">

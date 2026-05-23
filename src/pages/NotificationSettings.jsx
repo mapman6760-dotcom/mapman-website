@@ -121,12 +121,12 @@ const NotificationSettings = () => {
     <button
       onClick={!disabled ? onClick : undefined}
       disabled={disabled}
-      className={`relative w-10 h-5 rounded-full transition-all duration-300 focus:outline-none 
-                ${disabled ? "bg-slate-100 cursor-not-allowed opacity-50" : active ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.2)]" : "bg-slate-200"}`}
+      className={`relative w-12 h-6 rounded-full transition-all duration-300 focus:outline-none shadow-inner border border-black/5
+                ${disabled ? "bg-slate-200 cursor-not-allowed opacity-50" : active ? "bg-blue-600 shadow-[0_4px_12px_rgba(37,99,235,0.25)]" : "bg-slate-200"}`}
     >
       <motion.div
-        animate={{ x: active ? 22 : 3 }}
-        className={`absolute top-1 w-3 h-3 rounded-full shadow-sm flex items-center justify-center ${disabled ? "bg-slate-300" : "bg-white"}`}
+        animate={{ x: active ? 26 : 4 }}
+        className={`absolute top-[3px] w-[16px] h-[16px] rounded-full shadow-sm flex items-center justify-center ${disabled ? "bg-slate-300" : "bg-white"}`}
         transition={{ type: "spring", stiffness: 500, damping: 30 }}
       />
     </button>
@@ -141,32 +141,34 @@ const NotificationSettings = () => {
     disabled,
   }) => (
     <div
-      className={`p-4 sm:p-5 flex items-center justify-between group transition-all duration-300 border-b border-slate-50 last:border-0 ${disabled ? "opacity-30 cursor-not-allowed grayscale-[0.8]" : "hover:bg-slate-50/50"}`}
+      className={`p-4 sm:p-5 flex items-center justify-between group transition-all duration-300 rounded-2xl border ${disabled ? "opacity-40 cursor-not-allowed bg-slate-50 border-slate-100" : active ? "bg-white border-blue-100 shadow-[0_8px_30px_rgb(37,99,235,0.06)]" : "bg-white border-slate-100 hover:border-slate-200 hover:shadow-sm"}`}
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 sm:gap-5">
         <div
-          className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 
-                    ${disabled ? "bg-slate-100 text-slate-300" : active ? "bg-emerald-50 text-emerald-600 border border-emerald-100/50" : "bg-slate-50 text-slate-400"}`}
+          className={`w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-[14px] flex items-center justify-center transition-all duration-500
+                    ${disabled ? "bg-slate-100 text-slate-400" : active ? "bg-blue-50 text-blue-600" : "bg-slate-50 text-slate-500 group-hover:text-slate-700"}`}
         >
-          <Icon className="w-5 h-5" />
+          <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
-        <div className="space-y-0.5">
-          <h3 className="font-black text-slate-900 text-[11px] uppercase tracking-wider">
+        <div className="space-y-1 sm:space-y-1.5 max-w-[180px] sm:max-w-[240px] md:max-w-none">
+          <h3 className={`font-bold text-[11px] sm:text-xs md:text-sm tracking-tight truncate ${active ? 'text-slate-900' : 'text-slate-700'}`}>
             {title}
           </h3>
-          <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tight opacity-70">
+          <p className="text-[10px] sm:text-[11px] text-slate-500 truncate md:whitespace-normal leading-relaxed">
             {desc}
           </p>
         </div>
       </div>
-      <Toggle active={active} onClick={onClick} disabled={disabled} />
+      <div className="shrink-0 ml-2">
+        <Toggle active={active} onClick={onClick} disabled={disabled} />
+      </div>
     </div>
   );
 
   return (
     <div className="min-h-screen pb-32">
       {/* ── ALIGNED HEADER ── */}
-      <header className="relative h-[150px] bg-slate-950 overflow-hidden flex items-end">
+      <header className="relative h-[140px] md:h-[180px] lg:h-[200px] bg-slate-950 overflow-hidden flex items-end">
         <div className="absolute inset-0">
           <img
             src="assets/notification-banner.jpg"
@@ -200,7 +202,7 @@ const NotificationSettings = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="text-2xl md:text-3xl font-black tracking-tighter uppercase italic leading-none"
+                  className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter uppercase italic leading-none"
                 >
                   Notification Settings
                 </motion.h1>
@@ -231,23 +233,30 @@ const NotificationSettings = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden mt-10 md:mt-12"
+          className="bg-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200/60 overflow-hidden mt-10 md:mt-12 relative"
         >
-          <div className="px-6 py-6 border-b border-slate-50 bg-slate-50/50 flex items-center justify-between">
-            <div className="space-y-1">
-              <h2 className="text-[10px] font-black text-slate-950 uppercase tracking-[0.3em] italic">
+          {/* Top Gradient Line */}
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-500"></div>
+
+          <div className="relative z-10 px-6 sm:px-8 py-6 sm:py-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <div className="space-y-2 pr-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-200 rounded-full text-slate-600 text-[10px] font-bold tracking-wide shadow-sm">
+                <Settings2 className="w-3.5 h-3.5" />
+                Preferences
+              </div>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
                 Alert Management
               </h2>
-              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">
-                Touchpoint Configuration
+              <p className="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-sm">
+                Configure your touchpoints and control how you receive system notifications.
               </p>
             </div>
-            <div className="w-10 h-10 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center justify-center">
-              <BellRing className="w-5 h-5 text-emerald-500" />
+            <div className="hidden sm:flex shrink-0 w-12 h-12 sm:w-16 sm:h-16 bg-white border border-slate-100 rounded-2xl items-center justify-center shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
+              <BellRing className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
             </div>
           </div>
 
-          <div className="divide-y divide-slate-50">
+          <div className="relative z-10 p-4 sm:p-6 md:p-8 space-y-3 sm:space-y-4 bg-slate-50/30">
             <SettingsItem
               title="Push Notifications"
               desc="Critical system updates via authenticated push"
@@ -273,11 +282,12 @@ const NotificationSettings = () => {
             />
           </div>
 
-          <div className="p-6 bg-slate-50/30 flex items-center gap-4 border-t border-slate-50">
-            <Info className="w-4 h-4 text-blue-500" />
-            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tight">
-              Preference modifications propagate across all system nodes
-              instantly.
+          <div className="relative z-10 px-6 sm:px-8 py-5 bg-blue-50/50 flex items-start sm:items-center gap-4 border-t border-blue-100/50">
+            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm border border-blue-100">
+              <Info className="w-4 h-4 text-blue-600" />
+            </div>
+            <p className="text-xs text-blue-900/70 font-medium leading-relaxed">
+              Preference modifications propagate across all system nodes instantly.
             </p>
           </div>
         </motion.div>
@@ -293,22 +303,22 @@ const NotificationSettings = () => {
               <Link to="/viewed-videos">
                 <motion.div
                   whileHover={{ scale: 1.01 }}
-                  className="p-6 bg-white rounded-2xl shadow-lg shadow-slate-200/40 border border-slate-100 relative group overflow-hidden"
+                  className="p-4 sm:p-6 bg-white rounded-2xl shadow-lg shadow-slate-200/40 border border-slate-100 relative group overflow-hidden"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 shrink-0 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors">
                         <img
                           src="https://cdn-icons-png.flaticon.com/128/1709/1709973.png"
                           alt="History"
-                          className="w-6 h-6 object-contain"
+                          className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
                         />
                       </div>
                       <div>
-                        <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest italic">
+                        <h4 className="text-[10px] sm:text-[11px] font-black text-slate-900 uppercase tracking-widest italic">
                           History
                         </h4>
-                        <p className="text-[9px] text-slate-400 font-bold uppercase opacity-60">
+                        <p className="text-[8px] sm:text-[9px] text-slate-400 font-bold uppercase opacity-60">
                           Session Trail
                         </p>
                       </div>
@@ -321,22 +331,22 @@ const NotificationSettings = () => {
               <motion.button
                 whileHover={{ scale: 1.01 }}
                 onClick={() => setIsDeleteModalOpen(true)}
-                className="p-6 bg-white rounded-2xl shadow-lg shadow-slate-200/40 border border-slate-100 text-left w-full group overflow-hidden"
+                className="p-4 sm:p-6 bg-white rounded-2xl shadow-lg shadow-slate-200/40 border border-slate-100 text-left w-full group overflow-hidden"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center group-hover:bg-red-100 transition-colors">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 shrink-0 bg-red-50 rounded-xl flex items-center justify-center group-hover:bg-red-100 transition-colors">
                       <img
                         src="https://cdn-icons-png.flaticon.com/128/18006/18006079.png"
                         alt="Delete"
-                        className="w-6 h-6 object-contain"
+                        className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
                       />
                     </div>
                     <div>
-                      <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest italic">
+                      <h4 className="text-[10px] sm:text-[11px] font-black text-slate-900 uppercase tracking-widest italic">
                         Terminate
                       </h4>
-                      <p className="text-[9px] text-slate-400 font-bold uppercase opacity-60">
+                      <p className="text-[8px] sm:text-[9px] text-slate-400 font-bold uppercase opacity-60">
                         Identity Deletion
                       </p>
                     </div>

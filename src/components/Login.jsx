@@ -23,7 +23,7 @@ import {
   sendEmailRecoveryOtp,
   verifyEmailRecoveryOtp,
   updatePhoneSendOtp,
-  updatePhoneVerifyOtp
+  updatePhoneVerifyOtp,
 } from "../api/auth";
 import { getProfile } from "../api/shop";
 import indiaData from "../assets/india_states_districts.json";
@@ -176,7 +176,8 @@ const Login = ({ onLogin, logo }) => {
 
   const handleVerifyRecoveryEmailOtp = async () => {
     const otpStr = recoveryOtp.join("");
-    if (otpStr.length < 6) return setError("Please enter the full 6-digit code");
+    if (otpStr.length < 6)
+      return setError("Please enter the full 6-digit code");
     setLoading(true);
     setError(null);
     try {
@@ -192,7 +193,8 @@ const Login = ({ onLogin, logo }) => {
   };
 
   const handleUpdatePhoneOtp = async () => {
-    if (!/^\d{10}$/.test(newPhone)) return setError("Please enter a valid 10-digit mobile number");
+    if (!/^\d{10}$/.test(newPhone))
+      return setError("Please enter a valid 10-digit mobile number");
     setLoading(true);
     setError(null);
     try {
@@ -208,11 +210,16 @@ const Login = ({ onLogin, logo }) => {
 
   const handleVerifyUpdatePhoneOtp = async () => {
     const otpStr = recoveryOtp.join("");
-    if (otpStr.length < 6) return setError("Please enter the full 6-digit code");
+    if (otpStr.length < 6)
+      return setError("Please enter the full 6-digit code");
     setLoading(true);
     setError(null);
     try {
-      const res = await updatePhoneVerifyOtp(recoveryEmail, `91${newPhone}`, parseInt(otpStr, 10));
+      const res = await updatePhoneVerifyOtp(
+        recoveryEmail,
+        `91${newPhone}`,
+        parseInt(otpStr, 10),
+      );
       if (res.status === 200 && res.data?.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("userId", res.data.userId);
@@ -286,7 +293,7 @@ const Login = ({ onLogin, logo }) => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <h2 className="text-3xl md:text-4xl lg:text-6xl font-black text-white leading-[1.1] tracking-tighter">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white leading-[1.1] tracking-tighter">
                 Explore the world, <br />
                 <span className="text-blue-600 italic">differently.</span>
               </h2>
@@ -298,7 +305,7 @@ const Login = ({ onLogin, logo }) => {
           </div>
 
           <div className="text-slate-500 text-[9px] lg:text-[11px] font-medium tracking-wide">
-            &copy; 2026 Mapman Global.{" "}
+            &copy; 2026 Mapman.{" "}
             <span className="text-slate-700">All rights reserved.</span>
           </div>
         </div>
@@ -311,7 +318,11 @@ const Login = ({ onLogin, logo }) => {
           <div className="px-6 h-16 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center p-1.5 shadow-lg">
-                <img src={logo} alt="Logo" className="w-full h-full object-contain" />
+                <img
+                  src={logo}
+                  alt="Logo"
+                  className="w-full h-full object-contain"
+                />
               </div>
               <span className="text-base font-black text-slate-900 tracking-tighter uppercase italic">
                 Mapman
@@ -364,17 +375,36 @@ const Login = ({ onLogin, logo }) => {
                     <div className="space-y-6">
                       <div className="p-4 bg-amber-50 border border-amber-200/50 rounded-xl flex gap-3">
                         <Lock className="w-5 h-5 text-amber-500 shrink-0" />
-                        <p className="text-[11px] text-amber-800 font-medium">Verify your identity first before changing your phone number.</p>
+                        <p className="text-[11px] text-amber-800 font-medium">
+                          Verify your identity first before changing your phone
+                          number.
+                        </p>
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Verify VIA</label>
-                        <button onClick={() => setLostStep(2)} className="w-full p-4 bg-white border border-slate-200 rounded-xl hover:border-blue-300 hover:shadow-md transition-all flex items-center gap-4 text-left group">
+                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
+                          Verify VIA
+                        </label>
+                        <button
+                          onClick={() => setLostStep(2)}
+                          className="w-full p-4 bg-white border border-slate-200 rounded-xl hover:border-blue-300 hover:shadow-md transition-all flex items-center gap-4 text-left group"
+                        >
                           <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0 group-hover:scale-110 transition-transform">
-                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                            <svg
+                              className="w-5 h-5"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                            </svg>
                           </div>
                           <div>
-                            <p className="text-[13px] font-bold text-slate-900 group-hover:text-blue-600 flex items-center gap-1">Recover via Email <ChevronRight className="w-3.5 h-3.5" /></p>
-                            <p className="text-[10px] text-slate-500 mt-0.5">Verification link sent to your registered email</p>
+                            <p className="text-[13px] font-bold text-slate-900 group-hover:text-blue-600 flex items-center gap-1">
+                              Recover via Email{" "}
+                              <ChevronRight className="w-3.5 h-3.5" />
+                            </p>
+                            <p className="text-[10px] text-slate-500 mt-0.5">
+                              Verification link sent to your registered email
+                            </p>
                           </div>
                         </button>
                       </div>
@@ -384,12 +414,43 @@ const Login = ({ onLogin, logo }) => {
                   {lostStep === 2 && (
                     <div className="space-y-6">
                       <div className="relative">
-                        <input type="email" required placeholder="Enter Registered Email" className="w-full h-12 bg-white border border-slate-200 rounded-xl px-10 font-medium text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all" value={recoveryEmail} onChange={(e) => setRecoveryEmail(e.target.value)} />
-                        <svg className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <input
+                          type="email"
+                          required
+                          placeholder="Enter Registered Email"
+                          className="w-full h-12 bg-white border border-slate-200 rounded-xl px-10 font-medium text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all"
+                          value={recoveryEmail}
+                          onChange={(e) => setRecoveryEmail(e.target.value)}
+                        />
+                        <svg
+                          className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                          />
+                        </svg>
                       </div>
-                      {error && <div className="p-3 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-center border border-red-100">{error}</div>}
-                      <button onClick={handleRecoveryEmailOtp} disabled={loading} className="btn-primary w-full py-3">
-                        {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Get OTP"}
+                      {error && (
+                        <div className="p-3 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-center border border-red-100">
+                          {error}
+                        </div>
+                      )}
+                      <button
+                        onClick={handleRecoveryEmailOtp}
+                        disabled={loading}
+                        className="btn-primary w-full py-3"
+                      >
+                        {loading ? (
+                          <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                        ) : (
+                          "Get OTP"
+                        )}
                       </button>
                     </div>
                   )}
@@ -397,17 +458,43 @@ const Login = ({ onLogin, logo }) => {
                   {lostStep === 3 && (
                     <div className="space-y-6">
                       <div className="p-4 bg-blue-50 border-2 border-blue-400/50 rounded-xl flex items-center justify-between">
-                        <p className="text-[11px] font-bold text-slate-800">Verification OTP Sent</p>
-                        <p className="text-[11px] font-bold text-blue-600">{recoveryEmail}</p>
+                        <p className="text-[11px] font-bold text-slate-800">
+                          Verification OTP Sent
+                        </p>
+                        <p className="text-[11px] font-bold text-blue-600">
+                          {recoveryEmail}
+                        </p>
                       </div>
                       <div className="flex justify-between gap-1 sm:gap-2">
                         {recoveryOtp.map((data, index) => (
-                          <input key={index} type="text" maxLength="1" className="w-10 sm:w-11 h-12 text-center text-xl font-black rounded-lg border border-slate-200 bg-slate-50/50 focus:border-blue-600 focus:bg-white outline-none transition-all" value={data} onChange={(e) => handleOtpChange(e.target, index, true)} onFocus={(e) => e.target.select()} />
+                          <input
+                            key={index}
+                            type="text"
+                            maxLength="1"
+                            className="w-10 sm:w-11 h-12 text-center text-xl font-black rounded-lg border border-slate-200 bg-slate-50/50 focus:border-blue-600 focus:bg-white outline-none transition-all"
+                            value={data}
+                            onChange={(e) =>
+                              handleOtpChange(e.target, index, true)
+                            }
+                            onFocus={(e) => e.target.select()}
+                          />
                         ))}
                       </div>
-                      {error && <div className="p-3 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-center border border-red-100">{error}</div>}
-                      <button onClick={handleVerifyRecoveryEmailOtp} disabled={loading} className="btn-primary w-full py-3">
-                        {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Proceed"}
+                      {error && (
+                        <div className="p-3 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-center border border-red-100">
+                          {error}
+                        </div>
+                      )}
+                      <button
+                        onClick={handleVerifyRecoveryEmailOtp}
+                        disabled={loading}
+                        className="btn-primary w-full py-3"
+                      >
+                        {loading ? (
+                          <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                        ) : (
+                          "Proceed"
+                        )}
                       </button>
                     </div>
                   )}
@@ -416,15 +503,38 @@ const Login = ({ onLogin, logo }) => {
                     <div className="space-y-6">
                       <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex gap-2 items-start">
                         <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
-                        <p className="text-[11px] text-emerald-800 font-medium leading-relaxed">Identity verified. Enter your new phone number below</p>
+                        <p className="text-[11px] text-emerald-800 font-medium leading-relaxed">
+                          Identity verified. Enter your new phone number below
+                        </p>
                       </div>
                       <div className="relative group">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-black">+91</span>
-                        <input type="tel" required placeholder="Enter New Phone Number" className="w-full h-12 bg-white border border-slate-200 rounded-xl pl-12 pr-5 font-medium text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all" value={newPhone} onChange={(e) => setNewPhone(e.target.value)} />
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-black">
+                          +91
+                        </span>
+                        <input
+                          type="tel"
+                          required
+                          placeholder="Enter New Phone Number"
+                          className="w-full h-12 bg-white border border-slate-200 rounded-xl pl-12 pr-5 font-medium text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all"
+                          value={newPhone}
+                          onChange={(e) => setNewPhone(e.target.value)}
+                        />
                       </div>
-                      {error && <div className="p-3 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-center border border-red-100">{error}</div>}
-                      <button onClick={handleUpdatePhoneOtp} disabled={loading} className="btn-primary w-full py-3">
-                        {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Get OTP"}
+                      {error && (
+                        <div className="p-3 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-center border border-red-100">
+                          {error}
+                        </div>
+                      )}
+                      <button
+                        onClick={handleUpdatePhoneOtp}
+                        disabled={loading}
+                        className="btn-primary w-full py-3"
+                      >
+                        {loading ? (
+                          <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                        ) : (
+                          "Get OTP"
+                        )}
                       </button>
                     </div>
                   )}
@@ -432,19 +542,59 @@ const Login = ({ onLogin, logo }) => {
                   {lostStep === 5 && (
                     <div className="space-y-6">
                       <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between">
-                        <p className="text-[13px] font-black text-slate-900">+91{newPhone}</p>
-                        <button onClick={() => setLostStep(4)} className="text-[10px] font-bold text-blue-600 hover:underline flex items-center gap-1">
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg> Change Number
+                        <p className="text-[13px] font-black text-slate-900">
+                          +91{newPhone}
+                        </p>
+                        <button
+                          onClick={() => setLostStep(4)}
+                          className="text-[10px] font-bold text-blue-600 hover:underline flex items-center gap-1"
+                        >
+                          <svg
+                            className="w-3 h-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                            />
+                          </svg>{" "}
+                          Change Number
                         </button>
                       </div>
                       <div className="flex justify-between gap-1 sm:gap-2">
                         {recoveryOtp.map((data, index) => (
-                          <input key={index} type="text" maxLength="1" className="w-10 sm:w-11 h-12 text-center text-xl font-black rounded-lg border border-slate-200 bg-slate-50/50 focus:border-blue-600 focus:bg-white outline-none transition-all" value={data} onChange={(e) => handleOtpChange(e.target, index, true)} onFocus={(e) => e.target.select()} />
+                          <input
+                            key={index}
+                            type="text"
+                            maxLength="1"
+                            className="w-10 sm:w-11 h-12 text-center text-xl font-black rounded-lg border border-slate-200 bg-slate-50/50 focus:border-blue-600 focus:bg-white outline-none transition-all"
+                            value={data}
+                            onChange={(e) =>
+                              handleOtpChange(e.target, index, true)
+                            }
+                            onFocus={(e) => e.target.select()}
+                          />
                         ))}
                       </div>
-                      {error && <div className="p-3 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-center border border-red-100">{error}</div>}
-                      <button onClick={handleVerifyUpdatePhoneOtp} disabled={loading} className="btn-primary w-full py-3">
-                        {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Confirm"}
+                      {error && (
+                        <div className="p-3 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-widest text-center border border-red-100">
+                          {error}
+                        </div>
+                      )}
+                      <button
+                        onClick={handleVerifyUpdatePhoneOtp}
+                        disabled={loading}
+                        className="btn-primary w-full py-3"
+                      >
+                        {loading ? (
+                          <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                        ) : (
+                          "Confirm"
+                        )}
                       </button>
                     </div>
                   )}
@@ -454,18 +604,27 @@ const Login = ({ onLogin, logo }) => {
                       <div className="w-20 h-20 mx-auto bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mb-6">
                         <CheckCircle2 className="w-12 h-12 stroke-[2.5]" />
                       </div>
-                      <h3 className="text-2xl font-black text-slate-900 mb-2">Number Updated!</h3>
-                      <p className="text-sm text-slate-500 font-medium mb-6">Your phone number has been successfully changed.</p>
+                      <h3 className="text-2xl font-black text-slate-900 mb-2">
+                        Number Updated!
+                      </h3>
+                      <p className="text-sm text-slate-500 font-medium mb-6">
+                        Your phone number has been successfully changed.
+                      </p>
                       <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex justify-center items-center gap-2 mb-8 text-emerald-700">
                         <Smartphone className="w-4 h-4" />
                         <span className="font-bold">+91{newPhone}</span>
                       </div>
-                      <button onClick={() => { onLogin(); navigate("/dashboard"); }} className="btn-primary w-full py-3">
+                      <button
+                        onClick={() => {
+                          onLogin();
+                          navigate("/dashboard");
+                        }}
+                        className="btn-primary w-full py-3"
+                      >
                         Go to Dashboard
                       </button>
                     </div>
                   )}
-
                 </motion.div>
               ) : step === 1 ? (
                 <motion.div
@@ -479,7 +638,7 @@ const Login = ({ onLogin, logo }) => {
                     <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mb-4">
                       <Sparkles className="w-5 h-5 stroke-[2.5]" />
                     </div>
-                    <h3 className="text-3xl md:text-4xl font-black text-slate-950 tracking-[-0.04em] leading-[1.1] uppercase italic">
+                    <h3 className="text-2xl md:text-3xl font-black text-slate-950 tracking-[-0.04em] leading-[1.1] uppercase italic">
                       Sign in to <br />
                       <span className="text-blue-600">Mapman</span>
                     </h3>
@@ -510,7 +669,7 @@ const Login = ({ onLogin, logo }) => {
                             setError(null);
                             setLostStep(1);
                           }}
-                          className="text-[10px] font-black text-slate-400 hover:text-blue-600 uppercase tracking-widest transition-colors"
+                          className="text-[10px] font-black text-slate-700 hover:text-blue-600 uppercase tracking-widest transition-colors underline"
                         >
                           Lost Mobile Number?
                         </button>
@@ -535,7 +694,7 @@ const Login = ({ onLogin, logo }) => {
                         </span>
                       ) : (
                         <>
-                          Initiate Session <ChevronRight className="w-4 h-4" />
+                          Send OTP <ChevronRight className="w-4 h-4" />
                         </>
                       )}
                     </button>
@@ -557,7 +716,7 @@ const Login = ({ onLogin, logo }) => {
                       <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
                     </button>
                     <div className="space-y-2">
-                      <h3 className="text-3xl md:text-4xl font-black text-slate-950 tracking-[-0.04em] leading-tight uppercase italic">
+                      <h3 className="text-2xl md:text-3xl font-black text-slate-950 tracking-[-0.04em] leading-tight uppercase italic">
                         Verify <br /> <span className="text-blue-600">OTP</span>
                       </h3>
                       <p className="text-slate-500 text-xs font-medium">

@@ -736,11 +736,10 @@ const EditShop = () => {
                                     setShopData({ ...shopData, category: cat.categoryName });
                                     setShowCategoryDropdown(false);
                                   }}
-                                  className={`px-3 py-3 rounded-xl text-left transition-all border ${
-                                    shopData.category === cat.categoryName
-                                      ? "bg-blue-600 border-blue-600 text-white"
-                                      : "bg-slate-50 border-slate-100 text-slate-700 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700"
-                                  }`}
+                                  className={`px-3 py-3 rounded-xl text-left transition-all border ${shopData.category === cat.categoryName
+                                    ? "bg-blue-600 border-blue-600 text-white"
+                                    : "bg-slate-50 border-slate-100 text-slate-700 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700"
+                                    }`}
                                 >
                                   <span className="text-[9px] font-black uppercase tracking-wider leading-none line-clamp-2">
                                     {cat.categoryName}
