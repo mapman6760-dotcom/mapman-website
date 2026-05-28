@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Routes,
@@ -50,24 +50,31 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import logo from "./assets/logo.png";
-import Login from "./components/Login";
-import Home from "./pages/Home";
-import MapExplore from "./pages/MapExplore";
-import VideoFeed from "./pages/VideoFeed";
-import Profile from "./pages/Profile";
-import Notifications from "./pages/Notifications";
-import EditProfile from "./pages/EditProfile";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import TermsConditions from "./pages/TermsConditions";
-import ShopAnalytics from "./pages/ShopAnalytics";
-import NotificationSettings from "./pages/NotificationSettings";
-import ShopDetail from "./pages/ShopDetail";
-import SavedItems from "./pages/SavedItems";
-import EditShop from "./pages/EditShop";
-import VideoPlayer from "./pages/VideoPlayer";
-import ViewedVideos from "./pages/ViewedVideos";
-import CategoryVideos from "./pages/CategoryVideos";
-import Support from "./pages/Support";
+const Login = React.lazy(() => import("./components/Login"));
+const Home = React.lazy(() => import("./pages/Home"));
+const MapExplore = React.lazy(() => import("./pages/MapExplore"));
+const VideoFeed = React.lazy(() => import("./pages/VideoFeed"));
+const Profile = React.lazy(() => import("./pages/Profile"));
+const Notifications = React.lazy(() => import("./pages/Notifications"));
+const EditProfile = React.lazy(() => import("./pages/EditProfile"));
+const PrivacyPolicy = React.lazy(() => import("./pages/PrivacyPolicy"));
+const TermsConditions = React.lazy(() => import("./pages/TermsConditions"));
+const ShopAnalytics = React.lazy(() => import("./pages/ShopAnalytics"));
+const NotificationSettings = React.lazy(() => import("./pages/NotificationSettings"));
+const ShopDetail = React.lazy(() => import("./pages/ShopDetail"));
+const SavedItems = React.lazy(() => import("./pages/SavedItems"));
+const EditShop = React.lazy(() => import("./pages/EditShop"));
+const VideoPlayer = React.lazy(() => import("./pages/VideoPlayer"));
+const ViewedVideos = React.lazy(() => import("./pages/ViewedVideos"));
+const CategoryVideos = React.lazy(() => import("./pages/CategoryVideos"));
+const Support = React.lazy(() => import("./pages/Support"));
+
+const LoadingFallback = () => (
+  <div className="min-h-[60vh] flex flex-col items-center justify-center gap-6">
+    <div className="w-12 h-12 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin"></div>
+    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest animate-pulse">Syncing Hub...</p>
+  </div>
+);
 import { getProfile } from "./api/shop";
 
 const API_BASE_URL = "https://mapman-production.up.railway.app";
@@ -326,32 +333,34 @@ const Dashboard = ({ onLogout }) => {
         </header>
 
         <main className="p-2 md:p-4 lg:p-6 max-w-screen-2xl mx-auto w-full flex-1 min-h-0 overflow-y-auto no-scrollbar">
-          <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<Home onSelectCategory={navigateToMap} />} />
-            <Route path="/map" element={<MapExplore isCollapsed={isCollapsed} />} />
-            <Route path="/video" element={<VideoFeed />} />
-            <Route path="/notifications" element={<Notifications />} />
-            <Route path="/profile" element={<Profile onLogout={() => setShowLogoutDialog(true)} />} />
-            <Route path="/edit-profile" element={<EditProfile />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms-conditions" element={<TermsConditions />} />
-            <Route path="/shop-analytics" element={<ShopAnalytics />} />
-            <Route path="/shop-detail/:id" element={<ShopDetail />} />
-            <Route path="/saved" element={<SavedItems />} />
-            <Route path="/edit-shop" element={<EditShop />} />
-            <Route path="/video-player/:id" element={<VideoPlayer />} />
-            <Route path="/notification-settings" element={<NotificationSettings />} />
-            <Route path="/viewed-videos" element={<ViewedVideos />} />
-            <Route path="/category-videos" element={<CategoryVideos />} />
-            <Route path="/support" element={<Support />} />
-            <Route path="*" element={
-              <div className="flex flex-col items-center justify-center h-[60vh] text-slate-400">
-                <span className="text-4xl font-black uppercase tracking-widest opacity-20">404</span>
-                <p className="mt-4 font-bold uppercase tracking-tight">Access Denied / Coming Soon</p>
-              </div>
-            } />
-          </Routes>
+          <Suspense fallback={<LoadingFallback />}>
+            <Routes>
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/dashboard" element={<Home onSelectCategory={navigateToMap} />} />
+              <Route path="/map" element={<MapExplore isCollapsed={isCollapsed} />} />
+              <Route path="/video" element={<VideoFeed />} />
+              <Route path="/notifications" element={<Notifications />} />
+              <Route path="/profile" element={<Profile onLogout={() => setShowLogoutDialog(true)} />} />
+              <Route path="/edit-profile" element={<EditProfile />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-conditions" element={<TermsConditions />} />
+              <Route path="/shop-analytics" element={<ShopAnalytics />} />
+              <Route path="/shop-detail/:id" element={<ShopDetail />} />
+              <Route path="/saved" element={<SavedItems />} />
+              <Route path="/edit-shop" element={<EditShop />} />
+              <Route path="/video-player/:id" element={<VideoPlayer />} />
+              <Route path="/notification-settings" element={<NotificationSettings />} />
+              <Route path="/viewed-videos" element={<ViewedVideos />} />
+              <Route path="/category-videos" element={<CategoryVideos />} />
+              <Route path="/support" element={<Support />} />
+              <Route path="*" element={
+                <div className="flex flex-col items-center justify-center h-[60vh] text-slate-400">
+                  <span className="text-4xl font-black uppercase tracking-widest opacity-20">404</span>
+                  <p className="mt-4 font-bold uppercase tracking-tight">Access Denied / Coming Soon</p>
+                </div>
+              } />
+            </Routes>
+          </Suspense>
         </main>
       </div>
 
@@ -429,14 +438,16 @@ const App = () => {
       <BrowserRouter>
         <div className="min-h-screen">
           <AnimatePresence mode="wait">
-            {!isLoggedIn ? (
-              <Routes>
-                <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)} logo={logo} />} />
-                <Route path="*" element={<Navigate to="/login" replace />} />
-              </Routes>
-            ) : (
-              <Dashboard onLogout={handleLogout} />
-            )}
+            <Suspense fallback={<LoadingFallback />}>
+              {!isLoggedIn ? (
+                <Routes>
+                  <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)} logo={logo} />} />
+                  <Route path="*" element={<Navigate to="/login" replace />} />
+                </Routes>
+              ) : (
+                <Dashboard onLogout={handleLogout} />
+              )}
+            </Suspense>
           </AnimatePresence>
         </div>
       </BrowserRouter>

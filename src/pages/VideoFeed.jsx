@@ -449,7 +449,7 @@ const VideoFeed = () => {
                       {/* VIDEO THUMBNAIL AREA */}
                       <div className="relative w-full aspect-video bg-slate-950 overflow-hidden">
                         <video
-                          src={vid.video}
+                          src={`${API_BASE_URL}${vid.video}`}
                           className="w-full h-full object-cover opacity-80 group-hover/card:opacity-100 transition-all duration-700 group-hover/card:scale-105"
                           muted
                           loop
@@ -743,12 +743,11 @@ const VideoFeed = () => {
                 </button>
                 <button
                   className={`btn-primary flex-[1.5] shadow-xl transition-all
-                                        ${
-                                          uploadForm.videoTitle &&
-                                          (videoFile || editingVideo)
-                                            ? ""
-                                            : "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none hover:bg-slate-200"
-                                        }`}
+                                        ${uploadForm.videoTitle &&
+                      (videoFile || editingVideo)
+                      ? ""
+                      : "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none hover:bg-slate-200"
+                    }`}
                   disabled={
                     (!videoFile && !editingVideo) ||
                     !uploadForm.videoTitle ||
