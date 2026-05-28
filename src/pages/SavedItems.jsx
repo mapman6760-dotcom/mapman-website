@@ -156,7 +156,7 @@ const SavedItems = () => {
               title: item.videoTitle,
               shopName: item.shopName,
               thumbnail: item.video
-                ? `${API_BASE_URL}${item.video}`
+                ? item.video
                 : "https://images.unsplash.com/photo-1621252176993-94459d278660?w=600&h=800&fit=crop",
               views: `${item.views || 0}`,
             };

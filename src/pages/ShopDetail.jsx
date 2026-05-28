@@ -512,7 +512,7 @@ const ShopDetail = () => {
                     className="relative aspect-[3/4] rounded-xl md:rounded-2xl overflow-hidden bg-slate-900 shadow-xl group cursor-pointer"
                   >
                     <video
-                      src={`${API_BASE_URL}${video.video}`}
+                      src={video.video}
                       className="absolute inset-0 w-full h-full object-cover filter brightness-[0.8] group-hover:brightness-100 transition-all duration-700"
                       muted
                       loop

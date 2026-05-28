@@ -9,6 +9,7 @@ import {
   Link,
   BrowserRouter
 } from "react-router-dom";
+import { HelmetProvider, Helmet } from "react-helmet-async";
 import {
   Mail,
   ChevronRight,
@@ -416,20 +417,30 @@ const App = () => {
   );
 
   return (
-    <BrowserRouter>
-      <div className="min-h-screen">
-        <AnimatePresence mode="wait">
-          {!isLoggedIn ? (
-            <Routes>
-              <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)} logo={logo} />} />
-              <Route path="*" element={<Navigate to="/login" replace />} />
-            </Routes>
-          ) : (
-            <Dashboard onLogout={handleLogout} />
-          )}
-        </AnimatePresence>
-      </div>
-    </BrowserRouter>
+    <HelmetProvider>
+      <Helmet>
+        <title>MapMan - Modern Explorer</title>
+        <meta name="description" content="MapMan - The ultimate modern explorer web application." />
+        <meta name="keywords" content="MapMan, Map, Explorer, Business Hub, Shop Videos, Mapman Merchant" />
+        <meta property="og:title" content="MapMan - Modern Explorer" />
+        <meta property="og:description" content="Discover shops, watch videos, and explore the modern business hub." />
+        <meta property="og:type" content="website" />
+      </Helmet>
+      <BrowserRouter>
+        <div className="min-h-screen">
+          <AnimatePresence mode="wait">
+            {!isLoggedIn ? (
+              <Routes>
+                <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)} logo={logo} />} />
+                <Route path="*" element={<Navigate to="/login" replace />} />
+              </Routes>
+            ) : (
+              <Dashboard onLogout={handleLogout} />
+            )}
+          </AnimatePresence>
+        </div>
+      </BrowserRouter>
+    </HelmetProvider>
   );
 };
 

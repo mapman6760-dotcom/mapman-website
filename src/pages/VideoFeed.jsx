@@ -421,7 +421,7 @@ const VideoFeed = () => {
                     <>
                       <div className="absolute inset-0">
                         <img
-                          src={`${API_BASE_URL}${vid.categoryVideo}`}
+                          src={vid.categoryVideo}
                           alt={vid.categoryName}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                         />
@@ -449,7 +449,7 @@ const VideoFeed = () => {
                       {/* VIDEO THUMBNAIL AREA */}
                       <div className="relative w-full aspect-video bg-slate-950 overflow-hidden">
                         <video
-                          src={`${API_BASE_URL}${vid.video}`}
+                          src={vid.video}
                           className="w-full h-full object-cover opacity-80 group-hover/card:opacity-100 transition-all duration-700 group-hover/card:scale-105"
                           muted
                           loop
@@ -608,7 +608,7 @@ const VideoFeed = () => {
                             src={
                               videoFile
                                 ? URL.createObjectURL(videoFile)
-                                : `${API_BASE_URL}${editingVideo.video}`
+                                : editingVideo.video
                             }
                             className="w-full h-full object-cover opacity-80 group-hover/picker:opacity-100 transition-opacity"
                             autoPlay

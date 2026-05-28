@@ -44,8 +44,8 @@ const VideoPlayer = () => {
       shopNumber: v.shopNumber || v.number || v.shopNumber,
       videoUrl:
         v.videoUrl ||
-        (v.categoryVideo ? `${API_BASE_URL}${v.categoryVideo}` : null) ||
-        (v.video ? `${API_BASE_URL}${v.video}` : null) ||
+        (v.categoryVideo ? v.categoryVideo : null) ||
+        (v.video ? v.video : null) ||
         "https://assets.mixkit.co/videos/preview/mixkit-hand-applying-henna-on-another-hand-40049-large.mp4",
       coins: v.coins || 4,
       isWatched: v.isWatched || v.watched || false,
