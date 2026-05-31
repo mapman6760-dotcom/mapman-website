@@ -170,7 +170,7 @@ const CategoryVideos = () => {
                         className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110 opacity-90 group-hover:opacity-100"
                         muted
                         loop
-                        preload="none"
+                        preload="metadata"
                         onMouseEnter={(e) => e.target.play().catch(err => console.log("Play blocked", err))}
                         onMouseLeave={(e) => {
                           e.target.pause();

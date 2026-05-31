@@ -453,7 +453,7 @@ const VideoFeed = () => {
                           className="w-full h-full object-cover opacity-80 group-hover/card:opacity-100 transition-all duration-700 group-hover/card:scale-105"
                           muted
                           loop
-                          preload="none"
+                          preload="metadata"
                           onMouseOver={(e) => e.target.play().catch(err => console.log("Hover play blocked", err))}
                           onMouseOut={(e) => {
                             e.target.pause();

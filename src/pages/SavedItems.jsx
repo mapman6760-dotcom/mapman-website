@@ -431,7 +431,7 @@ const SavedItems = () => {
                       muted
                       playsInline
                       loop
-                      preload="none"
+                      preload="metadata"
                       onMouseOver={(e) => e.target.play().catch(err => console.log("Play blocked", err))}
                       onMouseOut={(e) => {
                         e.target.pause();

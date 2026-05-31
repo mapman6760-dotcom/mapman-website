@@ -139,7 +139,7 @@ const ViewedVideos = () => {
                         className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out"
                         muted
                         loop
-                        preload="none"
+                        preload="metadata"
                         onMouseEnter={(e) => e.target.play().catch(err => console.log("Hover play blocked", err))}
                         onMouseLeave={(e) => {
                           e.target.pause();

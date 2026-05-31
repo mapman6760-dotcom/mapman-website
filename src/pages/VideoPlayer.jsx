@@ -343,7 +343,7 @@ const VideoPlayer = () => {
                 className="w-full h-full object-cover lg:object-contain relative z-10"
                 playsInline
                 muted={isMuted}
-                preload={Math.abs(idx - currentIndex) <= 1 ? "metadata" : "none"}
+                preload={Math.abs(idx - currentIndex) <= 2 ? "auto" : "none"}
                 onEnded={() => handleVideoEnd(video)}
                 onTimeUpdate={handleTimeUpdate}
               />

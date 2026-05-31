@@ -81,13 +81,35 @@ const MapExplore = ({ isCollapsed }) => {
     }
   }, [initialSearch]);
 
+  // --- HAIVERSINE DISTANCE CALCULATION ---
+  const getRawDistance = React.useCallback((targetLat, targetLong) => {
+    if (!userPos || !targetLat || !targetLong) return 999999;
+    const R = 6371;
+    const dLat = (parseFloat(targetLat) - userPos.lat) * (Math.PI / 180);
+    const dLon = (parseFloat(targetLong) - userPos.lng) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(userPos.lat * (Math.PI / 180)) *
+        Math.cos(parseFloat(targetLat) * (Math.PI / 180)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }, [userPos]);
+
+  const getDistance = React.useCallback((targetLat, targetLong) => {
+    const d = getRawDistance(targetLat, targetLong);
+    if (d === 999999) return "1.2 km";
+    return d.toFixed(1) + " km";
+  }, [getRawDistance]);
+
   // Re-sort shops dynamically whenever user position or shops list changes
   const sortedShops = React.useMemo(() => {
     if (!userPos || shops.length === 0) return shops;
     return [...shops].sort(
       (a, b) => getRawDistance(a.lat, a.long) - getRawDistance(b.lat, b.long),
     );
-  }, [shops, userPos]);
+  }, [shops, userPos, getRawDistance]);
 
   // --- AUTOCOMPLETE LOGIC ---
   useEffect(() => {
@@ -138,28 +160,6 @@ const MapExplore = ({ isCollapsed }) => {
   const handleSearch = (e) => {
     e.preventDefault();
     loadShops(searchInput);
-  };
-
-  // --- HAIVERSINE DISTANCE CALCULATION ---
-  const getRawDistance = (targetLat, targetLong) => {
-    if (!userPos || !targetLat || !targetLong) return 999999;
-    const R = 6371;
-    const dLat = (parseFloat(targetLat) - userPos.lat) * (Math.PI / 180);
-    const dLon = (parseFloat(targetLong) - userPos.lng) * (Math.PI / 180);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(userPos.lat * (Math.PI / 180)) *
-        Math.cos(parseFloat(targetLat) * (Math.PI / 180)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  };
-
-  const getDistance = (targetLat, targetLong) => {
-    const d = getRawDistance(targetLat, targetLong);
-    if (d === 999999) return "1.2 km";
-    return d.toFixed(1) + " km";
   };
 
   return (

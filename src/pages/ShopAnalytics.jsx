@@ -186,7 +186,7 @@ const ShopAnalytics = () => {
                       className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700"
                       muted
                       playsInline
-                      preload="none"
+                      preload="metadata"
                       onMouseOver={(e) => e.target.play().catch(err => console.log("Play blocked", err))}
                       onMouseOut={(e) => {
                         e.target.pause();
