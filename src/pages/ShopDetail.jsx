@@ -93,13 +93,13 @@ const ShopDetail = () => {
 
   if (error || !shopInfo) {
     return (
-      <div className="max-w-6xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-20 px-4">
+      <div className="max-w-6xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-20 px-2">
         {/* ── EMPTY DATA CARD ── */}
         <div className="min-h-[50vh] flex flex-col items-center justify-center gap-8 p-12 bg-white rounded-[1rem] border border-slate-100 shadow-2xl max-w-4xl mx-auto relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-slate-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 
           <div className="w-24 h-24 bg-slate-50 rounded-3xl flex items-center justify-center border border-slate-100 shadow-inner group-hover:scale-110 transition-transform duration-500">
-           <img src="https://cdn-icons-png.flaticon.com/128/869/869432.png" alt="empty-shop" className="h-[40px] w-[40px]" />
+            <img src="https://cdn-icons-png.flaticon.com/128/869/869432.png" alt="empty-shop" className="h-[40px] w-[40px]" />
           </div>
 
           <div className="text-center space-y-4 relative z-10">
@@ -137,15 +137,14 @@ const ShopDetail = () => {
     );
   }
 
-  const shopBanner = `${API_BASE_URL}${shopInfo.shopImage}`;
+  const shopBanner = shopInfo.shopImage;
   const gallery = [
     shopInfo.image1,
     shopInfo.image2,
     shopInfo.image3,
     shopInfo.image4,
   ]
-    .filter(Boolean)
-    .map((img) => `${API_BASE_URL}${img}`);
+    .filter(Boolean);
 
   const ImageDialog = ({ image, onClose }) => (
     <motion.div
@@ -212,11 +211,10 @@ const ShopDetail = () => {
 
         <div className="flex items-center gap-2 md:gap-3">
           <button
-            className={`w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center transition-all border ${
-              isSaved
+            className={`w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center transition-all border ${isSaved
                 ? "bg-amber-500 border-amber-500 text-white shadow-lg"
                 : "bg-white border-slate-200 text-slate-400 hover:text-amber-500 hover:border-amber-200"
-            }`}
+              }`}
             onClick={() => setIsSaved(!isSaved)}
           >
             <Bookmark
@@ -306,11 +304,10 @@ const ShopDetail = () => {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 md:gap-3 px-4 md:px-6 py-2 md:py-2.5 rounded-lg md:rounded-xl text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
-              activeTab === tab.id
+            className={`flex items-center gap-2 md:gap-3 px-4 md:px-6 py-2 md:py-2.5 rounded-lg md:rounded-xl text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all duration-300 ${activeTab === tab.id
                 ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
                 : "text-slate-500 hover:bg-slate-100"
-            }`}
+              }`}
           >
             {tab.icon} {tab.label}
           </button>
@@ -517,8 +514,8 @@ const ShopDetail = () => {
                       muted
                       loop
                       playsInline
-                      preload="metadata"
-                      onMouseOver={(e) => e.target.play()}
+                      preload="none"
+                      onMouseOver={(e) => e.target.play().catch(err => console.log("Play blocked", err))}
                       onMouseOut={(e) => {
                         e.target.pause();
                         e.target.currentTime = 0;

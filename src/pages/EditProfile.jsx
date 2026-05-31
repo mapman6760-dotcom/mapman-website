@@ -135,7 +135,7 @@ const EditProfile = () => {
     }
 
     return (
-        <div className="w-full max-w-5xl mx-auto pb-16 px-4 md:px-8">
+        <div className="w-full max-w-5xl mx-auto pb-16 px-2 md:px-8">
             {/* ── HEADER ── */}
             <div className="flex items-center justify-between mb-6">
                 <button

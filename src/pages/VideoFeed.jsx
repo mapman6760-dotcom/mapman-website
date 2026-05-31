@@ -296,7 +296,7 @@ const VideoFeed = () => {
   return (
     <div className="flex flex-col h-full bg-transparent no-scrollbar relative">
       {/* 1. PROFESSIONAL HEADER & TABS */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6 md:mb-10 px-4 md:px-8 pt-4 md:pt-6 relative z-10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6 md:mb-10 px-2 md:px-8 pt-4 md:pt-6 relative z-10">
         <div className="flex flex-col gap-1">
           <h2 className="text-3xl font-black text-slate-900 tracking-tighter uppercase leading-none">
             Videos
@@ -421,7 +421,7 @@ const VideoFeed = () => {
                     <>
                       <div className="absolute inset-0">
                         <img
-                          src={vid.categoryVideo}
+                          src={`${API_BASE_URL}${vid.categoryVideo}`}
                           alt={vid.categoryName}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                         />
@@ -449,10 +449,16 @@ const VideoFeed = () => {
                       {/* VIDEO THUMBNAIL AREA */}
                       <div className="relative w-full aspect-video bg-slate-950 overflow-hidden">
                         <video
-                          src={`${API_BASE_URL}${vid.video}`}
+                          src={vid.video}
                           className="w-full h-full object-cover opacity-80 group-hover/card:opacity-100 transition-all duration-700 group-hover/card:scale-105"
                           muted
                           loop
+                          preload="none"
+                          onMouseOver={(e) => e.target.play().catch(err => console.log("Hover play blocked", err))}
+                          onMouseOut={(e) => {
+                            e.target.pause();
+                            e.target.currentTime = 0;
+                          }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
 

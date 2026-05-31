@@ -166,11 +166,12 @@ const CategoryVideos = () => {
                     {/* HIGH-END VIDEO CONTAINER */}
                     <div className="relative aspect-[4/4] overflow-hidden bg-slate-900">
                       <video
-                        src={`${API_BASE_URL}${vid.video}`}
+                        src={vid.video}
                         className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110 opacity-90 group-hover:opacity-100"
                         muted
                         loop
-                        onMouseEnter={(e) => e.target.play()}
+                        preload="none"
+                        onMouseEnter={(e) => e.target.play().catch(err => console.log("Play blocked", err))}
                         onMouseLeave={(e) => {
                           e.target.pause();
                           e.target.currentTime = 0;

@@ -107,7 +107,7 @@ const Notifications = () => {
           <div className="absolute inset-0 backdrop-blur-[1px]" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto w-full px-4 md:px-8 lg:px-12 pb-4 md:pb-8 text-white">
+        <div className="relative z-10 max-w-7xl mx-auto w-full px-2 md:px-8 lg:px-12 pb-4 md:pb-8 text-white">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-10">
             <div className="space-y-4 sm:space-y-6">
               <div className="space-y-2">
@@ -164,7 +164,7 @@ const Notifications = () => {
         </button>
       </div>
 
-      <main className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 -mt-4 md:-mt-8 relative z-20 space-y-6 md:space-y-12 pb-24">
+      <main className="max-w-7xl mx-auto px-2 md:px-8 lg:px-12 -mt-4 md:-mt-8 relative z-20 space-y-6 md:space-y-12 pb-24">
         <div className="flex items-center justify-between px-2"></div>
 
         {loading && notifications.length === 0 ? (

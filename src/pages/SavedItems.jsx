@@ -143,7 +143,7 @@ const SavedItems = () => {
               category: item.category,
               time: `${item.openTime || "10:30 AM"} - ${item.closeTime || "04:16 PM"}`,
               image: item.shopImage
-                ? `${API_BASE_URL}${item.shopImage}`
+                ? item.shopImage
                 : "https://images.unsplash.com/photo-1621252179027-94459d278660?w=600&h=600&fit=crop",
               location: item.address || "Location not available",
               latitude: item.lat,
@@ -430,8 +430,13 @@ const SavedItems = () => {
                       className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-40 transition-all duration-700"
                       muted
                       playsInline
-                      onMouseOver={(e) => e.target.play()}
-                      onMouseOut={(e) => e.target.pause()}
+                      loop
+                      preload="none"
+                      onMouseOver={(e) => e.target.play().catch(err => console.log("Play blocked", err))}
+                      onMouseOut={(e) => {
+                        e.target.pause();
+                        e.target.currentTime = 0;
+                      }}
                     />
 
                     <div

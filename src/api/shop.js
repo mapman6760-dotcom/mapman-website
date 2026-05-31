@@ -70,6 +70,7 @@ export const fetchSavedShops = async (page) => {
     throw error;
   }
 };
+
 export const getProfile = async () => {
   try {
     const token = localStorage.getItem("token");
@@ -92,6 +93,7 @@ export const getProfile = async () => {
     throw error;
   }
 };
+
 export const fetchShop = async () => {
   try {
     const token = localStorage.getItem("token");
@@ -110,7 +112,7 @@ export const fetchShop = async () => {
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching shop details:", error);
+    console.error("Error fetching shop details:", error.response.data);
     throw error;
   }
 };

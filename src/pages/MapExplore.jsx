@@ -20,6 +20,7 @@ import {
   ImageIcon,
   ArrowUpRight,
   X,
+  Store,
 } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Map, Marker as MapMarker } from "pigeon-maps";
@@ -58,6 +59,7 @@ const MapExplore = ({ isCollapsed }) => {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedShop, setSelectedShop] = useState(null);
+  const [showShopModal, setShowShopModal] = useState(false);
   const [zoom, setZoom] = useState(14);
   const [userPos, setUserPos] = useState(null);
   const [center, setCenter] = useState([11.02, 77.0]);
@@ -79,19 +81,13 @@ const MapExplore = ({ isCollapsed }) => {
     }
   }, [initialSearch]);
 
-  // Re-sort shops whenever user position becomes available
-  useEffect(() => {
-    if (userPos && shops.length > 0) {
-      const sorted = [...shops].sort(
-        (a, b) => getRawDistance(a.lat, a.long) - getRawDistance(b.lat, b.long),
-      );
-      
-      // Compare by first and last IDs to detect meaningful changes without full stringify
-      if (sorted[0]?.id !== shops[0]?.id || sorted[sorted.length - 1]?.id !== shops[shops.length - 1]?.id) {
-        setShops(sorted);
-      }
-    }
-  }, [userPos, shops.length]);
+  // Re-sort shops dynamically whenever user position or shops list changes
+  const sortedShops = React.useMemo(() => {
+    if (!userPos || shops.length === 0) return shops;
+    return [...shops].sort(
+      (a, b) => getRawDistance(a.lat, a.long) - getRawDistance(b.lat, b.long),
+    );
+  }, [shops, userPos]);
 
   // --- AUTOCOMPLETE LOGIC ---
   useEffect(() => {
@@ -121,20 +117,20 @@ const MapExplore = ({ isCollapsed }) => {
         !isNaN(parseFloat(shop.long)),
     );
     // Sort by distance if user position is available
-    const sortedShops = userPos
+    const loadedSortedShops = userPos
       ? validShops.sort(
           (a, b) =>
             getRawDistance(a.lat, a.long) - getRawDistance(b.lat, b.long),
         )
       : validShops;
 
-    setShops(sortedShops);
+    setShops(loadedSortedShops);
     setLoading(false);
-    if (sortedShops.length > 0) {
-      setSelectedShop(sortedShops[0]);
+    if (loadedSortedShops.length > 0) {
+      setSelectedShop(loadedSortedShops[0]);
       setCenter([
-        parseFloat(sortedShops[0].lat),
-        parseFloat(sortedShops[0].long),
+        parseFloat(loadedSortedShops[0].lat),
+        parseFloat(loadedSortedShops[0].long),
       ]);
     }
   };
@@ -164,34 +160,6 @@ const MapExplore = ({ isCollapsed }) => {
     const d = getRawDistance(targetLat, targetLong);
     if (d === 999999) return "1.2 km";
     return d.toFixed(1) + " km";
-  };
-
-  // --- MARKER UI --- (Positioning now handled by MapMarker)
-  const MarkerUI = ({ shop, isActive, delay = 0, onClick }) => {
-    const bgColorClass = getCategoryColor(shop.category);
-    const borderColorClass = getCategoryBorderColor(shop.category);
-    return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0, y: 10 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ type: "spring", stiffness: 300, damping: 15, delay }}
-        onClick={onClick}
-        className={`relative z-10 -translate-x-1/2 -translate-y-1/2 group cursor-pointer pointer-events-auto transition-all ${isActive ? "z-20 scale-125" : ""}`}
-      >
-        <div
-          className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white border-2 ${borderColorClass} px-3 py-1.5 rounded-[10px] shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-all flex flex-col items-center justify-center min-w-[70px] ${isActive ? "scale-105 z-30 ring-2 ring-blue-500/20" : "scale-100 opacity-90 hover:opacity-100"}`}
-        >
-          <span className="text-[13px] font-black text-slate-800 leading-tight whitespace-nowrap">{shop.shopName}</span>
-          <span className="text-[11px] font-medium text-slate-500 leading-tight capitalize whitespace-nowrap">{shop.category}</span>
-          <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-white"></div>
-        </div>
-        <div className="relative flex items-center justify-center">
-          <div
-            className={`w-5 h-5 rounded-full border-[3px] border-white shadow-sm ${bgColorClass} transition-transform duration-300 ${isActive ? "ring-4 ring-blue-500/20" : ""}`}
-          ></div>
-        </div>
-      </motion.div>
-    );
   };
 
   return (
@@ -270,7 +238,7 @@ const MapExplore = ({ isCollapsed }) => {
                           <div className="w-10 h-10 rounded-xl bg-slate-50 shadow-sm flex items-center justify-center overflow-hidden border border-slate-100 group-hover:scale-105 transition-transform">
                             {shop.shopImage ? (
                               <img
-                                src={`${API_BASE_URL}${shop.shopImage}`}
+                                src={shop.shopImage}
                                 alt={shop.shopName}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
@@ -347,13 +315,14 @@ const MapExplore = ({ isCollapsed }) => {
               setZoom(zoom);
             }}
           >
-            {shops.map((shop, i) => (
+            {sortedShops.map((shop, i) => (
               <MapMarker
                 key={shop.id}
                 anchor={[parseFloat(shop.lat), parseFloat(shop.long)]}
                 onClick={() => {
                   setSelectedShop(shop);
                   setCenter([parseFloat(shop.lat), parseFloat(shop.long)]);
+                  setShowShopModal(true);
                 }}
               >
                 <MarkerUI
@@ -386,20 +355,20 @@ const MapExplore = ({ isCollapsed }) => {
       </div>
 
       {/* 3. REDESIGNED SLIDING CARDS */}
-      <div className="absolute bottom-8 left-0 right-0 z-30 px-6">
+      <div className="absolute bottom-8 left-0 right-0 z-30 px-2 md:px-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <h3 className="text-[10px] font-black text-slate-900 bg-white/90 backdrop-blur-xl px-4 py-2.5 rounded-2xl shadow-xl border border-white/50 flex items-center gap-2.5 uppercase tracking-tighter">
                 <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></div>
-                Verified Local Hubs ({shops.length})
+                Verified Local Hubs ({sortedShops.length})
               </h3>
             </div>
           </div>
 
           <div className="flex gap-5 overflow-x-auto no-scrollbar pb-6 -mx-2 px-2 snap-x scroll-smooth">
-            {shops.length > 0
-              ? shops.map((shop, i) => (
+            {sortedShops.length > 0
+              ? sortedShops.map((shop, i) => (
                   <motion.div
                     key={shop.id}
                     onClick={() => {
@@ -416,7 +385,7 @@ const MapExplore = ({ isCollapsed }) => {
                     <div className="w-[85px] h-full flex-shrink-0 relative overflow-hidden rounded-[1.2rem] bg-slate-50 border border-slate-100/50 group-hover:shadow-md transition-all duration-700">
                       {shop.shopImage ? (
                         <img
-                          src={`${API_BASE_URL}${shop.shopImage}`}
+                          src={shop.shopImage}
                           alt={shop.shopName}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                           onError={(e) => {
@@ -493,18 +462,119 @@ const MapExplore = ({ isCollapsed }) => {
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showShopModal && selectedShop && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowShopModal(false)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-[320px] bg-white rounded-[2rem] shadow-[0_30px_80px_rgba(0,0,0,0.12)] overflow-hidden flex flex-col border border-slate-100"
+            >
+              <button 
+                onClick={() => setShowShopModal(false)}
+                className="absolute top-4 right-4 z-10 w-8 h-8 bg-black/20 hover:bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              
+              <div className="h-36 relative bg-slate-100">
+                {selectedShop.shopImage ? (
+                  <img src={selectedShop.shopImage} alt={selectedShop.shopName} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-slate-200">
+                    <ImageIcon className="w-10 h-10 text-slate-400 opacity-50" />
+                  </div>
+                )}
+                <div className="absolute bottom-3 left-3 px-3 py-1 bg-blue-600/90 backdrop-blur-md rounded-lg text-[10px] font-black text-white uppercase tracking-widest shadow-lg">
+                  {selectedShop.category}
+                </div>
+              </div>
+              
+              <div className="p-5 flex flex-col gap-3">
+                <div>
+                  <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase leading-tight mb-1">
+                    {selectedShop.shopName}
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium leading-relaxed flex items-start gap-1">
+                    <MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0 text-blue-500" />
+                    {selectedShop.address || "Local Hub, Mapman sector"}
+                  </p>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+                    <Navigation className="w-4 h-4 text-blue-600" />
+                    <span className="text-[11px] font-black text-slate-800 tracking-tight">
+                      {getRawDistance(parseFloat(selectedShop.lat), parseFloat(selectedShop.long)).toFixed(2)} km away
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="mt-1 pt-3 border-t border-slate-100 grid grid-cols-2 gap-2">
+                  <button 
+                    onClick={() => {
+                      if (selectedShop.lat && selectedShop.long) {
+                        window.open(`https://www.google.com/maps?q=${selectedShop.lat},${selectedShop.long}`, "_blank");
+                      }
+                    }}
+                    className="flex items-center justify-center gap-2 py-3 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all"
+                  >
+                    <Navigation className="w-3.5 h-3.5" /> Directions
+                  </button>
+                  <button 
+                    onClick={() => navigate(`/shop-detail/${selectedShop.id}`)}
+                    className="flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-600/20 transition-all active:scale-95"
+                  >
+                    <Store className="w-3.5 h-3.5" /> View Shop
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 };
 
-// --- MARKER COMPONENT REMOVED ---
+// --- MEMOIZED MARKER UI COMPONENT ---
+const MarkerUI = React.memo(({ shop, isActive, delay = 0, onClick }) => {
+  const bgColorClass = getCategoryColor(shop.category);
+  const borderColorClass = getCategoryBorderColor(shop.category);
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0, y: 10 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 300, damping: 15, delay }}
+      onClick={onClick}
+      className={`relative z-10 -translate-x-1/2 -translate-y-1/2 group cursor-pointer pointer-events-auto transition-all ${isActive ? "z-20 scale-125" : ""}`}
+    >
+      <div
+        className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white border-2 ${borderColorClass} px-3 py-1.5 rounded-[10px] shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-all flex flex-col items-center justify-center min-w-[70px] ${isActive ? "scale-105 z-30 ring-2 ring-blue-500/20" : "scale-100 opacity-90 hover:opacity-100"}`}
+      >
+        <span className="text-[13px] font-black text-slate-800 leading-tight whitespace-nowrap">{shop.shopName}</span>
+        <span className="text-[11px] font-medium text-slate-500 leading-tight capitalize whitespace-nowrap">{shop.category}</span>
+        <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-white"></div>
+      </div>
+      <div className="relative flex items-center justify-center">
+        <div
+          className={`w-5 h-5 rounded-full border-[3px] border-white shadow-sm ${bgColorClass} transition-transform duration-300 ${isActive ? "ring-4 ring-blue-500/20" : ""}`}
+        ></div>
+      </div>
+    </motion.div>
+  );
+});
 
 const getCategoryColor = (category = "") => {
   const cat = category.toLowerCase();
   if (cat.includes("theater") || cat.includes("cinema")) return "bg-purple-500";
   if (cat.includes("restaurant") || cat.includes("food") || cat.includes("eating")) return "bg-orange-500";
   if (cat.includes("hospital") || cat.includes("medical") || cat.includes("health")) return "bg-red-500";
-  if (cat.includes("bars") || cat.includes("pub") || cat.includes("drink")) return "bg-amber-500";
+  if (cat.includes("bar") || cat.includes("pub") || cat.includes("drink")) return "bg-amber-500";
   if (cat.includes("grocery") || cat.includes("shopping") || cat.includes("store")) return "bg-green-500";
   if (cat.includes("textile") || cat.includes("cloth") || cat.includes("fashion")) return "bg-pink-500";
   if (cat.includes("resort") || cat.includes("park")) return "bg-emerald-500";
@@ -520,7 +590,7 @@ const getCategoryBorderColor = (category = "") => {
   if (cat.includes("theater") || cat.includes("cinema")) return "border-purple-500";
   if (cat.includes("restaurant") || cat.includes("food") || cat.includes("eating")) return "border-orange-500";
   if (cat.includes("hospital") || cat.includes("medical") || cat.includes("health")) return "border-red-500";
-  if (cat.includes("bars") || cat.includes("pub") || cat.includes("drink")) return "border-amber-500";
+  if (cat.includes("bar") || cat.includes("pub") || cat.includes("drink")) return "border-amber-500";
   if (cat.includes("grocery") || cat.includes("shopping") || cat.includes("store")) return "border-green-500";
   if (cat.includes("textile") || cat.includes("cloth") || cat.includes("fashion")) return "border-pink-500";
   if (cat.includes("resort") || cat.includes("park")) return "border-emerald-500";
@@ -535,7 +605,7 @@ const getCategoryIcon = (category = "") => {
   const cat = category.toLowerCase();
   let iconName = "Others";
 
-  // Mapping provided by USER list: theater, restaurant, hospital, bars, grocery, textile, resort, bunk, spa, hotel, others
+  // Mapping provided by USER list: theater, restaurant, hospital, bar, grocery, textile, resort, bunk, spa, hotel, others
   if (cat.includes("theater") || cat.includes("cinema")) iconName = "Theater";
   else if (
     cat.includes("restaurant") ||
@@ -549,8 +619,8 @@ const getCategoryIcon = (category = "") => {
     cat.includes("health")
   )
     iconName = "Hospital";
-  else if (cat.includes("bars") || cat.includes("pub") || cat.includes("drink"))
-    iconName = "Bars";
+  else if (cat.includes("bar") || cat.includes("pub") || cat.includes("drink"))
+    iconName = "Bar";
   else if (
     cat.includes("grocery") ||
     cat.includes("shopping") ||

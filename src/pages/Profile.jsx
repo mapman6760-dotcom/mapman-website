@@ -50,7 +50,7 @@ const Profile = ({ onLogout }) => {
           country: data.country || "India",
           role: "Verified Account",
           avatar: data.profilePic
-            ? `${API_BASE_URL}${data.profilePic}`
+            ? data.profilePic
             : "https://cdn-icons-png.flaticon.com/128/3135/3135715.png",
           points: data.points || 0,
         });
@@ -137,7 +137,7 @@ const Profile = ({ onLogout }) => {
   }
 
   return (
-    <div className="w-full pb-16 no-scrollbar px-4 md:px-8 space-y-10">
+    <div className="w-full pb-16 no-scrollbar px-2 md:px-8 space-y-10">
       {/* 1. SLIM PREMIUM PROFILE CARD */}
       <section className="relative group p-1">
         <motion.div

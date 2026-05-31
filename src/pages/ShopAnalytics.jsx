@@ -182,12 +182,12 @@ const ShopAnalytics = () => {
                 >
                   <div className="relative aspect-video overflow-hidden bg-slate-900 flex items-center justify-center">
                     <video
-                      src={`https://mapman-production.up.railway.app${video.video}`}
+                      src={video.video}
                       className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700"
                       muted
                       playsInline
-                      preload="metadata"
-                      onMouseOver={(e) => e.target.play()}
+                      preload="none"
+                      onMouseOver={(e) => e.target.play().catch(err => console.log("Play blocked", err))}
                       onMouseOut={(e) => {
                         e.target.pause();
                         e.target.currentTime = 0;

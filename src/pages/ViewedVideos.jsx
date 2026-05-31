@@ -72,7 +72,7 @@ const ViewedVideos = () => {
   return (
     <div className="min-h-screen bg-[#FDFDFE] pb-24">
       {/* ── COMPACT HEADER ── */}
-      <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-3xl border-b border-slate-100/50 px-4 md:px-8 py-4">
+      <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-3xl border-b border-slate-100/50 px-2 md:px-8 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <motion.button
@@ -99,7 +99,7 @@ const ViewedVideos = () => {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 md:px-8 py-8 space-y-8">
+      <main className="max-w-6xl mx-auto px-2 md:px-8 py-8 space-y-8">
         {/* ── SEARCH ARCHITECTURE ── */}
         <div className="relative group max-w-md">
           <div className="absolute left-4 top-1/2 -translate-y-1/2">
@@ -138,6 +138,13 @@ const ViewedVideos = () => {
                         src={video.video}
                         className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out"
                         muted
+                        loop
+                        preload="none"
+                        onMouseEnter={(e) => e.target.play().catch(err => console.log("Hover play blocked", err))}
+                        onMouseLeave={(e) => {
+                          e.target.pause();
+                          e.target.currentTime = 0;
+                        }}
                       />
 
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />

@@ -656,6 +656,7 @@ const Login = ({ onLogin, logo }) => {
                         <input
                           type="tel"
                           required
+                          maxLength="10"
                           placeholder="Enter 10-digit number"
                           className="w-full h-12 bg-white border border-slate-200 rounded-xl px-5 font-medium text-sm text-slate-900 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all"
                           value={phoneNumber}

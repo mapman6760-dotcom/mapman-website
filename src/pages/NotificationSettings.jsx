@@ -190,7 +190,7 @@ const NotificationSettings = () => {
           <div className="absolute inset-0 bg-slate-950/20" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-8 md:px-12 pb-6 md:pb-8 text-white">
+        <div className="relative z-10 max-w-7xl mx-auto w-full px-2 sm:px-8 md:px-12 pb-6 md:pb-8 text-white">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-10">
             <div className="space-y-3">
               <div className="space-y-1">
@@ -235,7 +235,7 @@ const NotificationSettings = () => {
       </header>
 
       {/* ── OPTIMIZED SETTINGS ── */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-8 md:px-12 -mt-4 md:-mt-8 relative z-20 space-y-8 md:space-y-10">
+      <main className="max-w-7xl mx-auto px-2 sm:px-8 md:px-12 -mt-4 md:-mt-8 relative z-20 space-y-8 md:space-y-10">
         {/* Main Alert Management Card - MOVED ABOVE THE SPLIT */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

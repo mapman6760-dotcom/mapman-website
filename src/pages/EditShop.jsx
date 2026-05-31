@@ -157,15 +157,15 @@ const EditShop = () => {
         const d = res.data;
         setShopId(d.id);
         const currentShopImage = d.shopImage
-          ? `${API_BASE_URL}${d.shopImage}`
+          ? d.shopImage
           : null;
 
         // Map gallery images if they exist
         const currentGallery = [
-          d.image1 ? `${API_BASE_URL}${d.image1}` : null,
-          d.image2 ? `${API_BASE_URL}${d.image2}` : null,
-          d.image3 ? `${API_BASE_URL}${d.image3}` : null,
-          d.image4 ? `${API_BASE_URL}${d.image4}` : null,
+          d.image1 ? d.image1 : null,
+          d.image2 ? d.image2 : null,
+          d.image3 ? d.image3 : null,
+          d.image4 ? d.image4 : null,
         ];
 
         setShopData({
@@ -392,6 +392,30 @@ const EditShop = () => {
     }
   };
 
+  const handleDeleteCategory = async (e, categoryName) => {
+    e.stopPropagation();
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_BASE_URL}/shop/deleteCategory`, {
+        method: "POST",
+        headers: {
+          usertoken: token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ categoryName }),
+      });
+      const result = await res.json();
+      if (result.status === 200) {
+        setCategories((prev) => prev.filter(c => c.categoryName !== categoryName));
+        if (shopData.category === categoryName) {
+          setShopData({ ...shopData, category: "" });
+        }
+      }
+    } catch (err) {
+      console.error("Delete category error:", err);
+    }
+  };
+
   const handleSave = async () => {
     try {
       setSaving(true);
@@ -554,7 +578,7 @@ const EditShop = () => {
     <div className="min-h-screen bg-[#F8FAFC] pb-32">
       {/* ─── STICKY NAVIGATION ─── */}
       <header className="sticky top-0 z-[60] bg-white/70 backdrop-blur-2xl border-b border-slate-200/60 transition-all">
-        <div className="max-w-[1440px] mx-auto px-6 h-16 md:h-20 flex items-center justify-between">
+        <div className="max-w-[1440px] mx-auto px-2 md:px-6 h-16 md:h-20 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
               onClick={() => {
@@ -599,7 +623,7 @@ const EditShop = () => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-10">
+      <main className="max-w-7xl mx-auto px-2 md:px-6 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* ─── LEFT COLUMN: PREVIEW & VISUALS (5 COLS) ─── */}
           <div className="lg:col-span-5 space-y-8">
@@ -614,7 +638,7 @@ const EditShop = () => {
                   16:9 Aspect Ratio
                 </span>
               </div>
-              <div className="relative group rounded-[2.5rem] overflow-hidden bg-slate-200 border-2 border-white shadow-2xl aspect-video">
+              <div className="relative group rounded-[1rem] overflow-hidden bg-slate-200 border-2 border-white shadow-2xl aspect-video">
                 <img
                   src={
                     shopData.shopImageUrl ||
@@ -660,7 +684,7 @@ const EditShop = () => {
                 {[0, 1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className="relative aspect-square rounded-3xl bg-white border-2 border-dashed border-slate-200 flex items-center justify-center group overflow-hidden hover:border-blue-500 hover:bg-blue-50 transition-all duration-500 cursor-pointer"
+                    className="relative aspect-square rounded-xl bg-white border-2 border-dashed border-slate-200 flex items-center justify-center group overflow-hidden hover:border-blue-500 hover:bg-blue-50 transition-all duration-500 cursor-pointer"
                   >
                     {shopData.galleryUrls[i] ? (
                       <>
@@ -727,19 +751,36 @@ const EditShop = () => {
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2.5">
-                    {categories.map((cat, idx) => {
+                    {categories.filter(cat => cat.categoryName?.toLowerCase() !== 'others').map((cat, idx) => {
                       const isSelected = shopData.category === cat.categoryName;
+                      const verifiedCategories = [
+                        'theater', 'restaurant', 'hospital', 'bar', 'grocery', 
+                        'textile', 'resort', 'bunk', 'spa', 'hotel', 'jewellery', 
+                        'furniture', 'salons'
+                      ];
+                      const isVerified = verifiedCategories.includes(cat.categoryName?.toLowerCase());
                       return (
-                        <button
-                          key={idx}
-                          onClick={() => setShopData({ ...shopData, category: cat.categoryName })}
-                          className={`px-5 py-2.5 rounded-full text-[13px] font-bold transition-all border ${isSelected
-                            ? "bg-white border-blue-600 text-blue-600 shadow-[0_4px_12px_rgba(37,99,235,0.1)]"
-                            : "bg-[#F4F7FC] border-transparent text-slate-500 hover:bg-[#EAEFF6]"
-                            }`}
-                        >
-                          <span className="leading-none capitalize">{cat.categoryName}</span>
-                        </button>
+                        <div key={idx} className="relative group">
+                          <button
+                            type="button"
+                            onClick={() => setShopData({ ...shopData, category: cat.categoryName })}
+                            className={`px-5 py-2.5 rounded-full text-[13px] font-bold transition-all border ${isSelected
+                              ? "bg-white border-blue-600 text-blue-600 shadow-[0_4px_12px_rgba(37,99,235,0.1)]"
+                              : "bg-[#F4F7FC] border-transparent text-slate-500 hover:bg-[#EAEFF6]"
+                              }`}
+                          >
+                            <span className="leading-none capitalize">{cat.categoryName}</span>
+                          </button>
+                          {!isVerified && (
+                            <button
+                              type="button"
+                              onClick={(e) => handleDeleteCategory(e, cat.categoryName)}
+                              className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center z-10 shadow-sm hover:bg-red-600 transition-colors"
+                            >
+                              <X className="w-2.5 h-2.5" />
+                            </button>
+                          )}
+                        </div>
                       );
                     })}
                     <button

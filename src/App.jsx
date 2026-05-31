@@ -287,7 +287,7 @@ const Dashboard = ({ onLogout }) => {
 
       {/* 2. MAIN AREA */}
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-        <header className="h-16 lg:h-20 bg-white/80 backdrop-blur-md border-b border-slate-200/60 px-4 md:px-6 lg:px-10 flex items-center justify-between shrink-0 z-40">
+        <header className="h-16 lg:h-20 bg-white/80 backdrop-blur-md border-b border-slate-200/60 px-2 md:px-6 lg:px-10 flex items-center justify-between shrink-0 z-40">
           <div className="flex items-center gap-4 lg:gap-0">
             <button className="lg:hidden p-2.5 -ml-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all" onClick={() => setSidebarOpen(true)}>
               <Menu className="w-6 h-6 stroke-[2.5]" />
@@ -323,7 +323,7 @@ const Dashboard = ({ onLogout }) => {
               </div>
               <div className={`w-10 h-10 lg:w-11 lg:h-11 rounded-xl overflow-hidden ring-2 shadow-xl shadow-slate-200/50 group-hover:ring-blue-100 transition-all duration-300 ${currentPage === 'profile' ? 'ring-blue-500' : 'ring-slate-100'}`}>
                 <img
-                  src={profileData?.profilePic ? `${API_BASE_URL}${profileData.profilePic}` : "https://cdn-icons-png.flaticon.com/128/3135/3135715.png"}
+                  src={profileData?.profilePic ? profileData.profilePic : "https://cdn-icons-png.flaticon.com/128/3135/3135715.png"}
                   alt="Profile"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
