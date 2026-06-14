@@ -32,8 +32,9 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { fetchShop } from "../api/shop";
+import { API_BASE_URL } from "../config";
 
-const API_BASE_URL = "https://mapman-production.up.railway.app";
+
 
 const VideoFeed = () => {
   const navigate = useNavigate();

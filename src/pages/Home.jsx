@@ -27,6 +27,13 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { fetchShop } from "../api/shop";
+import { API_BASE_URL } from "../config";
+
+const getImageUrl = (url) => {
+  if (!url) return null;
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  return `${API_BASE_URL}${url}`;
+};
 
 const Home = ({ onSelectCategory }) => {
   const navigate = useNavigate();
@@ -181,7 +188,7 @@ const Home = ({ onSelectCategory }) => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          "https://mapman-production.up.railway.app/shop/home",
+          "https://api.mapman.in/shop/home",
           {
             headers: { usertoken: token },
           },
@@ -318,17 +325,15 @@ const Home = ({ onSelectCategory }) => {
               <motion.div
                 key={banner.id}
                 whileHover={{ scale: 0.98 }}
-                className="snap-center shrink-0 w-[90%] sm:w-[85%] md:w-[60%] lg:w-[45%] xl:w-[40%] relative h-[140px] sm:h-[160px] md:h-[200px] lg:h-[220px] rounded-[16px] sm:rounded-[20px] overflow-hidden shadow-xl flex-none bg-slate-900"
+                className="snap-center shrink-0 w-[90%] sm:w-[85%] md:w-[60%] lg:w-[45%] xl:w-[40%] relative h-[140px] sm:h-[160px] md:h-[200px] lg:h-[220px] rounded-[16px] sm:rounded-[20px] overflow-hidden flex-none bg-slate-900"
                 style={{
                   backgroundImage: banner.backgroundImage
-                    ? `url(https://mapman-production.up.railway.app${banner.backgroundImage})`
+                    ? `url(${getImageUrl(banner.backgroundImage)})`
                     : "none",
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/80 to-transparent/30 z-10"></div>
-
                 <div className="relative z-20 h-full flex items-center p-4 sm:p-5 md:p-8 lg:p-10">
                   <div className="flex-1 space-y-1.5 sm:space-y-2 md:space-y-3">
                     <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-black text-white tracking-tighter leading-[1.1] capitalize italic">
@@ -349,7 +354,7 @@ const Home = ({ onSelectCategory }) => {
                   {banner.image && (
                     <div className="flex w-[40%] sm:w-[35%] h-full relative items-center justify-center">
                       <img
-                        src={`https://mapman-production.up.railway.app${banner.image}`}
+                        src={`${API_BASE_URL}${banner.image}`}
                         alt="promo"
                         className="w-full h-[90%] sm:h-[120%] object-contain filter drop-shadow-2xl sm:scale-110 sm:translate-x-4"
                       />
@@ -477,9 +482,7 @@ const Home = ({ onSelectCategory }) => {
               const name = cat.categoryName.toLowerCase();
               const colors = colorMap[name] || colorMap.others;
               const icon = iconMap[name] || iconMap.others;
-              const imageUrl = cat.categoryImage
-                ? `https://mapman-production.up.railway.app${cat.categoryImage}`
-                : null;
+              const imageUrl = getImageUrl(cat.categoryImage);
 
               return (
                 <motion.div
@@ -583,7 +586,7 @@ const Home = ({ onSelectCategory }) => {
                 {/* Background Image (subtle) */}
                 {banner.backgroundImage && (
                   <img
-                    src={`https://mapman-production.up.railway.app${banner.backgroundImage}`}
+                    src={`${API_BASE_URL}${banner.backgroundImage}`}
                     alt="background"
                     className="absolute inset-0 w-full h-full object-cover opacity-3"
                   />
@@ -637,7 +640,7 @@ const Home = ({ onSelectCategory }) => {
                 {banner.image && (
                   <div className="absolute bottom-0 right-0 w-[40%] sm:w-[42%] md:w-[45%] h-[80%] z-10">
                     <img
-                      src={`https://mapman-production.up.railway.app${banner.image}`}
+                      src={`${API_BASE_URL}${banner.image}`}
                       alt="promo"
                       className="w-full h-full object-contain drop-shadow-[0_15px_35px_rgba(0,0,0,0.12)]"
                     />

@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Bell, Settings, Share2, MoreHorizontal, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import NotificationList from "../components/NotificationList";
+import { API_BASE_URL } from "../config";
 
-const API_BASE_URL = "https://mapman-production.up.railway.app";
+
 
 const Notifications = () => {
   const navigate = useNavigate();

@@ -19,8 +19,9 @@ import {
 } from "lucide-react";
 import { getProfile, updateProfile } from "../api/shop";
 import indiaData from "../assets/india_states_districts.json";
+import { API_BASE_URL } from "../config";
 
-const API_BASE_URL = "https://mapman-production.up.railway.app";
+
 
 const EditProfile = () => {
     const navigate = useNavigate();

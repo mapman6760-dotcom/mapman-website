@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { API_BASE_URL } from "../config";
 import {
   ArrowLeft,
   Store,
@@ -17,7 +18,7 @@ import {
   Phone,
 } from "lucide-react";
 
-const API_BASE_URL = "https://mapman-production.up.railway.app";
+
 
 /**
  * Immersive Video Player with Vertical Swipe Logic
@@ -330,7 +331,7 @@ const VideoPlayer = () => {
         {normalizedVideos.map((video, idx) => (
           <div
             key={video.id || idx}
-            className="h-full w-full snap-start relative flex items-center justify-center bg-black"
+            className="h-full w-full snap-start snap-always relative flex items-center justify-center bg-black"
           >
             {/* ── VIDEO CONTAINER (PORTRAIT CENTERED) ── */}
             <div

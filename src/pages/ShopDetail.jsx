@@ -24,8 +24,9 @@ import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import { useNavigate, useParams } from "react-router-dom";
+import { API_BASE_URL } from "../config";
 
-const API_BASE_URL = "https://mapman-production.up.railway.app";
+
 
 const ShopDetail = () => {
   const { id } = useParams();

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+ API_BASE_URL } from "../config";
+ import {
   ChevronLeft,
   Loader2,
   Play,
@@ -15,7 +17,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-const API_BASE_URL = "https://mapman-production.up.railway.app";
+
 
 const CategoryVideos = () => {
   const navigate = useNavigate();

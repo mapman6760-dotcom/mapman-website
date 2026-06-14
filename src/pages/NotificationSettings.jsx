@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import {
+import { API_BASE_URL } from "../config";
   Bell,
   BellRing,
   Store,
@@ -17,7 +18,7 @@ import {
   Loader2,
 } from "lucide-react";
 
-const API_BASE_URL = "https://mapman-production.up.railway.app";
+
 
 const SaveButton = ({ saved, loading, onClick }) => (
   <motion.button

@@ -27,11 +27,12 @@ import {
   LocateFixed,
   Grid,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetchShop, registerShop } from "../api/shop";
+import { API_BASE_URL } from "../config";
 
-const API_BASE_URL = "https://mapman-production.up.railway.app";
+
 
 const parseTo24Hour = (timeStr) => {
   if (!timeStr) return "";
@@ -109,6 +110,8 @@ const TextAreaField = ({ label, value, icon: Icon, onChange, placeholder }) => (
 
 const EditShop = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const shopFromState = location.state?.shopData;
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -152,44 +155,28 @@ const EditShop = () => {
   const loadShop = async () => {
     try {
       setLoading(true);
-      const res = await fetchShop();
-      if (res.status === 200 && res.data) {
-        const d = res.data;
-        setShopId(d.id);
-        const currentShopImage = d.shopImage
-          ? d.shopImage
-          : null;
-
-        // Map gallery images if they exist
-        const currentGallery = [
-          d.image1 ? d.image1 : null,
-          d.image2 ? d.image2 : null,
-          d.image3 ? d.image3 : null,
-          d.image4 ? d.image4 : null,
-        ];
-
-        setShopData({
-          name: d.shopName || "",
-          category: d.category || "",
-          location: d.address || "",
-          lat: d.lat || "",
-          long: d.long || "",
-          description: d.description || "",
-          whatsapp: d.whatsappNumber || "",
-          contact: d.shopNumber || "",
-          registerNumber: d.registerNumber || "",
-          openTime: parseTo24Hour(d.openTime) || "",
-          closeTime: parseTo24Hour(d.closeTime) || "",
-          website: d.website || "",
-          shopImage: null, // Reset to null so we don't try to upload a string
-          shopImageUrl: currentShopImage,
-          gallery: [null, null, null, null],
-          galleryUrls: currentGallery,
-        });
-        setMapSearch(d.address || "");
+      if (location.state?.createNew) {
+        setViewState("register");
+      } else if (shopFromState) {
+        populateShopData(shopFromState);
         setViewState("edit");
       } else {
-        setViewState("empty");
+        const res = await fetchShop();
+        if (res.status === 200 && res.data) {
+          let d = res.data;
+          if (Array.isArray(d)) {
+            if (d.length > 0) d = d[0];
+            else {
+              setViewState("empty");
+              setLoading(false);
+              return;
+            }
+          }
+          populateShopData(d);
+          setViewState("edit");
+        } else {
+          setViewState("empty");
+        }
       }
     } catch (error) {
       console.error("Error loading shop:", error);
@@ -197,6 +184,36 @@ const EditShop = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const populateShopData = (d) => {
+    setShopId(d.id);
+    const currentShopImage = d.shopImage ? d.shopImage : null;
+    const currentGallery = [
+      d.image1 ? d.image1 : null,
+      d.image2 ? d.image2 : null,
+      d.image3 ? d.image3 : null,
+      d.image4 ? d.image4 : null,
+    ];
+    setShopData({
+      name: d.shopName || "",
+      category: d.category || "",
+      location: d.address || "",
+      lat: d.lat || "",
+      long: d.long || "",
+      description: d.description || "",
+      whatsapp: d.whatsappNumber || "",
+      contact: d.shopNumber || "",
+      registerNumber: d.registerNumber || "",
+      openTime: parseTo24Hour(d.openTime) || "",
+      closeTime: parseTo24Hour(d.closeTime) || "",
+      website: d.website || "",
+      shopImage: null,
+      shopImageUrl: currentShopImage,
+      gallery: [null, null, null, null],
+      galleryUrls: currentGallery,
+    });
+    setMapSearch(d.address || "");
   };
 
   // --- REVERSE GEOCODING ---
@@ -582,7 +599,7 @@ const EditShop = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={() => {
-                if (viewState === "register") setViewState("empty");
+                if (viewState === "register") navigate("/shop-list");
                 else navigate(-1);
               }}
               className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center shadow-sm hover:shadow-md hover:scale-105 active:scale-95 transition-all text-slate-800"

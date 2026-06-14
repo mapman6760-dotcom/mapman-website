@@ -1,4 +1,6 @@
-const BASE_URL = "https://mapman-production.up.railway.app/shop/auth";
+import { API_BASE_URL } from "../config";
+const BASE_URL = `${API_BASE_URL}/shop/auth`;
+
 
 export const sendEmailOtp = async (phoneNumber) => {
   try {

@@ -24,8 +24,9 @@ import {
 } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Map, Marker as MapMarker } from "pigeon-maps";
+import { API_BASE_URL } from "../config";
 
-const API_BASE_URL = "https://mapman-production.up.railway.app";
+
 
 // --- API Helper ---
 const fetchShops = async (input = "") => {

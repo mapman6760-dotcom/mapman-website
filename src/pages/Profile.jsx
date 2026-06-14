@@ -11,8 +11,9 @@ import {
   Loader2,
 } from "lucide-react";
 import { getProfile } from "../api/shop";
+import { API_BASE_URL } from "../config";
 
-const API_BASE_URL = "https://mapman-production.up.railway.app";
+
 
 const Profile = ({ onLogout }) => {
   const [loading, setLoading] = useState(true);
@@ -94,7 +95,7 @@ const Profile = ({ onLogout }) => {
         />
       ),
       color: "emerald",
-      onClick: () => navigate("/edit-shop"),
+      onClick: () => navigate("/shop-list"),
     },
     {
       title: "Analytics",

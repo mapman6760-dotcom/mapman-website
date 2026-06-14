@@ -1,7 +1,8 @@
 import React from "react";
 import { Clock, MoreHorizontal, Bell } from "lucide-react";
+import { API_BASE_URL } from "../config";
 
-const API_BASE_URL = "https://mapman-production.up.railway.app";
+
 
 const NotificationList = ({ notifications = [], onNotificationClick }) => {
     return (

@@ -12,8 +12,9 @@ import {
   Eye
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../config";
 
-const API_BASE_URL = "https://mapman-production.up.railway.app";
+
 
 const ViewedVideos = () => {
   const navigate = useNavigate();

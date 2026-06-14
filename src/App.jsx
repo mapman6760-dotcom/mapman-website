@@ -68,6 +68,7 @@ const VideoPlayer = React.lazy(() => import("./pages/VideoPlayer"));
 const ViewedVideos = React.lazy(() => import("./pages/ViewedVideos"));
 const CategoryVideos = React.lazy(() => import("./pages/CategoryVideos"));
 const Support = React.lazy(() => import("./pages/Support"));
+const ShopList = React.lazy(() => import("./pages/ShopList"));
 
 const LoadingFallback = () => (
   <div className="min-h-[60vh] flex flex-col items-center justify-center gap-6">
@@ -76,8 +77,9 @@ const LoadingFallback = () => (
   </div>
 );
 import { getProfile } from "./api/shop";
+import { API_BASE_URL } from "./config";
 
-const API_BASE_URL = "https://mapman-production.up.railway.app";
+
 
 // --- Dashboard Component (Responsive Routing) ---
 const Dashboard = ({ onLogout }) => {
@@ -353,6 +355,7 @@ const Dashboard = ({ onLogout }) => {
               <Route path="/viewed-videos" element={<ViewedVideos />} />
               <Route path="/category-videos" element={<CategoryVideos />} />
               <Route path="/support" element={<Support />} />
+              <Route path="/shop-list" element={<ShopList />} />
               <Route path="*" element={
                 <div className="flex flex-col items-center justify-center h-[60vh] text-slate-400">
                   <span className="text-4xl font-black uppercase tracking-widest opacity-20">404</span>
