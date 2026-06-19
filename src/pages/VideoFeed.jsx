@@ -36,7 +36,7 @@ import { API_BASE_URL } from "../config";
 
 
 
-const VideoFeed = () => {
+const VideoFeed = ({ isLoggedIn, openLogin }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("all");
   const [videos, setVideos] = useState([]);
@@ -315,7 +315,13 @@ const VideoFeed = () => {
             All Videos
           </button>
           <button
-            onClick={() => setActiveTab("my")}
+            onClick={() => {
+    if (!isLoggedIn) {
+      openLogin();
+      return;
+    }
+    setActiveTab("my");
+  }}
             className={`flex-1 md:flex-none px-4 md:px-6 py-2 md:py-2.5 rounded-xl font-black text-[9px] md:text-[10px] uppercase tracking-widest transition-all duration-300 ${activeTab === "my" ? "bg-slate-900 text-white shadow-xl scale-105" : "text-slate-500 hover:text-slate-700"}`}
           >
             My Videos

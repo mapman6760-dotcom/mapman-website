@@ -82,10 +82,11 @@ import { API_BASE_URL } from "./config";
 
 
 // --- Dashboard Component (Responsive Routing) ---
-const Dashboard = ({ onLogout }) => {
+const Dashboard = ({ onLogout, isLoggedIn, setIsLoggedIn }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [isLoginDrawerOpen, setIsLoginDrawerOpen] = useState(false);
   const [profileData, setProfileData] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -101,8 +102,13 @@ const Dashboard = ({ onLogout }) => {
         console.error("Error fetching profile for header:", error);
       }
     };
-    fetchProfile();
-  }, []);
+    
+    if (isLoggedIn) {
+      fetchProfile();
+    } else {
+      setProfileData(null);
+    }
+  }, [isLoggedIn]);
 
   const showFullMenu = !isCollapsed || isSidebarOpen;
 
@@ -205,9 +211,14 @@ const Dashboard = ({ onLogout }) => {
                 <button
                   key={i}
                   onClick={() => {
-                    navigate(item.path);
-                    setSidebarOpen(false);
-                  }}
+    if (!isLoggedIn && (item.id === "saved" || item.id === "notifications")) {
+      setIsLoginDrawerOpen(true);
+      setSidebarOpen(false);
+      return;
+    }
+    navigate(item.path);
+    setSidebarOpen(false);
+  }}
                   className={`w-full group relative flex items-center transition-all duration-300 rounded-[1.25rem] 
                     ${!showFullMenu ? "lg:justify-center p-4 mb-2" : "px-4 py-3.5 mb-1 gap-4"} 
                     ${currentPage === item.id
@@ -246,9 +257,14 @@ const Dashboard = ({ onLogout }) => {
                     <button
                       key={i}
                       onClick={() => {
-                        navigate(item.path);
-                        setSidebarOpen(false);
-                      }}
+    if (!isLoggedIn && (item.id === "saved" || item.id === "notifications")) {
+      setIsLoginDrawerOpen(true);
+      setSidebarOpen(false);
+      return;
+    }
+    navigate(item.path);
+    setSidebarOpen(false);
+  }}
                       className={`w-full group relative flex items-center transition-all duration-300 rounded-[1.25rem] 
                         ${!showFullMenu ? "lg:justify-center p-4 mb-2" : "px-4 py-3.5 mb-1 gap-4"} 
                         ${currentPage === item.id
@@ -271,19 +287,21 @@ const Dashboard = ({ onLogout }) => {
             </div>
           </div>
 
-          <div className={`p-5 mt-auto transition-all duration-500 ${!showFullMenu ? "lg:bg-transparent" : "bg-slate-50/40 border-t border-slate-100/50"}`}>
-            <button
-              onClick={() => setShowLogoutDialog(true)}
-              className={`flex items-center gap-4 text-red-500 bg-red-50/80 hover:bg-red-100 hover:text-red-700 transition-all duration-300 group ${!showFullMenu ? "lg:justify-center lg:w-14 lg:h-14 lg:rounded-2xl lg:mx-auto" : "w-full p-4 rounded-2xl shadow-sm hover:shadow-md"}`}
-            >
-              <div className={`transition-transform duration-300 ${!showFullMenu ? "scale-110" : "w-9 h-9 bg-white/80 rounded-xl flex items-center justify-center group-hover:scale-110 shadow-sm"}`}>
-                <LogOut className="w-[18px] h-[18px] stroke-[2.5]" />
-              </div>
-              {showFullMenu && (
-                <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="text-[12px] font-black uppercase tracking-widest leading-none">Sign Out</motion.span>
-              )}
-            </button>
-          </div>
+          {isLoggedIn && (
+            <div className={`p-5 mt-auto transition-all duration-500 ${!showFullMenu ? "lg:bg-transparent" : "bg-slate-50/40 border-t border-slate-100/50"}`}>
+              <button
+                onClick={() => setShowLogoutDialog(true)}
+                className={`flex items-center gap-4 text-red-500 bg-red-50/80 hover:bg-red-100 hover:text-red-700 transition-all duration-300 group ${!showFullMenu ? "lg:justify-center lg:w-14 lg:h-14 lg:rounded-2xl lg:mx-auto" : "w-full p-4 rounded-2xl shadow-sm hover:shadow-md"}`}
+              >
+                <div className={`transition-transform duration-300 ${!showFullMenu ? "scale-110" : "w-9 h-9 bg-white/80 rounded-xl flex items-center justify-center group-hover:scale-110 shadow-sm"}`}>
+                  <LogOut className="w-[18px] h-[18px] stroke-[2.5]" />
+                </div>
+                {showFullMenu && (
+                  <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="text-[12px] font-black uppercase tracking-widest leading-none">Sign Out</motion.span>
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </aside>
 
@@ -338,11 +356,11 @@ const Dashboard = ({ onLogout }) => {
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Home onSelectCategory={navigateToMap} />} />
+              <Route path="/dashboard" element={<Home onSelectCategory={navigateToMap} isLoggedIn={isLoggedIn} openLogin={() => setIsLoginDrawerOpen(true)} />} />
               <Route path="/map" element={<MapExplore isCollapsed={isCollapsed} />} />
-              <Route path="/video" element={<VideoFeed />} />
+              <Route path="/video" element={<VideoFeed isLoggedIn={isLoggedIn} openLogin={() => setIsLoginDrawerOpen(true)} />} />
               <Route path="/notifications" element={<Notifications />} />
-              <Route path="/profile" element={<Profile onLogout={() => setShowLogoutDialog(true)} />} />
+              <Route path="/profile" element={<Profile onLogout={() => setShowLogoutDialog(true)} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} openLogin={() => setIsLoginDrawerOpen(true)} />} />
               <Route path="/edit-profile" element={<EditProfile />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-conditions" element={<TermsConditions />} />
@@ -366,6 +384,50 @@ const Dashboard = ({ onLogout }) => {
           </Suspense>
         </main>
       </div>
+
+      
+      {/* Login Drawer (Global) */}
+      <AnimatePresence>
+        {isLoginDrawerOpen && (
+          <div className="fixed inset-0 z-[200] flex justify-end">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsLoginDrawerOpen(false)}
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 200 }}
+              className="relative w-full sm:max-w-[420px] h-full bg-white/95 backdrop-blur-3xl shadow-[0_0_100px_rgba(37,99,235,0.15)] overflow-hidden flex flex-col z-50 rounded-none border-l border-white"
+            >
+              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none -mr-32 -mt-32"></div>
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none -ml-32 -mb-32"></div>
+              <button
+                onClick={() => setIsLoginDrawerOpen(false)}
+                className="absolute top-5 right-5 z-[200] w-10 h-10 flex items-center justify-center rounded-2xl bg-white/80 hover:bg-slate-50 text-slate-400 hover:text-red-500 transition-all shadow-sm border border-slate-100/50 backdrop-blur-md group"
+              >
+                <X className="w-5 h-5 stroke-[2.5] group-hover:rotate-90 transition-transform duration-300" />
+              </button>
+              <div className="flex-1 overflow-y-auto no-scrollbar w-full relative">
+                <Suspense fallback={<LoadingFallback />}>
+                  <Login 
+                    logo={logo} 
+                    isDrawer={true}
+                    onLogin={() => {
+                      setIsLoggedIn(true);
+                      setIsLoginDrawerOpen(false);
+                    }} 
+                  />
+                </Suspense>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* 4. LOGOUT DIALOG */}
       <AnimatePresence>
@@ -431,25 +493,18 @@ const App = () => {
   return (
     <HelmetProvider>
       <Helmet>
-        <title>MapMan - Modern Explorer</title>
-        <meta name="description" content="MapMan - The ultimate modern explorer web application." />
-        <meta name="keywords" content="MapMan, Map, Explorer, Business Hub, Shop Videos, Mapman Merchant" />
-        <meta property="og:title" content="MapMan - Modern Explorer" />
-        <meta property="og:description" content="Discover shops, watch videos, and explore the modern business hub." />
+        <title>Mapman - Discover Local Businesses & Shop Videos</title>
+        <meta name="description" content="Mapman is the ultimate location-based business discovery platform. Discover nearby shops, watch local category video reels, and explore interactive maps." />
+        <meta name="keywords" content="Mapman, MapMan, Map, Explorer, Business Hub, Shop Videos, Mapman Merchant, Local Shops, India Shops" />
+        <meta property="og:title" content="Mapman - Discover Local Businesses & Shop Videos" />
+        <meta property="og:description" content="Mapman is the ultimate location-based business discovery platform. Discover nearby shops, watch local category video reels, and explore interactive maps." />
         <meta property="og:type" content="website" />
       </Helmet>
       <BrowserRouter>
         <div className="min-h-screen">
           <AnimatePresence mode="wait">
             <Suspense fallback={<LoadingFallback />}>
-              {!isLoggedIn ? (
-                <Routes>
-                  <Route path="/login" element={<Login onLogin={() => setIsLoggedIn(true)} logo={logo} />} />
-                  <Route path="*" element={<Navigate to="/login" replace />} />
-                </Routes>
-              ) : (
-                <Dashboard onLogout={handleLogout} />
-              )}
+              <Dashboard onLogout={handleLogout} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
             </Suspense>
           </AnimatePresence>
         </div>

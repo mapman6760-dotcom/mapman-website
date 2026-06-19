@@ -19,6 +19,7 @@ import {
   Loader2
 } from "lucide-react";
 import { getShopAnalytics } from "../api/shop";
+import SEO from "../components/SEO";
 
 const ShopAnalytics = () => {
   const navigate = useNavigate();
@@ -90,6 +91,11 @@ const ShopAnalytics = () => {
 
   return (
     <div className="min-h-screen no-scrollbar bg-slate-50/50">
+      <SEO
+        title="Shop Analytics Dashboard"
+        description="Monitor your shop views, video performance metrics, and organic listing statistics on MapMan."
+        canonical="https://mapman.in/shop-analytics"
+      />
       {/* ── TOP HEADER ── */}
       <div className="sticky top-0 z-50 bg-slate-50/80 backdrop-blur-xl border-b border-slate-200/60 p-4 md:px-10 flex items-center justify-between">
         <div className="flex items-center gap-4 lg:gap-8">

@@ -25,6 +25,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_BASE_URL } from "../config";
+import SEO from "../components/SEO";
 
 
 
@@ -142,8 +143,33 @@ const ShopDetail = () => {
     },
   ];
 
+  const shopSchema = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": shopInfo.shopName,
+    "image": shopInfo.shopImage,
+    "url": window.location.href,
+    "telephone": shopInfo.shopNumber,
+    "priceRange": "$$",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": shopInfo.address,
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": parseFloat(shopInfo.lat) || 0.0,
+      "longitude": parseFloat(shopInfo.long) || 0.0
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto w-full pb-20 px-2 md:px-4 space-y-5 md:space-y-7">
+      <SEO
+        title={`${shopInfo.shopName} | ${shopInfo.category}`}
+        description={`Get address, location, telephone number, verified photos, video reel tour, and google directions for ${shopInfo.shopName} in ${shopInfo.address?.split(',').slice(0,2).join(', ')}.`}
+        canonical={window.location.href}
+        schema={shopSchema}
+      />
       {/* Image Lightbox */}
       <AnimatePresence>
         {selectedImage && (

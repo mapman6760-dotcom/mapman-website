@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronLeft, Store, Plus, MapPin, Loader2, Clock, Phone, ArrowRight, ExternalLink } from "lucide-react";
 import { API_BASE_URL } from "../config";
+import SEO from "../components/SEO";
 
 const ShopList = () => {
   const navigate = useNavigate();
@@ -50,11 +51,16 @@ const ShopList = () => {
 
   return (
     <div className="min-h-screen bg-[#F5F7FA] pb-20 font-sans">
+      <SEO
+        title="My Shops Dashboard"
+        description="Manage your business listings, review active shop coordinates, edit details, and analyze visitor views on MapMan."
+        canonical="https://mapman.in/shop-list"
+      />
       {/* HEADER */}
       <header className="h-20 px-4 md:px-6 flex items-center justify-between border-b border-slate-200/60 bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="flex items-center gap-4">
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/profile")}
             className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center shadow-sm hover:border-blue-300 hover:bg-blue-50 transition-all active:scale-95"
           >
             <ChevronLeft className="w-5 h-5 text-slate-600" />
@@ -94,72 +100,78 @@ const ShopList = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05 }}
                 onClick={() => navigate("/edit-shop", { state: { shopId: shop.id, shopData: shop } })}
-                className="bg-white rounded-[2rem] overflow-hidden border border-slate-100 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_50px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-500 cursor-pointer group flex flex-col"
+                className="relative bg-white/70 backdrop-blur-2xl rounded-[2.5rem] p-3 md:p-4 overflow-hidden border border-white/60 shadow-[0_15px_40px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_30px_60px_-15px_rgba(37,99,235,0.15)] hover:-translate-y-2 transition-all duration-500 cursor-pointer group flex flex-col"
               >
+                {/* Subtle Glow Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-transparent to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
                 {/* Banner Image */}
-                <div className="w-full h-40 md:h-48 bg-slate-100 relative overflow-hidden">
+                <div className="w-full h-44 md:h-52 bg-slate-100 relative rounded-[2rem] overflow-hidden shadow-inner">
                   <img 
                     src={shop.shopImage || "https://images.unsplash.com/photo-1621535281470-348633c7793d?w=800&fit=crop"} 
                     alt={shop.shopName}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                    className="w-full h-full object-cover group-hover:scale-110 group-hover:rotate-1 transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/30 to-slate-900/10 opacity-70 group-hover:opacity-90 transition-opacity duration-500"></div>
                   
                   {/* Status Badge */}
-                  <div className="absolute top-4 left-4 flex items-center gap-2">
-                    <span className="px-3 py-1 bg-white/20 backdrop-blur-md text-white rounded-lg text-[9px] font-black uppercase tracking-widest border border-white/20 shadow-sm">
-                      {shop.category || "General"}
-                    </span>
+                  <div className="absolute top-4 left-4">
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-lg">
+                      <Store className="w-3.5 h-3.5 text-white/90" />
+                      <span className="text-white text-[9px] font-black uppercase tracking-widest">
+                        {shop.category || "General"}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="absolute top-4 right-4">
-                     <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest border shadow-sm backdrop-blur-md ${shop.status === 'active' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-slate-500/20 text-slate-300 border-slate-500/30'}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${shop.status === 'active' ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}`}></span>
+                     <span className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border shadow-lg backdrop-blur-md transition-colors ${shop.status === 'active' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border-rose-500/30'}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${shop.status === 'active' ? 'bg-emerald-400 animate-[pulse_2s_ease-in-out_infinite] shadow-[0_0_8px_rgba(52,211,153,0.8)]' : 'bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.8)]'}`}></span>
                       {shop.status || "Unknown"}
                     </span>
                   </div>
 
-                  <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <h3 className="text-xl md:text-2xl font-black tracking-tight line-clamp-1 group-hover:text-blue-300 transition-colors uppercase italic">
+                  {/* Title Area */}
+                  <div className="absolute bottom-4 left-4 right-4 text-white z-10 transform group-hover:-translate-y-1 transition-transform duration-500">
+                    <h3 className="text-xl md:text-2xl font-black tracking-tighter line-clamp-1 text-white drop-shadow-lg uppercase italic">
                       {shop.shopName}
                     </h3>
-                    <div className="flex items-center gap-1.5 text-white/80 text-[10px] md:text-xs mt-1 font-medium">
-                      <MapPin className="w-3.5 h-3.5 shrink-0 text-blue-400" />
-                      <span className="truncate">{shop.address ? shop.address.split(",").slice(0, 2).join(",") : "No address"}</span>
+                    <div className="flex items-center gap-2 text-white/80 text-[10px] md:text-xs mt-1.5 font-medium">
+                      <div className="p-1.5 bg-white/20 rounded-full backdrop-blur-sm border border-white/20">
+                        <MapPin className="w-3 h-3 text-white" />
+                      </div>
+                      <span className="truncate tracking-wide">{shop.address ? shop.address.split(",").slice(0, 2).join(",") : "Location not specified"}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Card Body */}
-                <div className="p-5 flex flex-col gap-4">
+                <div className="pt-5 px-2 pb-2 flex flex-col gap-4 relative z-10">
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-100/60 group-hover:bg-blue-50/30 transition-colors">
-                      <div className="w-8 h-8 rounded-xl bg-white shadow-sm flex items-center justify-center shrink-0">
-                        <Clock className="w-4 h-4 text-blue-500" />
+                    <div className="flex flex-col gap-1.5 p-3.5 rounded-[1.25rem] bg-slate-50/80 hover:bg-white border border-slate-200/60 shadow-sm transition-all group-hover:border-blue-100 group-hover:shadow-blue-500/5">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Clock className="w-3.5 h-3.5 text-blue-500" />
+                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Timing</span>
                       </div>
-                      <div className="min-w-0">
-                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Timing</p>
-                        <p className="text-[10px] font-bold text-slate-700 truncate">{shop.openTime} - {shop.closeTime}</p>
-                      </div>
+                      <p className="text-xs font-black text-slate-800 tracking-tight">{shop.openTime} <span className="text-slate-400 font-medium mx-0.5">to</span> {shop.closeTime}</p>
                     </div>
                     
-                    <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-100/60 group-hover:bg-blue-50/30 transition-colors">
-                      <div className="w-8 h-8 rounded-xl bg-white shadow-sm flex items-center justify-center shrink-0">
-                        <Phone className="w-4 h-4 text-emerald-500" />
+                    <div className="flex flex-col gap-1.5 p-3.5 rounded-[1.25rem] bg-slate-50/80 hover:bg-white border border-slate-200/60 shadow-sm transition-all group-hover:border-emerald-100 group-hover:shadow-emerald-500/5">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Phone className="w-3.5 h-3.5 text-emerald-500" />
+                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Contact</span>
                       </div>
-                      <div className="min-w-0">
-                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Contact</p>
-                        <p className="text-[10px] font-bold text-slate-700 truncate">{shop.shopNumber || "N/A"}</p>
-                      </div>
+                      <p className="text-xs font-black text-slate-800 tracking-tight truncate">{shop.shopNumber || "Not Available"}</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-1">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                      ID: {shop.id}
-                    </span>
-                    <button className="flex items-center gap-1.5 text-[10px] font-black text-blue-600 uppercase tracking-widest group-hover:translate-x-1 transition-transform">
-                      Edit details <ArrowRight className="w-3.5 h-3.5" />
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-200/60 mt-1">
+                    <div className="flex flex-col">
+                      <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Shop ID</span>
+                      <span className="text-[10px] font-black text-slate-700 font-mono tracking-wider">{shop.id}</span>
+                    </div>
+                    <button className="flex items-center justify-center w-10 h-10 rounded-[1rem] bg-slate-900 text-white group-hover:bg-blue-600 transition-colors shadow-lg active:scale-95">
+                      <ArrowRight className="w-4 h-4 group-hover:-rotate-45 transition-transform duration-300" />
                     </button>
                   </div>
                 </div>

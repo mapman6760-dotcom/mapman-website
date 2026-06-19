@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { fetchShop } from "../api/shop";
 import { API_BASE_URL } from "../config";
+import SEO from "../components/SEO";
 
 const getImageUrl = (url) => {
   if (!url) return null;
@@ -35,7 +36,7 @@ const getImageUrl = (url) => {
   return `${API_BASE_URL}${url}`;
 };
 
-const Home = ({ onSelectCategory }) => {
+const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [topBanners, setTopBanners] = useState([]);
@@ -64,18 +65,11 @@ const Home = ({ onSelectCategory }) => {
   }, [topBanners]);
 
   const handleRegisterClick = async () => {
-    try {
-      const res = await fetchShop();
-      if (res.status === 200 && res.data && Object.keys(res.data).length > 0) {
-        setToastMessage("You have already registtred.");
-        setTimeout(() => setToastMessage(null), 3000);
-      } else {
-        navigate("/edit-shop");
-      }
-    } catch (err) {
-      console.error(err);
-      navigate("/edit-shop");
+    if (!isLoggedIn) {
+      openLogin();
+      return;
     }
+    navigate("/edit-shop");
   };
 
   const iconMap = {
@@ -187,15 +181,13 @@ const Home = ({ onSelectCategory }) => {
     const fetchHomeData = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(
-          "https://api.mapman.in/shop/home",
-          {
-            headers: { usertoken: token },
-          },
-        );
+        const endpoint = token ? "https://api.mapman.in/shop/home" : "https://api.mapman.in/shop/nonauthendicateHome";
+        const headers = token ? { usertoken: token } : {};
+        const response = await fetch(endpoint, { headers });
         const result = await response.json();
 
         if (
+          token &&
           result.status === 400 &&
           result.error?.type === "UnauthorizedException"
         ) {
@@ -236,8 +228,35 @@ const Home = ({ onSelectCategory }) => {
       </div>
     );
 
+  const homeSchema = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Mapman",
+      "url": "https://mapman.in",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://mapman.in/map?query={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Mapman",
+      "url": "https://mapman.in",
+      "logo": "https://mapman.in/logo.png"
+    }
+  ];
+
   return (
     <div className="space-y-8 md:space-y-16 lg:space-y-24 py-2 md:py-6 relative">
+      <SEO
+        title="Discover Local Businesses & Shop Videos"
+        description="Explore the best local shops, watch custom shop video feeds, find coordinates on the interactive map, and register your business on Mapman."
+        canonical="https://mapman.in/dashboard"
+        schema={homeSchema}
+      />
       {/* --- TOAST --- */}
       <AnimatePresence>
         {toastMessage && (
@@ -324,8 +343,9 @@ const Home = ({ onSelectCategory }) => {
             {topBanners.map((banner) => (
               <motion.div
                 key={banner.id}
+                onClick={handleRegisterClick}
                 whileHover={{ scale: 0.98 }}
-                className="snap-center shrink-0 w-[90%] sm:w-[85%] md:w-[60%] lg:w-[45%] xl:w-[40%] relative h-[140px] sm:h-[160px] md:h-[200px] lg:h-[220px] rounded-[16px] sm:rounded-[20px] overflow-hidden flex-none bg-slate-900"
+                className="cursor-pointer snap-center shrink-0 w-[90%] sm:w-[85%] md:w-[60%] lg:w-[45%] xl:w-[40%] relative h-[140px] sm:h-[160px] md:h-[200px] lg:h-[220px] rounded-[16px] sm:rounded-[20px] overflow-hidden flex-none bg-slate-900"
                 style={{
                   backgroundImage: banner.backgroundImage
                     ? `url(${getImageUrl(banner.backgroundImage)})`

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronRight,
   ShieldCheck,
@@ -9,13 +9,16 @@ import {
   ArrowLeft,
   Settings,
   Loader2,
+  X,
 } from "lucide-react";
 import { getProfile } from "../api/shop";
 import { API_BASE_URL } from "../config";
+import Login from "../components/Login";
+import logo from "../assets/logo.png";
 
 
 
-const Profile = ({ onLogout }) => {
+const Profile = ({ onLogout, isLoggedIn, setIsLoggedIn, openLogin }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -33,8 +36,12 @@ const Profile = ({ onLogout }) => {
   });
 
   useEffect(() => {
-    fetchProfileData();
-  }, []);
+    if (isLoggedIn) {
+      fetchProfileData();
+    } else {
+      setLoading(false);
+    }
+  }, [isLoggedIn]);
 
   const fetchProfileData = async () => {
     try {
@@ -133,6 +140,30 @@ const Profile = ({ onLogout }) => {
         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest animate-pulse">
           Syncing Profile...
         </p>
+      </div>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <div className="w-full h-full min-h-[60vh] flex flex-col items-center justify-center space-y-6 px-4 text-center">
+        <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-2">
+          <ShieldCheck className="w-10 h-10" />
+        </div>
+        <h2 className="text-2xl font-black text-slate-900 tracking-tight uppercase">
+          Authentication Required
+        </h2>
+        <p className="text-sm font-medium text-slate-500 max-w-md">
+          Please log in to access your profile, manage your account, and enjoy personalized features.
+        </p>
+        <button
+          onClick={() => openLogin()}
+          className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg active:scale-95"
+        >
+          Login / Register
+        </button>
+
+        
       </div>
     );
   }

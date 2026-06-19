@@ -25,6 +25,7 @@ import {
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Map, Marker as MapMarker } from "pigeon-maps";
 import { API_BASE_URL } from "../config";
+import SEO from "../components/SEO";
 
 
 
@@ -34,10 +35,9 @@ const fetchShops = async (input = "") => {
     console.log(input);
 
     const token = localStorage.getItem("token");
-    const response = await fetch(`${API_BASE_URL}/shop/search?input=${input}`, {
-      headers: { usertoken: token },
-    });
-    console.log(`${API_BASE_URL}/shop/search?input=${input}`);
+    const endpoint = token ? `${API_BASE_URL}/shop/search?input=${input}` : `${API_BASE_URL}/shop/nonauthendicateSearch?input=${input}`;
+    const headers = token ? { usertoken: token } : {};
+    const response = await fetch(endpoint, { headers });
 
     const result = await response.json();
     console.log(result.data);
@@ -167,6 +167,11 @@ const MapExplore = ({ isCollapsed }) => {
     <div
       className={`fixed inset-0 transition-all duration-500 ease-in-out bg-[#F8FAFC] z-10 flex flex-col overflow-hidden ${isCollapsed ? "lg:left-16" : "lg:left-60"} top-16 lg:top-20`}
     >
+      <SEO
+        title={searchInput ? `Find ${searchInput} Nearby` : "Explore Local Businesses on Map"}
+        description={searchInput ? `Locate the best verified ${searchInput} in your area. View geo-coordinates, distances, and contact detail cards on Mapman.` : "Use our interactive map directory to discover nearby shops, restaurants, services, and local business hubs."}
+        canonical="https://mapman.in/map"
+      />
       {/* 1. LEFT-TOP COMPACT SEARCH & SMART AUTOCOMPLETE */}
       <div className="absolute top-6 left-6 z-40 pointer-events-none w-full max-w-[340px] lg:max-w-[400px]">
         <div className="relative pointer-events-auto">

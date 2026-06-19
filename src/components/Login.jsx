@@ -27,8 +27,9 @@ import {
 } from "../api/auth";
 import { getProfile } from "../api/shop";
 import indiaData from "../assets/india_states_districts.json";
+import SEO from "./SEO";
 
-const Login = ({ onLogin, logo }) => {
+const Login = ({ onLogin, logo, isDrawer = false }) => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -239,7 +240,12 @@ const Login = ({ onLogin, logo }) => {
   const cities = profileData.state ? indiaData[profileData.state] : [];
 
   return (
-    <div className="h-[100dvh] w-full flex flex-col md:flex-row bg-[#ffffff] overflow-hidden font-sans">
+    <div className={`w-full flex flex-col md:flex-row bg-[#ffffff] overflow-hidden font-sans ${isDrawer ? "h-full min-h-[600px]" : "h-[100dvh]"}`}>
+      <SEO
+        title="Register & Discover Local Shops & Business Videos"
+        description="Welcome to Mapman. Sign in to register your business, watch custom shop reels, explore local shops on our interactive map, and discover verified establishments."
+        canonical="https://mapman.in/login"
+      />
       {/* Toast Notification */}
       <AnimatePresence>
         {toast && (
@@ -258,7 +264,8 @@ const Login = ({ onLogin, logo }) => {
       </AnimatePresence>
 
       {/* Left Section: Immersive Visuals - Adaptive Tablet/Desktop */}
-      <div className="hidden md:flex md:w-[40%] lg:w-[55%] relative h-full shrink-0 border-r border-slate-100 overflow-hidden">
+      {!isDrawer && (
+        <div className="hidden md:flex md:w-[40%] lg:w-[55%] relative h-full shrink-0 border-r border-slate-100 overflow-hidden">
         <div className="absolute inset-0 bg-slate-950">
           <img
             src="https://images.unsplash.com/photo-1449034446853-66c86144b0ad?q=80&w=2070&auto=format&fit=crop"
@@ -310,9 +317,10 @@ const Login = ({ onLogin, logo }) => {
           </div>
         </div>
       </div>
+      )}
 
       {/* Right Section: Auth Forms */}
-      <div className="w-full md:w-[60%] lg:w-[45%] h-full flex flex-col bg-gradient-to-br from-blue-50/30 via-white to-white md:from-white md:to-white overflow-y-auto relative no-scrollbar">
+      <div className={`w-full h-full flex flex-col bg-gradient-to-br from-blue-50/30 via-white to-white md:from-white md:to-white overflow-y-auto relative no-scrollbar ${isDrawer ? "" : "md:w-[60%] lg:w-[45%]"}`}>
         {/* Mobile Sticky Header - Refined */}
         <div className="md:hidden sticky top-0 z-50 bg-white/70 backdrop-blur-2xl border-b border-slate-100/50 shrink-0">
           <div className="px-6 h-16 flex items-center justify-between">

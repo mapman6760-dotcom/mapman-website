@@ -31,6 +31,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetchShop, registerShop } from "../api/shop";
 import { API_BASE_URL } from "../config";
+import SEO from "../components/SEO";
 
 
 
@@ -511,6 +512,11 @@ const EditShop = () => {
   if (viewState === "empty") {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col">
+        <SEO
+          title="Merchant Hub"
+          description="Access Mapman's secure merchant portal to configure and manage your shop listings."
+          canonical="https://mapman.in/edit-shop"
+        />
         {/* HEADER FOR EMPTY STATE */}
         <header className="h-20 lg:h-24 px-8 flex items-center justify-between border-b border-slate-200/60 bg-white sticky top-0 z-50">
           <div className="flex items-center gap-6">
@@ -591,8 +597,18 @@ const EditShop = () => {
     );
   }
 
+  const seoTitle = viewState === "register" ? "Register Your Shop" : "Edit Shop Configuration";
+  const seoDesc = viewState === "register"
+    ? "Register your business listing, customize categories, upload video showcases, and pinpoint coordinates on MapMan."
+    : "Update your shop profile info, contact details, video showcase, and opening hours on MapMan.";
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] pb-32">
+      <SEO
+        title={seoTitle}
+        description={seoDesc}
+        canonical="https://mapman.in/edit-shop"
+      />
       {/* ─── STICKY NAVIGATION ─── */}
       <header className="sticky top-0 z-[60] bg-white/70 backdrop-blur-2xl border-b border-slate-200/60 transition-all">
         <div className="max-w-[1440px] mx-auto px-2 md:px-6 h-16 md:h-20 flex items-center justify-between">

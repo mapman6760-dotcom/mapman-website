@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { API_BASE_URL } from "../config";
+import SEO from "../components/SEO";
 import {
   ArrowLeft,
   Store,
@@ -248,8 +249,31 @@ const VideoPlayer = () => {
     setIsPlaying(!isPlaying);
   };
 
+  const activeVideo = normalizedVideos[currentIndex];
+  const videoSchema = activeVideo ? {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": activeVideo.title,
+    "description": activeVideo.description,
+    "thumbnailUrl": "https://mapman.in/logo.png",
+    "uploadDate": "2026-06-19T10:00:00Z",
+    "contentUrl": activeVideo.videoUrl,
+    "embedUrl": window.location.href,
+    "interactionStatistic": {
+      "@type": "InteractionCounter",
+      "interactionType": "https://schema.org/WatchAction",
+      "userInteractionCount": 1000
+    }
+  } : null;
+
   return (
     <div className="fixed inset-0 z-[1000] bg-black overflow-hidden select-none">
+      <SEO
+        title={activeVideo ? `${activeVideo.title} | Shop Tour` : "Shop Video Feed"}
+        description={activeVideo ? activeVideo.description : "Watch local business video tours on Mapman."}
+        canonical={window.location.href}
+        schema={videoSchema}
+      />
       {/* ── TOP ACTION BAR ── */}
       <div className="absolute top-0 left-0 right-0 p-4 pt-12 md:pt-6 z-50 flex items-center justify-between pointer-events-none">
         <button
