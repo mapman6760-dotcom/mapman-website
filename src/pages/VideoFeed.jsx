@@ -456,7 +456,7 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
                       {/* VIDEO THUMBNAIL AREA */}
                       <div className="relative w-full aspect-video bg-slate-950 overflow-hidden">
                         <video
-                          src={vid.video}
+                          src={vid.video ? (vid.video.startsWith('http') ? vid.video : `${API_BASE_URL}${vid.video}`) : ""}
                           className="w-full h-full object-cover opacity-80 group-hover/card:opacity-100 transition-all duration-700 group-hover/card:scale-105"
                           muted
                           loop
@@ -621,7 +621,7 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
                             src={
                               videoFile
                                 ? URL.createObjectURL(videoFile)
-                                : editingVideo.video
+                                : (editingVideo?.video ? (editingVideo.video.startsWith('http') ? editingVideo.video : `${API_BASE_URL}${editingVideo.video}`) : "")
                             }
                             className="w-full h-full object-cover opacity-80 group-hover/picker:opacity-100 transition-opacity"
                             autoPlay

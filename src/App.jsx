@@ -102,7 +102,7 @@ const Dashboard = ({ onLogout, isLoggedIn, setIsLoggedIn }) => {
         console.error("Error fetching profile for header:", error);
       }
     };
-    
+
     if (isLoggedIn) {
       fetchProfile();
     } else {
@@ -211,14 +211,14 @@ const Dashboard = ({ onLogout, isLoggedIn, setIsLoggedIn }) => {
                 <button
                   key={i}
                   onClick={() => {
-    if (!isLoggedIn && (item.id === "saved" || item.id === "notifications")) {
-      setIsLoginDrawerOpen(true);
-      setSidebarOpen(false);
-      return;
-    }
-    navigate(item.path);
-    setSidebarOpen(false);
-  }}
+                    if (!isLoggedIn && (item.id === "saved" || item.id === "notifications")) {
+                      setIsLoginDrawerOpen(true);
+                      setSidebarOpen(false);
+                      return;
+                    }
+                    navigate(item.path);
+                    setSidebarOpen(false);
+                  }}
                   className={`w-full group relative flex items-center transition-all duration-300 rounded-[1.25rem] 
                     ${!showFullMenu ? "lg:justify-center p-4 mb-2" : "px-4 py-3.5 mb-1 gap-4"} 
                     ${currentPage === item.id
@@ -257,14 +257,14 @@ const Dashboard = ({ onLogout, isLoggedIn, setIsLoggedIn }) => {
                     <button
                       key={i}
                       onClick={() => {
-    if (!isLoggedIn && (item.id === "saved" || item.id === "notifications")) {
-      setIsLoginDrawerOpen(true);
-      setSidebarOpen(false);
-      return;
-    }
-    navigate(item.path);
-    setSidebarOpen(false);
-  }}
+                        if (!isLoggedIn && (item.id === "saved" || item.id === "notifications")) {
+                          setIsLoginDrawerOpen(true);
+                          setSidebarOpen(false);
+                          return;
+                        }
+                        navigate(item.path);
+                        setSidebarOpen(false);
+                      }}
                       className={`w-full group relative flex items-center transition-all duration-300 rounded-[1.25rem] 
                         ${!showFullMenu ? "lg:justify-center p-4 mb-2" : "px-4 py-3.5 mb-1 gap-4"} 
                         ${currentPage === item.id
@@ -318,10 +318,7 @@ const Dashboard = ({ onLogout, isLoggedIn, setIsLoggedIn }) => {
                   Map <span className="text-blue-600">Man</span>
                 </h1>
               </div>
-              <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-50 border border-slate-100 rounded-full shadow-sm">
-                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]"></div>
-                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">System Active</span>
-              </div>
+
             </div>
           </div>
 
@@ -385,7 +382,7 @@ const Dashboard = ({ onLogout, isLoggedIn, setIsLoggedIn }) => {
         </main>
       </div>
 
-      
+
       {/* Login Drawer (Global) */}
       <AnimatePresence>
         {isLoginDrawerOpen && (
@@ -414,13 +411,13 @@ const Dashboard = ({ onLogout, isLoggedIn, setIsLoggedIn }) => {
               </button>
               <div className="flex-1 overflow-y-auto no-scrollbar w-full relative">
                 <Suspense fallback={<LoadingFallback />}>
-                  <Login 
-                    logo={logo} 
+                  <Login
+                    logo={logo}
                     isDrawer={true}
                     onLogin={() => {
                       setIsLoggedIn(true);
                       setIsLoginDrawerOpen(false);
-                    }} 
+                    }}
                   />
                 </Suspense>
               </div>

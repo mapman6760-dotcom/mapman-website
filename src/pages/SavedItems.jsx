@@ -427,7 +427,7 @@ const SavedItems = () => {
                     className="group relative aspect-[4/5] overflow-hidden rounded-[1.8rem] bg-slate-950 shadow-lg border border-white/5 transition-all hover:-translate-y-1 duration-500"
                   >
                     <video
-                      src={video.thumbnail}
+                      src={video.thumbnail ? (video.thumbnail.startsWith('http') ? video.thumbnail : `${API_BASE_URL}${video.thumbnail}`) : ""}
                       className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-40 transition-all duration-700"
                       muted
                       playsInline

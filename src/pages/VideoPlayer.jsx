@@ -33,26 +33,35 @@ const VideoPlayer = () => {
   const videoList = location.state?.videos || [];
 
   const [normalizedVideos, setNormalizedVideos] = useState(
-    videoList.map((v) => ({
-      id: v.id || v.videoId || Math.random(),
-      shopId: v.shopId,
-      title: v.videoTitle || v.title || "Untitled Reel",
-      description:
-        v.description ||
-        v.reelDesc ||
-        "This video show the simple tricks for beginners",
-      shopName: v.shopName || v.categoryName || "Mapman Merchant",
-      whatsappNumber: v.whatsappNumber || v.shopWhatsapp,
-      shopNumber: v.shopNumber || v.number || v.shopNumber,
-      videoUrl:
-        v.videoUrl ||
-        (v.categoryVideo ? v.categoryVideo : null) ||
-        (v.video ? v.video : null) ||
-        "https://assets.mixkit.co/videos/preview/mixkit-hand-applying-henna-on-another-hand-40049-large.mp4",
-      coins: v.coins || 4,
-      isWatched: v.isWatched || v.watched || false,
-      savedAlready: v.savedAlready || false,
-    })),
+    videoList.map((v) => {
+      let rawUrl = v.videoUrl || v.video || v.thumbnail || v.categoryVideo;
+      let resolvedUrl = "https://assets.mixkit.co/videos/preview/mixkit-hand-applying-henna-on-another-hand-40049-large.mp4";
+      
+      if (rawUrl && typeof rawUrl === "string") {
+        if (rawUrl.startsWith("http://") || rawUrl.startsWith("https://")) {
+          resolvedUrl = rawUrl;
+        } else {
+          resolvedUrl = `${API_BASE_URL}${rawUrl}`;
+        }
+      }
+
+      return {
+        id: v.id || v.videoId || Math.random(),
+        shopId: v.shopId,
+        title: v.videoTitle || v.title || "Untitled Reel",
+        description:
+          v.description ||
+          v.reelDesc ||
+          "This video show the simple tricks for beginners",
+        shopName: v.shopName || v.categoryName || "Mapman Merchant",
+        whatsappNumber: v.whatsappNumber || v.shopWhatsapp,
+        shopNumber: v.shopNumber || v.number || v.shopNumber,
+        videoUrl: resolvedUrl,
+        coins: v.coins || 4,
+        isWatched: v.isWatched || v.watched || false,
+        savedAlready: v.savedAlready || false,
+      };
+    }),
   );
 
   const startIndex =

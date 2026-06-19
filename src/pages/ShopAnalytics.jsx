@@ -188,7 +188,7 @@ const ShopAnalytics = () => {
                 >
                   <div className="relative aspect-video overflow-hidden bg-slate-900 flex items-center justify-center">
                     <video
-                      src={video.video}
+                      src={video.video ? (video.video.startsWith('http') ? video.video : `${API_BASE_URL}${video.video}`) : ""}
                       className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700"
                       muted
                       playsInline

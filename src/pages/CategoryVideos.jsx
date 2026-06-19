@@ -168,7 +168,7 @@ const CategoryVideos = () => {
                     {/* HIGH-END VIDEO CONTAINER */}
                     <div className="relative aspect-[4/4] overflow-hidden bg-slate-900">
                       <video
-                        src={vid.video}
+                        src={vid.video ? (vid.video.startsWith('http') ? vid.video : `${API_BASE_URL}${vid.video}`) : ""}
                         className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110 opacity-90 group-hover:opacity-100"
                         muted
                         loop

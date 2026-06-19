@@ -136,7 +136,7 @@ const ViewedVideos = () => {
                   >
                     <div className="aspect-[16/12] relative overflow-hidden bg-slate-900">
                       <video
-                        src={video.video}
+                        src={video.video ? (video.video.startsWith('http') ? video.video : `${API_BASE_URL}${video.video}`) : ""}
                         className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out"
                         muted
                         loop
