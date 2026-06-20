@@ -266,57 +266,57 @@ const Login = ({ onLogin, logo, isDrawer = false }) => {
       {/* Left Section: Immersive Visuals - Adaptive Tablet/Desktop */}
       {!isDrawer && (
         <div className="hidden md:flex md:w-[40%] lg:w-[55%] relative h-full shrink-0 border-r border-slate-100 overflow-hidden">
-        <div className="absolute inset-0 bg-slate-950">
-          <img
-            src="https://images.unsplash.com/photo-1449034446853-66c86144b0ad?q=80&w=2070&auto=format&fit=crop"
-            alt="Mapman Landscape"
-            className="w-full h-full object-cover opacity-60 mix-blend-luminosity grayscale hover:grayscale-0 transition-all duration-[3s] ease-in-out scale-105"
-          />
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+          <div className="absolute inset-0 bg-slate-950">
+            <img
+              src="https://images.unsplash.com/photo-1449034446853-66c86144b0ad?q=80&w=2070&auto=format&fit=crop"
+              alt="Mapman Landscape"
+              className="w-full h-full object-cover opacity-60 mix-blend-luminosity grayscale hover:grayscale-0 transition-all duration-[3s] ease-in-out scale-105"
+            />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
 
-        <div className="relative z-10 w-full h-full flex flex-col p-8 lg:p-20 justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 lg:w-14 lg:h-14 bg-white rounded-xl lg:rounded-2xl flex items-center justify-center p-2 lg:p-3 shadow-2xl">
-              <img
-                src={logo}
-                alt="Logo"
-                className="w-full h-full object-contain"
-              />
+          <div className="relative z-10 w-full h-full flex flex-col p-8 lg:p-20 justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 lg:w-14 lg:h-14 bg-white rounded-xl lg:rounded-2xl flex items-center justify-center p-2 lg:p-3 shadow-2xl">
+                <img
+                  src={logo}
+                  alt="Logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div>
+                <h1 className="text-white text-lg lg:text-2xl font-black tracking-tighter leading-none uppercase italic">
+                  Mapman
+                </h1>
+                <p className="text-blue-500 text-[8px] lg:text-[10px] uppercase font-black tracking-[0.3em] mt-1 lg:mt-2 opacity-80">
+                  Modern Explorer Hub
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-white text-lg lg:text-2xl font-black tracking-tighter leading-none uppercase italic">
-                Mapman
-              </h1>
-              <p className="text-blue-500 text-[8px] lg:text-[10px] uppercase font-black tracking-[0.3em] mt-1 lg:mt-2 opacity-80">
-                Modern Explorer Hub
-              </p>
+
+            <div className="space-y-6 lg:space-y-8 max-w-xl">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white leading-[1.1] tracking-tighter">
+                  Explore the world, <br />
+                  <span className="text-blue-600 italic">differently.</span>
+                </h2>
+                <p className="text-slate-400 text-sm lg:text-lg mt-4 lg:mt-6 font-medium leading-relaxed max-w-md">
+                  Sophisticated mapping platform built for modern professionals
+                  and global explorers.
+                </p>
+              </motion.div>
+            </div>
+
+            <div className="text-slate-500 text-[9px] lg:text-[11px] font-medium tracking-wide">
+              &copy; 2026 Mapman.{" "}
+              <span className="text-slate-700">All rights reserved.</span>
             </div>
           </div>
-
-          <div className="space-y-6 lg:space-y-8 max-w-xl">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white leading-[1.1] tracking-tighter">
-                Explore the world, <br />
-                <span className="text-blue-600 italic">differently.</span>
-              </h2>
-              <p className="text-slate-400 text-sm lg:text-lg mt-4 lg:mt-6 font-medium leading-relaxed max-w-md">
-                Sophisticated mapping platform built for modern professionals
-                and global explorers.
-              </p>
-            </motion.div>
-          </div>
-
-          <div className="text-slate-500 text-[9px] lg:text-[11px] font-medium tracking-wide">
-            &copy; 2026 Mapman.{" "}
-            <span className="text-slate-700">All rights reserved.</span>
-          </div>
         </div>
-      </div>
       )}
 
       {/* Right Section: Auth Forms */}
