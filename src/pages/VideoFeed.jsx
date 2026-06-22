@@ -33,6 +33,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { fetchShop } from "../api/shop";
 import { API_BASE_URL } from "../config";
+import { VideoCardSkeleton } from "../components/SkeletonLoaders";
 
 
 
@@ -295,50 +296,61 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-transparent no-scrollbar relative">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="flex flex-col h-full bg-transparent no-scrollbar relative"
+    >
       {/* 1. PROFESSIONAL HEADER & TABS */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6 md:mb-10 px-2 md:px-8 pt-4 md:pt-6 relative z-10">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-3xl font-black text-slate-900 tracking-tighter uppercase leading-none">
-            Videos
+      <div className="relative w-full mb-4 md:mb-8 overflow-hidden shadow-xl border-b border-slate-800 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 p-6 md:p-8 lg:px-12 lg:py-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 z-10">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20"></div>
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none -ml-20 -mb-20"></div>
+
+        <div className="flex flex-col gap-1 relative z-10">
+          <h2 className="text-3xl md:text-4xl font-black text-white tracking-tighter uppercase leading-none drop-shadow-lg">
+            Discover Reels
           </h2>
-          <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">
-            Explore Hub experiences through live motion
-          </p>
+          <div className="flex items-center gap-2 pt-1.5">
+            <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
+            <p className="text-[10px] font-black text-blue-200 uppercase tracking-[0.3em] opacity-90">
+              Explore Hub experiences through live motion
+            </p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-1.5 bg-white/60 backdrop-blur-xl p-1 md:p-1.5 rounded-2xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
+        <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-xl p-1.5 rounded-2xl border border-white/10 shadow-lg relative z-10">
           <button
             onClick={() => setActiveTab("all")}
-            className={`flex-1 md:flex-none px-4 md:px-6 py-2 md:py-2.5 rounded-xl font-black text-[9px] md:text-[10px] uppercase tracking-widest transition-all duration-300 ${activeTab === "all" ? "bg-slate-900 text-white shadow-xl scale-105" : "text-slate-500 hover:text-slate-700"}`}
+            className={`flex-1 md:flex-none px-4 md:px-6 py-2 md:py-2.5 rounded-xl font-black text-[9px] md:text-[10px] uppercase tracking-widest transition-all duration-300 ${activeTab === "all" ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105" : "text-slate-300 hover:text-white hover:bg-white/5"}`}
           >
             All Videos
           </button>
           <button
             onClick={() => {
-    if (!isLoggedIn) {
-      openLogin();
-      return;
-    }
-    setActiveTab("my");
-  }}
-            className={`flex-1 md:flex-none px-4 md:px-6 py-2 md:py-2.5 rounded-xl font-black text-[9px] md:text-[10px] uppercase tracking-widest transition-all duration-300 ${activeTab === "my" ? "bg-slate-900 text-white shadow-xl scale-105" : "text-slate-500 hover:text-slate-700"}`}
+              if (!isLoggedIn) {
+                openLogin();
+                return;
+              }
+              setActiveTab("my");
+            }}
+            className={`flex-1 md:flex-none px-4 md:px-6 py-2 md:py-2.5 rounded-xl font-black text-[9px] md:text-[10px] uppercase tracking-widest transition-all duration-300 ${activeTab === "my" ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105" : "text-slate-300 hover:text-white hover:bg-white/5"}`}
           >
             My Videos
           </button>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4 relative z-10">
           <button
             onClick={() => setShowRewardsModal(true)}
-            className="bg-white px-5 py-2.5 rounded-full flex items-center gap-3 shadow-sm border border-slate-100 hover:shadow-md transition-all active:scale-95 group"
+            className="bg-white/10 backdrop-blur-xl px-6 py-3 rounded-2xl flex items-center gap-3 shadow-xl border border-white/10 hover:bg-white/20 transition-all active:scale-95 group"
           >
             <img
               src="https://cdn-icons-png.flaticon.com/128/7892/7892416.png"
-              className="w-5 h-5 object-contain group-hover:rotate-12 transition-transform"
+              className="w-6 h-6 object-contain group-hover:rotate-12 transition-transform drop-shadow-lg"
               alt="Coins"
             />
-            <span className="text-sm font-black text-slate-900 tracking-tighter">
+            <span className="text-lg font-black text-white tracking-tighter drop-shadow-md">
               {userPoints}
             </span>
           </button>
@@ -390,11 +402,10 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
 
       {/* 2. DISCOVERY GRID */}
       {loading ? (
-        <div className="flex-1 flex flex-col items-center justify-center">
-          <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">
-            Syncing Feed...
-          </span>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-1.5 md:gap-5 pb-20 no-scrollbar">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+            <VideoCardSkeleton key={i} />
+          ))}
         </div>
       ) : videos.length > 0 ? (
         <div
@@ -461,11 +472,6 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
                           muted
                           loop
                           preload="metadata"
-                          onMouseOver={(e) => e.target.play().catch(err => console.log("Hover play blocked", err))}
-                          onMouseOut={(e) => {
-                            e.target.pause();
-                            e.target.currentTime = 0;
-                          }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
 
@@ -846,7 +852,7 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
           </div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 };
 

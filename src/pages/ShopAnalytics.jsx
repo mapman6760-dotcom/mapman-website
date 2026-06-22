@@ -96,22 +96,31 @@ const ShopAnalytics = () => {
         description="Monitor your shop views, video performance metrics, and organic listing statistics on MapMan."
         canonical="https://mapman.in/shop-analytics"
       />
-      {/* ── TOP HEADER ── */}
-      <div className="sticky top-0 z-50 bg-slate-50/80 backdrop-blur-xl border-b border-slate-200/60 p-4 md:px-10 flex items-center justify-between">
-        <div className="flex items-center gap-4 lg:gap-8">
+      {/* ── REDESIGNED PREMIUM HEADER CARD ── */}
+      <div className="relative w-full mb-6 md:mb-10 overflow-hidden shadow-xl rounded-none border-b border-slate-800 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 p-6 md:p-8 lg:px-12 lg:py-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 z-10">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20"></div>
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none -ml-20 -mb-20"></div>
+
+        <div className="flex items-center gap-6 relative z-10">
           <button
             onClick={() => navigate("/profile")}
-            className="w-10 h-10 border border-slate-200 rounded-xl flex items-center justify-center hover:bg-slate-50 transition-all hover:scale-105 active:scale-95 shadow-sm"
+            className="w-12 h-12 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl flex items-center justify-center shadow-lg hover:bg-white/10 hover:border-white/20 hover:scale-105 active:scale-95 transition-all text-white"
           >
-            <ArrowLeft className="w-5 h-5 text-slate-600" />
+            <ChevronLeft className="w-6 h-6" />
           </button>
-          <div>
-            <h1 className="text-lg md:text-xl font-black text-slate-900 tracking-tight flex items-center gap-3 uppercase">
+          <div className="space-y-1.5">
+            <h1 className="text-2xl md:text-3xl font-black text-white tracking-tighter uppercase italic leading-none drop-shadow-lg flex items-center gap-3">
               Shop Analytics
-              <span className="hidden md:flex bg-blue-100 text-blue-700 text-[9px] font-black uppercase px-2 py-0.5 rounded-full border border-blue-200">
+              <span className="hidden md:flex bg-blue-500/20 text-cyan-300 text-[10px] font-black uppercase px-3 py-1 rounded-full border border-blue-400/30 shadow-[0_0_10px_rgba(34,211,238,0.2)]">
                 Live
               </span>
             </h1>
+            <div className="flex items-center gap-2 pt-1.5">
+              <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
+              <p className="text-[10px] font-black text-blue-200 uppercase tracking-[0.3em] opacity-90">
+                Performance Dashboard
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -193,11 +202,6 @@ const ShopAnalytics = () => {
                       muted
                       playsInline
                       preload="metadata"
-                      onMouseOver={(e) => e.target.play().catch(err => console.log("Play blocked", err))}
-                      onMouseOut={(e) => {
-                        e.target.pause();
-                        e.target.currentTime = 0;
-                      }}
                     />
 
                     {/* Centered Play Icon Overlay (Minimal) */}

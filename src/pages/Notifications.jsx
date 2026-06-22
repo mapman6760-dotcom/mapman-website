@@ -194,14 +194,14 @@ const Notifications = () => {
               <button
                 onClick={handleLoadMore}
                 disabled={loading}
-                className="relative px-10 py-4 bg-white border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:border-blue-200 text-slate-700 rounded-[1.25rem] text-[10px] font-black uppercase tracking-[0.3em] hover:-translate-y-1 transition-all duration-500 active:scale-95 flex items-center gap-4 overflow-hidden group"
+                className="relative px-6 py-2.5 bg-white border border-slate-200 shadow-[0_4px_15px_rgb(0,0,0,0.04)] hover:shadow-[0_10px_20px_rgb(0,0,0,0.08)] hover:border-blue-200 text-slate-700 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] hover:-translate-y-0.5 transition-all duration-500 active:scale-95 flex items-center gap-2 overflow-hidden group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]" />
                 {loading ? (
-                  <Loader2 className="w-4 h-4 text-blue-600 animate-spin relative z-10" />
+                  <Loader2 className="w-3 h-3 text-blue-600 animate-spin relative z-10" />
                 ) : (
-                  <div className="w-7 h-7 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-white group-hover:shadow-md transition-all duration-500 relative z-10">
-                    <MoreHorizontal className="w-4 h-4 text-blue-600" />
+                  <div className="w-5 h-5 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-white group-hover:shadow-sm transition-all duration-500 relative z-10">
+                    <MoreHorizontal className="w-3 h-3 text-blue-600" />
                   </div>
                 )}
                 <span className="relative z-10 group-hover:text-blue-700 transition-colors duration-300">

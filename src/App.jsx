@@ -43,6 +43,10 @@ import {
   X,
   Globe,
   Zap,
+  Phone,
+  Clock,
+  Send,
+  Headset,
 } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay, Navigation } from "swiper/modules";
@@ -69,6 +73,8 @@ const ViewedVideos = React.lazy(() => import("./pages/ViewedVideos"));
 const CategoryVideos = React.lazy(() => import("./pages/CategoryVideos"));
 const Support = React.lazy(() => import("./pages/Support"));
 const ShopList = React.lazy(() => import("./pages/ShopList"));
+const AboutUs = React.lazy(() => import("./pages/AboutUs"));
+const ContactUs = React.lazy(() => import("./pages/ContactUs"));
 
 const LoadingFallback = () => (
   <div className="min-h-[60vh] flex flex-col items-center justify-center gap-6">
@@ -79,14 +85,334 @@ const LoadingFallback = () => (
 import { getProfile } from "./api/shop";
 import { API_BASE_URL } from "./config";
 
+// --- Header Component ---
+const Header = ({ isLoggedIn, profileData, onLogout, openLogin, currentPage, isMobileMenuOpen, setIsMobileMenuOpen }) => {
+  const navigate = useNavigate();
 
+  return (
+    <header className="sticky top-0 w-full z-50 transition-all duration-300">
+      {/* Top glowing bar */}
+      <div className="h-[3px] w-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600"></div>
+
+      <div className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 px-4 md:px-8 py-3.5 flex items-center justify-between shadow-sm">
+        {/* Brand / Logo */}
+        <div className="flex items-center gap-8">
+          <Link to="/" className="flex items-center gap-3 group cursor-pointer">
+            <div className="relative w-10 h-10 bg-white border border-slate-200/60 rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:border-blue-400/30 transition-all duration-500">
+              <div className="absolute inset-0 bg-blue-500/10 rounded-xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <img src={logo} alt="Logo" className="w-7 h-7 object-contain group-hover:rotate-[360deg] transition-all duration-700 ease-out" />
+            </div>
+            <div className="overflow-hidden">
+              <span className="text-lg font-black bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 bg-clip-text text-transparent tracking-tighter block leading-none">
+                Mapman
+              </span>
+              <span className="text-[8px] text-blue-600 font-extrabold uppercase tracking-[0.2em] mt-1 block opacity-75">
+                Modern Explorer
+              </span>
+            </div>
+          </Link>
+
+          {/* Desktop Navigation Links */}
+          <nav className="hidden lg:flex items-center gap-2">
+            {[
+              { path: "/", label: "Home" },
+              { path: "/map", label: "Map Explorer" },
+              { path: "/video", label: "Video Feed" },
+              { path: "/about-us", label: "About Us" },
+              { path: "/contact-us", label: "Contact Us" }
+            ].map((link) => {
+              const isActive = (currentPage === "" && link.path === "/") || currentPage === link.path.substring(1);
+              return (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`relative px-4 py-2 text-sm font-bold tracking-tight rounded-xl transition-all duration-300 ${isActive
+                      ? "text-blue-600 bg-blue-50/60"
+                      : "text-slate-500 hover:text-slate-900 hover:bg-slate-50/50"
+                    }`}
+                >
+                  {link.label}
+                  {isActive && (
+                    <motion.div
+                      layoutId="headerActiveIndicator"
+                      className="absolute bottom-1 left-4 right-4 h-0.5 bg-blue-600 rounded-full"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Right side actions */}
+        <div className="flex items-center gap-3">
+          {/* Saved Items Link (only if logged in) */}
+          {isLoggedIn && (
+            <button
+              onClick={() => navigate("/saved")}
+              className={`p-2.5 rounded-xl border transition-all duration-300 group hover:scale-105 ${currentPage === "saved"
+                  ? "bg-blue-50 border-blue-200 text-blue-600 shadow-sm"
+                  : "bg-white border-slate-200/60 text-slate-500 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50/30"
+                }`}
+              title="Saved Items"
+            >
+              <Bookmark className="w-5 h-5 transition-colors" />
+            </button>
+          )}
+
+          {/* Notification bell */}
+          <button
+            onClick={() => {
+              if (!isLoggedIn) {
+                openLogin();
+              } else {
+                navigate("/notifications");
+              }
+            }}
+            className={`p-2.5 rounded-xl border transition-all duration-300 group hover:scale-105 ${currentPage === "notifications"
+                ? "bg-blue-50 border-blue-200 text-blue-600 shadow-sm"
+                : "bg-white border-slate-200/60 text-slate-500 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50/30"
+              }`}
+            title="Notifications"
+          >
+            <div className="relative">
+              <Bell className={`w-5 h-5 transition-transform duration-500 group-hover:rotate-12 ${currentPage === "notifications" ? "text-blue-600" : "text-slate-500"}`} />
+              <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></div>
+            </div>
+          </button>
+
+          {/* User Account / Profile / Login */}
+          {isLoggedIn ? (
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => navigate("/profile")}
+                className={`flex items-center gap-2 group cursor-pointer p-1 rounded-xl transition-all ${currentPage === "profile" ? "bg-blue-50/80 ring-1 ring-blue-100" : "hover:bg-slate-50"
+                  }`}
+              >
+                <div className="text-right hidden sm:block pl-2">
+                  <p className="text-xs font-black text-slate-900 leading-none">
+                    {profileData?.userName || "Profile"}
+                  </p>
+                </div>
+                <div className="w-9 h-9 rounded-lg overflow-hidden ring-2 ring-slate-100 shadow-sm group-hover:ring-blue-200 transition-all duration-500">
+                  <img
+                    src={profileData?.profilePic ? profileData.profilePic : "https://cdn-icons-png.flaticon.com/128/3135/3135715.png"}
+                    alt="Profile"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                </div>
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={openLogin}
+              className="relative overflow-hidden px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-md shadow-blue-500/10 active:scale-95 group"
+            >
+              <span className="relative z-10">Login</span>
+              <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
+            </button>
+          )}
+
+          {/* Mobile menu hamburger toggle */}
+          <button
+            className="lg:hidden p-2 text-slate-500 hover:text-slate-950 hover:bg-slate-50 rounded-xl transition-all"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu Dropdown Panel */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-xl border-b border-slate-200/60 shadow-xl lg:hidden overflow-hidden z-40 px-6 py-5 flex flex-col gap-3"
+          >
+            {[
+              { path: "/", label: "Home" },
+              { path: "/map", label: "Map Explorer" },
+              { path: "/video", label: "Video Feed" },
+              { path: "/about-us", label: "About Us" },
+              { path: "/contact-us", label: "Contact Us" }
+            ].map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`py-2 px-3 text-sm font-bold tracking-tight rounded-lg transition-colors ${(currentPage === "" && link.path === "/") || currentPage === link.path.substring(1)
+                    ? "text-blue-600 bg-blue-50/60"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                  }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
+  );
+};
+
+// --- Footer Component ---
+const Footer = () => {
+  return (
+    <footer className="relative bg-gradient-to-br from-slate-950 via-[#00003a] to-slate-950 text-blue-100 overflow-hidden mt-auto border-t border-slate-800">
+
+      {/* Ambient glows */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[150px] pointer-events-none -mr-40 -mt-40" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-600/5 rounded-full blur-[150px] pointer-events-none -ml-40 -mb-40" />
+
+      {/* Top neon accent line */}
+      <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-blue-500/60 to-transparent" />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-16 pb-10">
+
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 pb-14 border-b border-slate-800/80">
+
+          {/* ── Brand Column ── */}
+          <div className="lg:col-span-4 space-y-6">
+            <Link to="/" className="inline-flex items-center gap-3 group">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/30 group-hover:shadow-blue-500/50 transition-all">
+                <img src={logo} alt="Logo" className="w-7 h-7 object-contain" />
+              </div>
+              <div>
+                <span className="text-2xl font-black text-white tracking-tighter block leading-none">Mapman</span>
+                <span className="text-[9px] text-blue-400 font-bold uppercase tracking-[0.25em] mt-1 block">Explore · Connect · Discover</span>
+              </div>
+            </Link>
+
+            <p className="text-sm text-slate-400 leading-relaxed max-w-xs">
+              The ultimate location-based business discovery platform. Watch shop videos, explore interactive maps, and find the best places in town.
+            </p>
+
+            {/* Contact info */}
+            <div className="space-y-3">
+              {[
+                { icon: <MapPin className="w-4 h-4" />, text: "123 Business Street, Chennai, Tamil Nadu", color: "text-cyan-400" },
+                { icon: <Phone className="w-4 h-4" />, text: "+91 98765 43210", color: "text-emerald-400" },
+                { icon: <Mail className="w-4 h-4" />, text: "info@mapman.com", color: "text-purple-400" },
+                { icon: <Clock className="w-4 h-4" />, text: "Mon – Sat: 9:00 AM – 6:00 PM", color: "text-amber-400" },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3 text-sm text-slate-400">
+                  <span className={item.color}>{item.icon}</span>
+                  <span>{item.text}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Social icons */}
+            <div className="flex items-center gap-2 pt-1">
+              {[
+                { href: "https://facebook.com", icon: <Globe className="w-4 h-4" />, label: "Facebook", hover: "hover:bg-blue-600 hover:border-blue-500" },
+                { href: "https://twitter.com", icon: <Zap className="w-4 h-4" />, label: "Twitter", hover: "hover:bg-sky-500 hover:border-sky-400" },
+                { href: "https://instagram.com", icon: <Smartphone className="w-4 h-4" />, label: "Instagram", hover: "hover:bg-pink-600 hover:border-pink-500" },
+                { href: "https://linkedin.com", icon: <ShieldCheck className="w-4 h-4" />, label: "LinkedIn", hover: "hover:bg-blue-700 hover:border-blue-600" },
+              ].map((s, i) => (
+                <a key={i} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label}
+                  className={`w-9 h-9 rounded-xl bg-slate-800/60 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-all duration-300 ${s.hover}`}>
+                  {s.icon}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Quick Links ── */}
+          <div className="lg:col-span-2 lg:pl-4 space-y-5">
+            <div>
+              <h4 className="text-xs font-black text-white uppercase tracking-[0.2em] mb-1">Quick Links</h4>
+              <div className="h-[2px] w-8 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full" />
+            </div>
+            <ul className="space-y-3">
+              {[
+                { path: "/", label: "Home" },
+                { path: "/map", label: "Map Explorer" },
+                { path: "/video", label: "Video Feed" },
+                { path: "/about-us", label: "About Us" },
+                { path: "/contact-us", label: "Contact Us" },
+              ].map((link) => (
+                <li key={link.path}>
+                  <Link to={link.path}
+                    className="group flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors duration-300">
+                    <span className="w-1 h-1 bg-cyan-500 rounded-full group-hover:w-3 transition-all duration-300" />
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* ── Our Categories ── */}
+          <div className="lg:col-span-3 space-y-5">
+            <div>
+              <h4 className="text-xs font-black text-white uppercase tracking-[0.2em] mb-1">Our Categories</h4>
+              <div className="h-[2px] w-8 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full" />
+            </div>
+            <ul className="space-y-3">
+              {["Theater", "Restaurant", "Hospital", "Bar", "Grocery", "Textile", "Resort", "Bunk", "Spa", "Hotel"].map((cat, i) => (
+                <li key={i}>
+                  <Link to={`/map?category=${encodeURIComponent(cat)}`}
+                    className="group flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors duration-300">
+                    <span className="w-1 h-1 bg-purple-500 rounded-full group-hover:w-3 transition-all duration-300" />
+                    {cat}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* ── Legal & Policies ── */}
+          <div className="lg:col-span-3 space-y-5">
+            <div>
+              <h4 className="text-xs font-black text-white uppercase tracking-[0.2em] mb-1">Legal & Policies</h4>
+              <div className="h-[2px] w-8 bg-gradient-to-r from-rose-400 to-orange-400 rounded-full" />
+            </div>
+            <ul className="space-y-3">
+              {[
+                { path: "/privacy-policy", label: "Privacy Policy" },
+                { path: "/terms-conditions", label: "Terms & Conditions" },
+              ].map((link) => (
+                <li key={link.path}>
+                  <Link to={link.path}
+                    className="group flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors duration-300">
+                    <span className="w-1 h-1 bg-rose-400 rounded-full group-hover:w-3 transition-all duration-300" />
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-slate-500 font-semibold uppercase tracking-wider">
+          <span>© {new Date().getFullYear()} Mapman. All rights reserved.</span>
+          <span className="flex items-center gap-1.5">
+            Crafted with <span className="text-red-500 animate-pulse">♥</span> for a better experience
+          </span>
+        </div>
+
+      </div>
+
+      {/* Bottom gradient line */}
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 opacity-60" />
+
+    </footer>
+  );
+};
 
 // --- Dashboard Component (Responsive Routing) ---
 const Dashboard = ({ onLogout, isLoggedIn, setIsLoggedIn }) => {
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(true);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [isLoginDrawerOpen, setIsLoginDrawerOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [profileData, setProfileData] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -110,12 +436,10 @@ const Dashboard = ({ onLogout, isLoggedIn, setIsLoggedIn }) => {
     }
   }, [isLoggedIn]);
 
-  const showFullMenu = !isCollapsed || isSidebarOpen;
-
   // Mapping of route paths to display IDs
   const getCurrentPageId = () => {
     const path = location.pathname;
-    if (path === "/" || path === "/dashboard") return "dashboard";
+    if (path === "/") return "";
     return path.substring(1); // remove leading slash
   };
 
@@ -124,264 +448,64 @@ const Dashboard = ({ onLogout, isLoggedIn, setIsLoggedIn }) => {
   useEffect(() => {
     // Scroll the main content area to top whenever path changes
     try {
-      const mainContent = document.querySelector('main');
-      if (mainContent) {
-        mainContent.scrollTo({ top: 0, behavior: "smooth" });
-      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       console.warn("Scroll to top failed:", err);
     }
   }, [location.pathname]);
 
   const navigateToMap = (category = "") => {
-    navigate(`/map?query=${encodeURIComponent(category)}`);
+    navigate(`/map?category=${encodeURIComponent(category)}`);
   };
 
   return (
-    <div className="h-screen overflow-hidden bg-[#F5F5F5] flex font-sans">
-      {/* MOBILE BACKDROP */}
-      <AnimatePresence>
-        {isSidebarOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSidebarOpen(false)}
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 lg:hidden"
-          />
-        )}
-      </AnimatePresence>
+    <div className="min-h-screen bg-[#F5F5F5] flex flex-col font-sans relative">
+      {/* Header */}
+      <Header
+        isLoggedIn={isLoggedIn}
+        profileData={profileData}
+        onLogout={() => setShowLogoutDialog(true)}
+        openLogin={() => setIsLoginDrawerOpen(true)}
+        currentPage={currentPage}
+        isMobileMenuOpen={isMobileMenuOpen}
+        setIsMobileMenuOpen={setIsMobileMenuOpen}
+      />
 
-      {/* 1. PROFESSIONAL COLLAPSIBLE SIDEBAR */}
-      <aside
-        className={`
-          fixed inset-y-0 left-0 z-50 transition-transform duration-300 ease-out
-          lg:static lg:flex lg:flex-col lg:h-screen lg:shadow-none shrink-0 lg:transition-all lg:duration-500 lg:ease-[cubic-bezier(0.23,1,0.32,1)]
-          ${isCollapsed ? "lg:w-[84px]" : "lg:w-64"}
-          ${isSidebarOpen ? "translate-x-0 w-[280px]" : "-translate-x-full lg:translate-x-0"}
-        `}
-      >
-        <div className={`
-          flex flex-col h-full overflow-hidden relative bg-white lg:bg-white/75 lg:backdrop-blur-xl border-r border-slate-200/50 lg:border-white/40 shadow-2xl lg:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.1)]
-          transition-all duration-300 lg:duration-500 lg:ease-[cubic-bezier(0.23,1,0.32,1)]
-          ${showFullMenu ? "w-[280px] lg:w-64" : "w-[84px]"}
-        `}>
-          <div className="absolute top-0 right-0 w-32 h-64 bg-blue-500/5 blur-[100px] pointer-events-none hidden lg:block" />
-          <div className="absolute bottom-0 left-0 w-32 h-64 bg-indigo-500/5 blur-[100px] pointer-events-none hidden lg:block" />
-
-          {/* Brand Header & Toggle */}
-          <div className={`p-8 lg:p-7 pb-4 lg:pb-3 flex items-center transition-all duration-500 ${!showFullMenu ? "lg:flex-col lg:gap-4" : "justify-between"}`}>
-            <Link to="/" className={`flex items-center gap-4 group cursor-pointer transition-all duration-500 ${!showFullMenu ? "lg:scale-95" : "scale-100"}`}>
-              <div className="w-12 h-12 lg:w-11 lg:h-11 bg-white border border-slate-200/50 rounded-[1.25rem] flex items-center justify-center transition-all duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.05)] group-hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)] group-hover:border-blue-400/30">
-                <img src={logo} alt="Logo" className="w-8 h-8 lg:w-7 lg:h-7 object-contain group-hover:scale-110 transition-transform duration-300" />
+      {/* Main Content Area */}
+      <main className={`flex-1 w-full min-h-0 ${currentPage === "" ? "" : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12"}`}>
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            <Route path="/" element={<Home onSelectCategory={navigateToMap} isLoggedIn={isLoggedIn} openLogin={() => setIsLoginDrawerOpen(true)} />} />
+            <Route path="/dashboard" element={<Navigate to="/" replace />} />
+            <Route path="/map" element={<MapExplore />} />
+            <Route path="/video" element={<VideoFeed isLoggedIn={isLoggedIn} openLogin={() => setIsLoginDrawerOpen(true)} />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/profile" element={<Profile onLogout={() => setShowLogoutDialog(true)} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} openLogin={() => setIsLoginDrawerOpen(true)} />} />
+            <Route path="/edit-profile" element={<EditProfile />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-conditions" element={<TermsConditions />} />
+            <Route path="/about-us" element={<AboutUs />} />
+            <Route path="/contact-us" element={<ContactUs />} />
+            <Route path="/shop-analytics" element={<ShopAnalytics />} />
+            <Route path="/shop-detail/:id" element={<ShopDetail />} />
+            <Route path="/saved" element={<SavedItems />} />
+            <Route path="/edit-shop" element={<EditShop />} />
+            <Route path="/video-player/:id" element={<VideoPlayer />} />
+            <Route path="/notification-settings" element={<NotificationSettings />} />
+            <Route path="/viewed-videos" element={<ViewedVideos />} />
+            <Route path="/category-videos" element={<CategoryVideos />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/shop-list" element={<ShopList />} />
+            <Route path="*" element={
+              <div className="flex flex-col items-center justify-center h-[60vh] text-slate-400">
+                <span className="text-4xl font-black uppercase tracking-widest opacity-20">404</span>
+                <p className="mt-4 font-bold uppercase tracking-tight">Access Denied / Coming Soon</p>
               </div>
-              {showFullMenu && (
-                <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="overflow-hidden whitespace-nowrap">
-                  <span className="text-xl lg:text-lg font-black text-slate-900 tracking-tighter block leading-none">Mapman</span>
-                  <span className="text-[9px] text-blue-600 font-bold uppercase tracking-[0.2em] mt-1.5 block opacity-60">Modern Explorer</span>
-                </motion.div>
-              )}
-            </Link>
-
-            <button
-              className={`p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50/80 rounded-xl transition-all ${!showFullMenu ? "lg:flex" : "flex"}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsCollapsed(!isCollapsed);
-              }}
-            >
-              <Menu className={`w-4 h-4 transition-transform duration-500 ${isCollapsed ? "rotate-0" : "rotate-90"}`} />
-            </button>
-          </div>
-
-          <div className="flex-1 overflow-y-auto px-4 py-8 space-y-10 lg:space-y-6 no-scrollbar scroll-smooth">
-            <div className="space-y-2 lg:space-y-1.5">
-              {showFullMenu && (
-                <p className="px-4 text-[10px] text-slate-400 font-bold uppercase tracking-[0.25em] mb-4 opacity-50">
-                  Main Hub
-                </p>
-              )}
-              {[
-                { id: "dashboard", path: "/dashboard", label: "Dashboard", icon: <LucideHome /> },
-                { id: "map", path: "/map", label: "Map Explorer", icon: <MapPin /> },
-                { id: "video", path: "/video", label: "Video Feed", icon: <Play /> },
-                { id: "saved", path: "/saved", label: "Saved Items", icon: <Bookmark /> },
-                { id: "profile", path: "/profile", label: "Profile", icon: <User /> },
-              ].map((item, i) => (
-                <button
-                  key={i}
-                  onClick={() => {
-                    if (!isLoggedIn && (item.id === "saved" || item.id === "notifications")) {
-                      setIsLoginDrawerOpen(true);
-                      setSidebarOpen(false);
-                      return;
-                    }
-                    navigate(item.path);
-                    setSidebarOpen(false);
-                  }}
-                  className={`w-full group relative flex items-center transition-all duration-300 rounded-[1.25rem] 
-                    ${!showFullMenu ? "lg:justify-center p-4 mb-2" : "px-4 py-3.5 mb-1 gap-4"} 
-                    ${currentPage === item.id
-                      ? "bg-blue-600 text-white shadow-[0_15px_30px_-5px_rgba(37,99,235,0.4)] scale-[1.02]"
-                      : "text-slate-500 hover:bg-blue-50/60 hover:text-blue-600 active:scale-95"
-                    }`}
-                >
-                  <div className={`transition-all duration-300 ${currentPage === item.id ? "scale-110" : "group-hover:scale-110"}`}>
-                    {React.cloneElement(item.icon, { className: `w-5 h-5 lg:w-[18px] lg:h-[18px] ${currentPage === item.id ? "stroke-[3]" : "stroke-[2.2]"}` })}
-                  </div>
-                  {showFullMenu && (
-                    <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="text-[14px] font-bold tracking-tight whitespace-nowrap">
-                      {item.label}
-                    </motion.span>
-                  )}
-                  {currentPage === item.id && (
-                    <motion.div
-                      layoutId="sidebarActivePill"
-                      className="absolute left-0 w-1.5 h-6 bg-white rounded-r-full shadow-[0_0_15px_white]"
-                    />
-                  )}
-                </button>
-              ))}
-
-              <div className="pt-8">
-                {showFullMenu && (
-                  <p className="px-4 text-[10px] text-slate-400 font-bold uppercase tracking-[0.25em] mb-4 opacity-50">
-                    Transparency
-                  </p>
-                )}
-                <div className="space-y-1">
-                  {[
-                    { id: "privacy-policy", path: "/privacy-policy", label: "Privacy Policy", icon: <ShieldCheck /> },
-                    { id: "terms-conditions", path: "/terms-conditions", label: "Terms & Conditions", icon: <Globe /> },
-                  ].map((item, i) => (
-                    <button
-                      key={i}
-                      onClick={() => {
-                        if (!isLoggedIn && (item.id === "saved" || item.id === "notifications")) {
-                          setIsLoginDrawerOpen(true);
-                          setSidebarOpen(false);
-                          return;
-                        }
-                        navigate(item.path);
-                        setSidebarOpen(false);
-                      }}
-                      className={`w-full group relative flex items-center transition-all duration-300 rounded-[1.25rem] 
-                        ${!showFullMenu ? "lg:justify-center p-4 mb-2" : "px-4 py-3.5 mb-1 gap-4"} 
-                        ${currentPage === item.id
-                          ? "bg-blue-600 text-white shadow-[0_15px_30px_-5px_rgba(37,99,235,0.4)] scale-[1.02]"
-                          : "text-slate-500 hover:bg-blue-50/60 hover:text-blue-600 active:scale-95"
-                        }`}
-                    >
-                      <div className={`transition-all duration-300 ${currentPage === item.id ? "scale-110" : "group-hover:scale-110"}`}>
-                        {React.cloneElement(item.icon, { className: `w-5 h-5 lg:w-[18px] lg:h-[18px] ${currentPage === item.id ? "stroke-[3]" : "stroke-[2.2]"}` })}
-                      </div>
-                      {showFullMenu && (
-                        <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="text-[14px] font-bold tracking-tight whitespace-nowrap">
-                          {item.label}
-                        </motion.span>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {isLoggedIn && (
-            <div className={`p-5 mt-auto transition-all duration-500 ${!showFullMenu ? "lg:bg-transparent" : "bg-slate-50/40 border-t border-slate-100/50"}`}>
-              <button
-                onClick={() => setShowLogoutDialog(true)}
-                className={`flex items-center gap-4 text-red-500 bg-red-50/80 hover:bg-red-100 hover:text-red-700 transition-all duration-300 group ${!showFullMenu ? "lg:justify-center lg:w-14 lg:h-14 lg:rounded-2xl lg:mx-auto" : "w-full p-4 rounded-2xl shadow-sm hover:shadow-md"}`}
-              >
-                <div className={`transition-transform duration-300 ${!showFullMenu ? "scale-110" : "w-9 h-9 bg-white/80 rounded-xl flex items-center justify-center group-hover:scale-110 shadow-sm"}`}>
-                  <LogOut className="w-[18px] h-[18px] stroke-[2.5]" />
-                </div>
-                {showFullMenu && (
-                  <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="text-[12px] font-black uppercase tracking-widest leading-none">Sign Out</motion.span>
-                )}
-              </button>
-            </div>
-          )}
-        </div>
-      </aside>
-
-      {/* 2. MAIN AREA */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-        <header className="h-16 lg:h-20 bg-white/80 backdrop-blur-md border-b border-slate-200/60 px-2 md:px-6 lg:px-10 flex items-center justify-between shrink-0 z-40">
-          <div className="flex items-center gap-4 lg:gap-0">
-            <button className="lg:hidden p-2.5 -ml-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all" onClick={() => setSidebarOpen(true)}>
-              <Menu className="w-6 h-6 stroke-[2.5]" />
-            </button>
-            <div className="relative hidden md:flex items-center gap-3">
-              <div className="flex items-center">
-                <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase italic">
-                  Map <span className="text-blue-600">Man</span>
-                </h1>
-              </div>
-
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 lg:gap-5">
-            <button
-              onClick={() => navigate("/notifications")}
-              className={`p-2.5 rounded-xl border border-slate-100 transition-all shadow-sm group hover:border-blue-200/50 hover:bg-blue-50/50 ${currentPage === "notifications" ? "bg-blue-50 border-blue-200 shadow-md translate-y-[-2px]" : "bg-white"}`}
-            >
-              <div className="relative">
-                <Bell className={`w-5 h-5 transition-transform duration-500 group-hover:rotate-12 ${currentPage === "notifications" ? "text-blue-600" : "text-slate-500"}`} />
-                <div className="absolute -top-0.5 -right-0.5 w-[7px] h-[7px] bg-red-500 rounded-full ring-2 ring-white"></div>
-              </div>
-            </button>
-            <button onClick={() => navigate("/profile")} className={`flex items-center gap-3 group cursor-pointer p-2 rounded-2xl transition-all ${currentPage === 'profile' ? 'bg-blue-50 ring-1 ring-blue-100' : 'hover:bg-slate-50'}`}>
-              <div className="text-right hidden md:block">
-                <p className="text-sm font-black text-slate-900 leading-none">
-                  {profileData?.userName || "Profile Name"}
-                </p>
-              </div>
-              <div className={`w-10 h-10 lg:w-11 lg:h-11 rounded-xl overflow-hidden ring-2 shadow-xl shadow-slate-200/50 group-hover:ring-blue-100 transition-all duration-300 ${currentPage === 'profile' ? 'ring-blue-500' : 'ring-slate-100'}`}>
-                <img
-                  src={profileData?.profilePic ? profileData.profilePic : "https://cdn-icons-png.flaticon.com/128/3135/3135715.png"}
-                  alt="Profile"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-              </div>
-            </button>
-          </div>
-        </header>
-
-        <main className="p-2 md:p-4 lg:p-6 max-w-screen-2xl mx-auto w-full flex-1 min-h-0 overflow-y-auto no-scrollbar">
-          <Suspense fallback={<LoadingFallback />}>
-            <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Home onSelectCategory={navigateToMap} isLoggedIn={isLoggedIn} openLogin={() => setIsLoginDrawerOpen(true)} />} />
-              <Route path="/map" element={<MapExplore isCollapsed={isCollapsed} />} />
-              <Route path="/video" element={<VideoFeed isLoggedIn={isLoggedIn} openLogin={() => setIsLoginDrawerOpen(true)} />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/profile" element={<Profile onLogout={() => setShowLogoutDialog(true)} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} openLogin={() => setIsLoginDrawerOpen(true)} />} />
-              <Route path="/edit-profile" element={<EditProfile />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-conditions" element={<TermsConditions />} />
-              <Route path="/shop-analytics" element={<ShopAnalytics />} />
-              <Route path="/shop-detail/:id" element={<ShopDetail />} />
-              <Route path="/saved" element={<SavedItems />} />
-              <Route path="/edit-shop" element={<EditShop />} />
-              <Route path="/video-player/:id" element={<VideoPlayer />} />
-              <Route path="/notification-settings" element={<NotificationSettings />} />
-              <Route path="/viewed-videos" element={<ViewedVideos />} />
-              <Route path="/category-videos" element={<CategoryVideos />} />
-              <Route path="/support" element={<Support />} />
-              <Route path="/shop-list" element={<ShopList />} />
-              <Route path="*" element={
-                <div className="flex flex-col items-center justify-center h-[60vh] text-slate-400">
-                  <span className="text-4xl font-black uppercase tracking-widest opacity-20">404</span>
-                  <p className="mt-4 font-bold uppercase tracking-tight">Access Denied / Coming Soon</p>
-                </div>
-              } />
-            </Routes>
-          </Suspense>
-        </main>
-      </div>
-
+            } />
+          </Routes>
+        </Suspense>
+      </main>
+      <Footer />
 
       {/* Login Drawer (Global) */}
       <AnimatePresence>

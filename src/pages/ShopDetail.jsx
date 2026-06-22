@@ -26,6 +26,8 @@ import "swiper/css/pagination";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_BASE_URL } from "../config";
 import SEO from "../components/SEO";
+import { ShopDetailSkeleton } from "../components/SkeletonLoaders";
+
 
 
 
@@ -73,20 +75,8 @@ const ShopDetail = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center gap-5">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
-          className="w-11 h-11 border-4 border-slate-100 border-t-blue-600 rounded-full"
-        />
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] animate-pulse">
-          Loading Store Profile...
-        </p>
-      </div>
-    );
-  }
+  if (loading) return <ShopDetailSkeleton />;
+
 
   if (error || !shopInfo) {
     return (
@@ -99,9 +89,6 @@ const ShopDetail = () => {
           <p className="text-sm text-slate-500 leading-relaxed">We couldn't retrieve data for this business. It may be inactive or under synchronization.</p>
         </div>
         <div className="flex gap-3 w-full">
-          <button onClick={() => navigate(-1)} className="flex-1 py-3.5 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95">
-            <ArrowLeft className="w-4 h-4" /> Go Back
-          </button>
           <button onClick={() => navigate("/map")} className="flex-1 py-3.5 bg-blue-50 text-blue-600 border border-blue-100 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all active:scale-95">
             Explore Map
           </button>
@@ -163,10 +150,15 @@ const ShopDetail = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto w-full pb-20 px-2 md:px-4 space-y-5 md:space-y-7">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="max-w-6xl mx-auto w-full pb-20 px-2 md:px-4 space-y-5 md:space-y-7"
+    >
       <SEO
         title={`${shopInfo.shopName} | ${shopInfo.category}`}
-        description={`Get address, location, telephone number, verified photos, video reel tour, and google directions for ${shopInfo.shopName} in ${shopInfo.address?.split(',').slice(0,2).join(', ')}.`}
+        description={`Get address, location, telephone number, verified photos, video reel tour, and google directions for ${shopInfo.shopName} in ${shopInfo.address?.split(',').slice(0, 2).join(', ')}.`}
         canonical={window.location.href}
         schema={shopSchema}
       />
@@ -199,15 +191,8 @@ const ShopDetail = () => {
         )}
       </AnimatePresence>
 
-      {/* ── BACK + SAVE ROW ── */}
-      <div className="flex items-center justify-between pt-1">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2.5 px-4 py-2.5 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-blue-300 hover:bg-blue-50 transition-all group active:scale-90"
-        >
-          <ArrowLeft className="w-4 h-4 text-slate-700 group-hover:text-blue-600 transition-colors" />
-          <span className="text-[10px] font-black text-slate-600 group-hover:text-blue-600 uppercase tracking-widest hidden sm:block">Back</span>
-        </button>
+      {/* ── SAVE ROW ── */}
+      <div className="flex items-center justify-end pt-1">
 
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-100 rounded-full">
@@ -308,16 +293,15 @@ const ShopDetail = () => {
       <nav className="flex items-center gap-2 bg-white border border-slate-100 rounded-2xl p-1.5 shadow-sm w-fit">
         {[
           { id: "details", label: "Store Info", icon: <Info className="w-3.5 h-3.5" /> },
-          { id: "videos",  label: "Store Reel", icon: <Video className="w-3.5 h-3.5" /> },
+          { id: "videos", label: "Store Reel", icon: <Video className="w-3.5 h-3.5" /> },
         ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
-              activeTab === tab.id
-                ? "bg-slate-900 text-white shadow-lg"
-                : "text-slate-500 hover:bg-slate-50"
-            }`}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${activeTab === tab.id
+              ? "bg-slate-900 text-white shadow-lg"
+              : "text-slate-500 hover:bg-slate-50"
+              }`}
           >
             {tab.icon} {tab.label}
           </button>
@@ -444,8 +428,6 @@ const ShopDetail = () => {
                       loop
                       playsInline
                       preload="metadata"
-                      onMouseOver={(e) => e.target.play().catch(() => {})}
-                      onMouseOut={(e) => { e.target.pause(); e.target.currentTime = 0; }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-100 group-hover:opacity-50 transition-opacity" />
                     {/* Play icon */}
@@ -474,7 +456,7 @@ const ShopDetail = () => {
         .swiper-pagination-bullet { background: #CBD5E1 !important; }
         .swiper-pagination-bullet-active { background: #2563EB !important; width: 20px !important; border-radius: 10px; }
       `}</style>
-    </div>
+    </motion.div>
   );
 };
 

@@ -5,6 +5,13 @@ import {
   Search,
   Play,
   Bookmark,
+} from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ArrowLeft,
+  Search,
+  Play,
+  Bookmark,
   Store,
   ChevronRight,
   Loader2,
@@ -13,6 +20,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../config";
+import { VideoCardSkeleton } from "../components/SkeletonLoaders";
 
 
 
@@ -71,7 +79,12 @@ const ViewedVideos = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#FDFDFE] pb-24">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="min-h-screen bg-[#FDFDFE] pb-24"
+    >
       {/* ── COMPACT HEADER ── */}
       <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-3xl border-b border-slate-100/50 px-2 md:px-8 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
@@ -117,9 +130,10 @@ const ViewedVideos = () => {
 
         {/* ── VIDEO FEED ── */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-32 space-y-4">
-            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Decoding Transmission...</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <VideoCardSkeleton key={i} />
+            ))}
           </div>
         ) : filteredVideos.length > 0 ? (
           <div className="space-y-12">
@@ -244,7 +258,7 @@ const ViewedVideos = () => {
           </div>
         )}
       </main>
-    </div>
+    </motion.div>
   );
 };
 

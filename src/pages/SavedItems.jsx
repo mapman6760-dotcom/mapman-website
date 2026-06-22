@@ -238,35 +238,34 @@ const SavedItems = () => {
       {/* ── PREMIUM HEADER ── */}
 
       <main className="max-w-7xl mx-auto px-2 md:px-6 py-6 md:py-10 space-y-10 md:space-y-16">
-        {/* ── INTERACTIVE ENROLLMENT CARD ── */}
-        <section className="relative overflow-hidden rounded-[1rem] bg-slate-900 shadow-2xl p-6 md:p-9">
-          <div className="absolute inset-0">
-            <img
-              src="assets/notification-banner.jpg"
-              className="w-full h-full object-cover opacity-60"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/40 to-transparent" />
-          </div>
+        {/* ── REDESIGNED PREMIUM HEADER CARD ── */}
+        <section className="relative w-full overflow-hidden shadow-xl rounded-[1rem] bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 p-6 md:p-8 lg:px-12 lg:py-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6 z-10 border border-slate-800">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20"></div>
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none -ml-20 -mb-20"></div>
 
-          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-            <div className="flex items-center gap-6">
-              <div className="w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] overflow-hidden border-2 border-white/20 shadow-2xl shrink-0 rotate-2 transition-transform hover:rotate-0 duration-500">
-                <img
-                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop"
-                  className="w-full h-full object-cover scale-110"
-                  alt="Enroll"
-                />
-              </div>
-              <div className="space-y-3">
-                <h2 className="text-xl md:text-2xl font-black text-white tracking-wide italic leading-relaxed">
-                  Entroll Shop Owners <br />
-                  <span className="text-blue-400 tracking-wider">
-                    Business Network
-                  </span>
-                </h2>
+          <div className="flex items-center gap-6 relative z-10">
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] overflow-hidden border-2 border-white/10 shadow-2xl shrink-0 rotate-2 transition-transform hover:rotate-0 duration-500 bg-white/5">
+              <img
+                src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop"
+                className="w-full h-full object-cover scale-110"
+                alt="Enroll"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <h2 className="text-2xl md:text-3xl font-black text-white tracking-tighter uppercase italic leading-none drop-shadow-lg">
+                Enroll Shop Owners
+              </h2>
+              <div className="flex items-center gap-2 pt-1.5">
+                <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
+                <p className="text-[10px] font-black text-blue-200 uppercase tracking-[0.3em] opacity-90">
+                  Business Network
+                </p>
               </div>
             </div>
-            <button className="group relative px-8 py-4 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 overflow-hidden">
+          </div>
+
+          <div className="flex items-center gap-4 relative z-10">
+            <button className="bg-white/10 backdrop-blur-xl px-8 py-3.5 rounded-2xl flex items-center gap-3 shadow-xl border border-white/10 hover:bg-white/20 transition-all active:scale-95 group text-white font-bold text-sm tracking-wider">
               <span className="relative z-10">Join Registry</span>
               <ChevronRight className="relative z-10 w-4 h-4 transition-transform group-hover:translate-x-1" />
             </button>
@@ -433,11 +432,6 @@ const SavedItems = () => {
                       playsInline
                       loop
                       preload="metadata"
-                      onMouseOver={(e) => e.target.play().catch(err => console.log("Play blocked", err))}
-                      onMouseOut={(e) => {
-                        e.target.pause();
-                        e.target.currentTime = 0;
-                      }}
                     />
 
                     <div

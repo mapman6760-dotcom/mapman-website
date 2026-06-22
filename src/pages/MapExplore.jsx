@@ -165,7 +165,7 @@ const MapExplore = ({ isCollapsed }) => {
 
   return (
     <div
-      className={`fixed inset-0 transition-all duration-500 ease-in-out bg-[#F8FAFC] z-10 flex flex-col overflow-hidden ${isCollapsed ? "lg:left-16" : "lg:left-60"} top-16 lg:top-20`}
+      className="relative w-full h-[88vh] min-h-[700px] transition-all duration-500 ease-in-out bg-[#F8FAFC] z-10 flex flex-col overflow-hidden rounded-none shadow-2xl border border-slate-200/60"
     >
       <SEO
         title={searchInput ? `Find ${searchInput} Nearby` : "Explore Local Businesses on Map"}

@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { ChevronLeft, Store, Plus, MapPin, Loader2, Clock, Phone, ArrowRight, ExternalLink } from "lucide-react";
 import { API_BASE_URL } from "../config";
 import SEO from "../components/SEO";
+import { ShopListSkeleton } from "../components/SkeletonLoaders";
+
 
 const ShopList = () => {
   const navigate = useNavigate();
@@ -36,51 +38,56 @@ const ShopList = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest animate-pulse">
-            Loading Shops...
-          </p>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <ShopListSkeleton />;
+
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pb-20 font-sans">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="min-h-screen bg-[#F5F7FA] pb-20 font-sans"
+    >
       <SEO
         title="My Shops Dashboard"
         description="Manage your business listings, review active shop coordinates, edit details, and analyze visitor views on MapMan."
         canonical="https://mapman.in/shop-list"
       />
-      {/* HEADER */}
-      <header className="h-20 px-4 md:px-6 flex items-center justify-between border-b border-slate-200/60 bg-white/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="flex items-center gap-4">
+      {/* ── REDESIGNED PREMIUM HEADER CARD ── */}
+      <div className="relative w-full mb-6 md:mb-8 overflow-hidden shadow-xl rounded-none border-b border-slate-800 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 p-6 md:p-8 lg:px-12 lg:py-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 z-10">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20"></div>
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none -ml-20 -mb-20"></div>
+
+        <div className="flex items-center gap-6 relative z-10">
           <button
             onClick={() => navigate("/profile")}
-            className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center shadow-sm hover:border-blue-300 hover:bg-blue-50 transition-all active:scale-95"
+            className="w-12 h-12 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl flex items-center justify-center shadow-lg hover:bg-white/10 hover:border-white/20 hover:scale-105 active:scale-95 transition-all text-white"
           >
-            <ChevronLeft className="w-5 h-5 text-slate-600" />
+            <ChevronLeft className="w-6 h-6" />
           </button>
-          <div className="space-y-0.5">
-            <h1 className="text-xl font-black text-slate-900 tracking-tight uppercase italic leading-none">
+          <div className="space-y-1.5">
+            <h1 className="text-3xl md:text-4xl font-black text-white tracking-tighter uppercase italic leading-none drop-shadow-lg">
               My Shops
             </h1>
-            <p className="text-[9px] font-black text-blue-500/60 uppercase tracking-[0.2em]">
-              Manage your business listings
-            </p>
+            <div className="flex items-center gap-2 pt-1.5">
+              <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
+              <p className="text-[10px] font-black text-blue-200 uppercase tracking-[0.3em] opacity-90">
+                Manage your business listings
+              </p>
+            </div>
           </div>
         </div>
-        <button
-          onClick={() => navigate("/edit-shop", { state: { createNew: true } })}
-          className="bg-slate-900 hover:bg-black text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.15em] transition-all shadow-lg hover:shadow-xl flex items-center gap-2 active:scale-95"
-        >
-          <Plus className="w-4 h-4" /> Add Shop
-        </button>
-      </header>
+
+        <div className="flex items-center gap-4 relative z-10">
+          <button
+            onClick={() => navigate("/edit-shop", { state: { createNew: true } })}
+            className="bg-white/10 backdrop-blur-xl px-6 py-3.5 rounded-2xl flex items-center gap-3 shadow-xl border border-white/10 hover:bg-white/20 transition-all active:scale-95 group text-white font-bold text-sm tracking-wider uppercase"
+          >
+            <Plus className="w-4 h-4" />
+            <span className="relative z-10">Add Shop</span>
+          </button>
+        </div>
+      </div>
 
       <main className="max-w-6xl mx-auto p-2 md:p-4 mt-4">
         {shops.length === 0 ? (
@@ -107,13 +114,13 @@ const ShopList = () => {
 
                 {/* Banner Image */}
                 <div className="w-full h-44 md:h-52 bg-slate-100 relative rounded-[2rem] overflow-hidden shadow-inner">
-                  <img 
-                    src={shop.shopImage || "https://images.unsplash.com/photo-1621535281470-348633c7793d?w=800&fit=crop"} 
+                  <img
+                    src={shop.shopImage || "https://images.unsplash.com/photo-1621535281470-348633c7793d?w=800&fit=crop"}
                     alt={shop.shopName}
                     className="w-full h-full object-cover group-hover:scale-110 group-hover:rotate-1 transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/30 to-slate-900/10 opacity-70 group-hover:opacity-90 transition-opacity duration-500"></div>
-                  
+
                   {/* Status Badge */}
                   <div className="absolute top-4 left-4">
                     <div className="flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-lg">
@@ -125,7 +132,7 @@ const ShopList = () => {
                   </div>
 
                   <div className="absolute top-4 right-4">
-                     <span className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border shadow-lg backdrop-blur-md transition-colors ${shop.status === 'active' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border-rose-500/30'}`}>
+                    <span className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border shadow-lg backdrop-blur-md transition-colors ${shop.status === 'active' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border-rose-500/30'}`}>
                       <span className={`w-1.5 h-1.5 rounded-full ${shop.status === 'active' ? 'bg-emerald-400 animate-[pulse_2s_ease-in-out_infinite] shadow-[0_0_8px_rgba(52,211,153,0.8)]' : 'bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.8)]'}`}></span>
                       {shop.status || "Unknown"}
                     </span>
@@ -155,7 +162,7 @@ const ShopList = () => {
                       </div>
                       <p className="text-xs font-black text-slate-800 tracking-tight">{shop.openTime} <span className="text-slate-400 font-medium mx-0.5">to</span> {shop.closeTime}</p>
                     </div>
-                    
+
                     <div className="flex flex-col gap-1.5 p-3.5 rounded-[1.25rem] bg-slate-50/80 hover:bg-white border border-slate-200/60 shadow-sm transition-all group-hover:border-emerald-100 group-hover:shadow-emerald-500/5">
                       <div className="flex items-center gap-2 mb-1">
                         <Phone className="w-3.5 h-3.5 text-emerald-500" />
@@ -180,7 +187,7 @@ const ShopList = () => {
           </div>
         )}
       </main>
-    </div>
+    </motion.div>
   );
 };
 
