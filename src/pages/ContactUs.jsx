@@ -40,8 +40,8 @@ const ContactUs = () => {
         <div className="absolute inset-0 bg-slate-900/60" />
 
         {/* Glass Bubbles */}
-        <div className="absolute -top-20 -right-20 w-80 h-80 bg-white/5 backdrop-blur-md border border-white/10 rounded-full" />
-        <div className="absolute -bottom-16 -left-20 w-72 h-72 bg-white/5 backdrop-blur-md border border-white/10 rounded-full" />
+        {/* <div className="absolute -top-20 -right-20 w-80 h-80 bg-white/5 backdrop-blur-md border border-white/10 rounded-full" />
+        <div className="absolute -bottom-16 -left-20 w-72 h-72 bg-white/5 backdrop-blur-md border border-white/10 rounded-full" /> */}
 
         {/* Dot grid */}
         <div
