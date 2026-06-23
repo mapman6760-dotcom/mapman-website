@@ -10,7 +10,7 @@ const NotificationList = ({ notifications = [], onNotificationClick }) => {
             {notifications.map((notif) => {
                 const avatarUrl = notif.msgImage
                     ? (notif.msgImage.startsWith('http') ? notif.msgImage : `${API_BASE_URL}${notif.msgImage}`)
-                    : "https://cdn-icons-png.flaticon.com/128/726/726498.png"; // Updated fallback icon
+                    : "/assets/placeholder.jpg";
 
                 const isNotOpened = notif.openStatus === 'notOpened';
                 const indicatorColor = notif.msgStatus === 'accepted' ? 'bg-emerald-500' : 'bg-red-500';

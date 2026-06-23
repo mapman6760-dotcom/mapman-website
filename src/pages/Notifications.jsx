@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+
 import { Bell, Settings, Share2, MoreHorizontal, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import NotificationList from "../components/NotificationList";
@@ -112,10 +112,8 @@ const Notifications = () => {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-10">
             <div className="space-y-4 sm:space-y-6">
               <div className="space-y-2">
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-2"
+                <div
+                  className="flex items-center gap-2 animate-fade-in"
                 >
                   <div className="flex gap-1">
                     <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
@@ -124,23 +122,17 @@ const Notifications = () => {
                   <p className="text-[8px] font-black text-blue-400 uppercase tracking-[0.4em]">
                     Mapman Connect
                   </p>
-                </motion.div>
-                <motion.h1
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="text-2xl md:text-3xl font-black tracking-tighter uppercase italic leading-none"
+                </div>
+                <h1
+                  className="text-2xl md:text-3xl font-black tracking-tighter uppercase italic leading-none animate-fade-in"
                 >
                   Notifications
-                </motion.h1>
+                </h1>
               </div>
             </div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="hidden md:flex flex-col items-end gap-3 text-right"
+            <div
+              className="hidden md:flex flex-col items-end gap-3 text-right animate-scale-in"
             >
               <button
                 onClick={() => navigate("/notification-settings")}
@@ -148,7 +140,7 @@ const Notifications = () => {
               >
                 <Settings className="w-4 h-4 text-white group-hover:rotate-90 transition-transform duration-500" />
               </button>
-            </motion.div>
+            </div>
           </div>
         </div>
       </header>
@@ -176,16 +168,14 @@ const Notifications = () => {
             </p>
           </div>
         ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
+          <div
+            className="animate-fade-in"
           >
             <NotificationList
               notifications={notifications}
               onNotificationClick={handleNotificationClick}
             />
-          </motion.div>
+          </div>
         )}
 
         {notifications.length > 0 && (

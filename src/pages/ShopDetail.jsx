@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   Bookmark,
@@ -150,12 +149,7 @@ const ShopDetail = () => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="max-w-6xl mx-auto w-full pb-20 px-2 md:px-4 space-y-5 md:space-y-7"
-    >
+    <div className="max-w-6xl mx-auto w-full pb-20 px-2 md:px-4 space-y-5 md:space-y-7 animate-fade-in">
       <SEO
         title={`${shopInfo.shopName} | ${shopInfo.category}`}
         description={`Get address, location, telephone number, verified photos, video reel tour, and google directions for ${shopInfo.shopName} in ${shopInfo.address?.split(',').slice(0, 2).join(', ')}.`}
@@ -163,33 +157,25 @@ const ShopDetail = () => {
         schema={shopSchema}
       />
       {/* Image Lightbox */}
-      <AnimatePresence>
-        {selectedImage && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/95 backdrop-blur-md"
-            onClick={() => setSelectedImage(null)}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/95 backdrop-blur-md animate-fade-in"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div
+            className="relative max-w-4xl w-full overflow-hidden rounded-3xl bg-black shadow-2xl animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
           >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="relative max-w-4xl w-full overflow-hidden rounded-3xl bg-black shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
+            <img src={selectedImage} alt="Full view" className="w-full h-auto max-h-[85vh] object-contain" />
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-5 right-5 p-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white border border-white/10 transition-all"
             >
-              <img src={selectedImage} alt="Full view" className="w-full h-auto max-h-[85vh] object-contain" />
-              <button
-                onClick={() => setSelectedImage(null)}
-                className="absolute top-5 right-5 p-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white border border-white/10 transition-all"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── SAVE ROW ── */}
       <div className="flex items-center justify-end pt-1">
@@ -299,7 +285,7 @@ const ShopDetail = () => {
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${activeTab === tab.id
-              ? "bg-slate-900 text-white shadow-lg"
+              ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
               : "text-slate-500 hover:bg-slate-50"
               }`}
           >
@@ -309,16 +295,9 @@ const ShopDetail = () => {
       </nav>
 
       {/* ── TAB CONTENT ── */}
-      <AnimatePresence mode="wait">
+      <div>
         {activeTab === "details" ? (
-          <motion.div
-            key="details"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.25 }}
-            className="grid grid-cols-1 lg:grid-cols-12 gap-5 md:gap-8"
-          >
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 md:gap-8 animate-fade-in">
             {/* LEFT COLUMN */}
             <div className="lg:col-span-8 space-y-5 md:space-y-7">
 
@@ -401,23 +380,14 @@ const ShopDetail = () => {
                 </button>
               </div>
             </aside>
-          </motion.div>
+          </div>
         ) : (
-          <motion.div
-            key="videos"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.25 }}
-          >
+          <div className="animate-fade-in">
             {videos.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
                 {videos.map((video, idx) => (
-                  <motion.div
+                  <div
                     key={video.id}
-                    initial={{ opacity: 0, scale: 0.92 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: idx * 0.04 }}
                     onClick={() => navigate(`/video-player/${video.id}`, { state: { videos, index: idx } })}
                     className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-900 shadow-lg group cursor-pointer"
                   >
@@ -439,7 +409,7 @@ const ShopDetail = () => {
                     <div className="absolute bottom-3 left-3 right-3 text-[10px] font-bold text-white leading-tight line-clamp-2 drop-shadow-lg">
                       {video.videoTitle}
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             ) : (
@@ -448,15 +418,15 @@ const ShopDetail = () => {
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">No Store Reels Available</p>
               </div>
             )}
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      </div>
 
       <style>{`
         .swiper-pagination-bullet { background: #CBD5E1 !important; }
         .swiper-pagination-bullet-active { background: #2563EB !important; width: 20px !important; border-radius: 10px; }
       `}</style>
-    </motion.div>
+    </div>
   );
 };
 

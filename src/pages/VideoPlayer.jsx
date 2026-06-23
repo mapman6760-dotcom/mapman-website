@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+
 import { API_BASE_URL } from "../config";
 import SEO from "../components/SEO";
 import {
@@ -309,33 +309,22 @@ const VideoPlayer = () => {
           </div>
 
           {!isMyVideos && (
-            <motion.button
-              animate={{
-                scale: [1, 1.05, 1],
-                boxShadow: ["0px 0px 0px rgba(255,255,255,0)", "0px 0px 20px rgba(255,255,255,0.2)", "0px 0px 0px rgba(255,255,255,0)"]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 setShowRewardsModal(true);
               }}
-              className="h-12 bg-white/20 backdrop-blur-xl border border-white/20 rounded-full flex items-center gap-3 px-4 text-white active:scale-90 transition-transform shadow-xl"
+              className="h-12 bg-white/20 backdrop-blur-xl border border-white/20 rounded-full flex items-center gap-3 px-4 text-white active:scale-90 hover:scale-105 transition-all shadow-xl duration-200"
             >
-              <motion.img
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+              <img
                 src="https://cdn-icons-png.flaticon.com/128/7892/7892416.png"
-                className="w-5 h-5 object-contain"
+                className="w-5 h-5 object-contain animate-[bounce_2s_infinite]"
                 alt="Coins"
               />
               <span className="text-xs font-black tracking-tighter">
                 {userPoints}
               </span>
-            </motion.button>
+            </button>
           )}
 
           <button
@@ -383,20 +372,13 @@ const VideoPlayer = () => {
               />
 
               {/* PLAY/PAUSE OVERLAY INDICATOR */}
-              <AnimatePresence>
-                {!isPlaying && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none"
-                  >
-                    <div className="w-16 h-16 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center text-white border border-white/20 shadow-2xl">
-                      <Play className="w-7 h-7 fill-current opacity-80" />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {!isPlaying && (
+                <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none animate-scale-in">
+                  <div className="w-16 h-16 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center text-white border border-white/20 shadow-2xl">
+                    <Play className="w-7 h-7 fill-current opacity-80" />
+                  </div>
+                </div>
+              )}
 
               {/* AUDIO TOGGLE OVERLAY */}
               <button
@@ -488,22 +470,15 @@ const VideoPlayer = () => {
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-40 h-1.5 bg-white/10 rounded-full backdrop-blur-xl" />
 
       {/* ── SAVE CONFIRMATION DIALOG ── */}
-      <AnimatePresence>
-        {showSaveConfirm && (
-          <div className="fixed inset-0 z-[2000] flex items-center justify-center p-6 text-center">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowSaveConfirm(false)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 30 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 30 }}
-              className="relative w-full max-w-[320px] bg-white rounded-[2.5rem] shadow-2xl p-8 border border-slate-100 overflow-hidden"
-            >
+      {showSaveConfirm && (
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-6 text-center">
+          <div
+            onClick={() => setShowSaveConfirm(false)}
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-md animate-fade-in"
+          />
+          <div
+            className="relative w-full max-w-[320px] bg-white rounded-[2.5rem] shadow-2xl p-8 border border-slate-100 overflow-hidden animate-scale-in"
+          >
               <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <Bookmark className="w-8 h-8 fill-current" />
               </div>
@@ -531,45 +506,31 @@ const VideoPlayer = () => {
                   Cancel
                 </button>
               </div>
-            </motion.div>
+            </div>
           </div>
         )}
-      </AnimatePresence>
 
       {/* ── EARN REWARDS DIALOG (PROFESSIONAL) ── */}
-      <AnimatePresence>
-        {showRewardsModal && (
-          <div className="fixed inset-0 z-[2000] flex items-center justify-center p-6 text-center">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowRewardsModal(false)}
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-xl"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 30 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 30 }}
-              className="relative w-full max-w-[300px] bg-white rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(30,58,138,0.25)] p-8 border border-white overflow-hidden"
-            >
+      {showRewardsModal && (
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-6 text-center">
+          <div
+            onClick={() => setShowRewardsModal(false)}
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-xl animate-fade-in"
+          />
+          <div
+            className="relative w-full max-w-[300px] bg-white rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(30,58,138,0.25)] p-8 border border-white overflow-hidden animate-scale-in"
+          >
               <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-amber-600" />
               <div className="w-32 h-32 mx-auto mb-6 relative">
-                <motion.div
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="relative z-10"
+                <div
+                  className="relative z-10 animate-[bounce_3s_infinite]"
                 >
                   <img
                     src="https://img.freepik.com/premium-vector/purple-box-with-gold-bow-top-it-there-are-many-gold-coins-scattered-around-box-vector-illustration_345238-2441.jpg?semt=ais_incoming&w=740&q=80"
                     className="w-full h-full object-cover rounded-2xl"
                     alt="Treasure"
                   />
-                </motion.div>
+                </div>
                 <div className="absolute inset-0 bg-orange-400/20 blur-3xl rounded-full" />
               </div>
               <div className="space-y-3 mb-8">
@@ -589,23 +550,17 @@ const VideoPlayer = () => {
               >
                 Yes, I Got It
               </button>
-            </motion.div>
+            </div>
           </div>
         )}
-      </AnimatePresence>
       {/* ── TOAST MESSAGE ── */}
-      <AnimatePresence>
-        {toastMsg && (
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[3000] px-6 py-3 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl"
-          >
-            <p className="text-xs font-black text-white uppercase tracking-widest">{toastMsg}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {toastMsg && (
+        <div
+          className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[3000] px-6 py-3 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl animate-fade-in"
+        >
+          <p className="text-xs font-black text-white uppercase tracking-widest">{toastMsg}</p>
+        </div>
+      )}
     </div>
   );
 };

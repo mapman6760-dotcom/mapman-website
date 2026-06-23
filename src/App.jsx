@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Suspense } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+
 import {
   Routes,
   Route,
@@ -91,8 +91,10 @@ const Header = ({ isLoggedIn, profileData, onLogout, openLogin, currentPage, isM
 
   return (
     <header className="sticky top-0 w-full z-50 transition-all duration-300">
-      {/* Top glowing bar */}
-      <div className="h-[3px] w-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600"></div>
+      {/* Top Announcement Bar */}
+      <div className="w-full bg-[#1e293b] text-white/90 text-[10px] sm:text-[11px] font-medium py-2 px-4 flex items-center justify-center text-center tracking-wide border-b border-white/10">
+        Powered by Pafagel Software Solutions Pvt Ltd. Discover the best local shops and reels! <span className="hidden sm:inline mx-2">|</span><br className="sm:hidden" /> <span className="font-bold text-white">Join Mapman Today!</span>
+      </div>
 
       <div className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 px-4 md:px-8 py-3.5 flex items-center justify-between shadow-sm">
         {/* Brand / Logo */}
@@ -127,16 +129,14 @@ const Header = ({ isLoggedIn, profileData, onLogout, openLogin, currentPage, isM
                   key={link.path}
                   to={link.path}
                   className={`relative px-4 py-2 text-sm font-bold tracking-tight rounded-xl transition-all duration-300 ${isActive
-                      ? "text-blue-600 bg-blue-50/60"
-                      : "text-slate-500 hover:text-slate-900 hover:bg-slate-50/50"
+                    ? "text-blue-600 bg-blue-50/60"
+                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-50/50"
                     }`}
                 >
                   {link.label}
                   {isActive && (
-                    <motion.div
-                      layoutId="headerActiveIndicator"
-                      className="absolute bottom-1 left-4 right-4 h-0.5 bg-blue-600 rounded-full"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    <div
+                      className="absolute bottom-1 left-4 right-4 h-0.5 bg-blue-600 rounded-full animate-scale-in"
                     />
                   )}
                 </Link>
@@ -152,8 +152,8 @@ const Header = ({ isLoggedIn, profileData, onLogout, openLogin, currentPage, isM
             <button
               onClick={() => navigate("/saved")}
               className={`p-2.5 rounded-xl border transition-all duration-300 group hover:scale-105 ${currentPage === "saved"
-                  ? "bg-blue-50 border-blue-200 text-blue-600 shadow-sm"
-                  : "bg-white border-slate-200/60 text-slate-500 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50/30"
+                ? "bg-blue-50 border-blue-200 text-blue-600 shadow-sm"
+                : "bg-white border-slate-200/60 text-slate-500 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50/30"
                 }`}
               title="Saved Items"
             >
@@ -171,8 +171,8 @@ const Header = ({ isLoggedIn, profileData, onLogout, openLogin, currentPage, isM
               }
             }}
             className={`p-2.5 rounded-xl border transition-all duration-300 group hover:scale-105 ${currentPage === "notifications"
-                ? "bg-blue-50 border-blue-200 text-blue-600 shadow-sm"
-                : "bg-white border-slate-200/60 text-slate-500 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50/30"
+              ? "bg-blue-50 border-blue-200 text-blue-600 shadow-sm"
+              : "bg-white border-slate-200/60 text-slate-500 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50/30"
               }`}
             title="Notifications"
           >
@@ -225,36 +225,31 @@ const Header = ({ isLoggedIn, profileData, onLogout, openLogin, currentPage, isM
       </div>
 
       {/* Mobile Menu Dropdown Panel */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-xl border-b border-slate-200/60 shadow-xl lg:hidden overflow-hidden z-40 px-6 py-5 flex flex-col gap-3"
-          >
-            {[
-              { path: "/", label: "Home" },
-              { path: "/map", label: "Map Explorer" },
-              { path: "/video", label: "Video Feed" },
-              { path: "/about-us", label: "About Us" },
-              { path: "/contact-us", label: "Contact Us" }
-            ].map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`py-2 px-3 text-sm font-bold tracking-tight rounded-lg transition-colors ${(currentPage === "" && link.path === "/") || currentPage === link.path.substring(1)
-                    ? "text-blue-600 bg-blue-50/60"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                  }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isMobileMenuOpen && (
+        <div
+          className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-xl border-b border-slate-200/60 shadow-xl lg:hidden overflow-hidden z-40 px-6 py-5 flex flex-col gap-3 animate-fade-in-up"
+        >
+          {[
+            { path: "/", label: "Home" },
+            { path: "/map", label: "Map Explorer" },
+            { path: "/video", label: "Video Feed" },
+            { path: "/about-us", label: "About Us" },
+            { path: "/contact-us", label: "Contact Us" }
+          ].map((link) => (
+            <Link
+              key={link.path}
+              to={link.path}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`py-2 px-3 text-sm font-bold tracking-tight rounded-lg transition-colors ${(currentPage === "" && link.path === "/") || currentPage === link.path.substring(1)
+                ? "text-blue-600 bg-blue-50/60"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                }`}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+      )}
     </header>
   );
 };
@@ -279,8 +274,8 @@ const Footer = () => {
           {/* ── Brand Column ── */}
           <div className="lg:col-span-4 space-y-6">
             <Link to="/" className="inline-flex items-center gap-3 group">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/30 group-hover:shadow-blue-500/50 transition-all">
-                <img src={logo} alt="Logo" className="w-7 h-7 object-contain" />
+              <div className="w-12 h-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center shadow-lg transition-all group-hover:bg-white/20">
+                <img src={logo} alt="Logo" className="w-7 h-7 object-contain drop-shadow-md" />
               </div>
               <div>
                 <span className="text-2xl font-black text-white tracking-tighter block leading-none">Mapman</span>
@@ -295,14 +290,20 @@ const Footer = () => {
             {/* Contact info */}
             <div className="space-y-3">
               {[
-                { icon: <MapPin className="w-4 h-4" />, text: "123 Business Street, Chennai, Tamil Nadu", color: "text-cyan-400" },
-                { icon: <Phone className="w-4 h-4" />, text: "+91 98765 43210", color: "text-emerald-400" },
-                { icon: <Mail className="w-4 h-4" />, text: "info@mapman.com", color: "text-purple-400" },
-                { icon: <Clock className="w-4 h-4" />, text: "Mon – Sat: 9:00 AM – 6:00 PM", color: "text-amber-400" },
+                { icon: <MapPin className="w-4 h-4" />, text: "Chennai, Tamil Nadu, India", color: "text-cyan-400" },
+                { icon: <Phone className="w-4 h-4" />, text: "+91 9342376760 ", color: "text-emerald-400" },
+                { icon: <Mail className="w-4 h-4" />, text: "mapman6760@gmail.com", color: "text-purple-400" },
+                { icon: <Globe className="w-4 h-4" />, text: "pafagelsoftwaresolutionspvtltd.in", color: "text-amber-400", href: "https://pafagelsoftwaresolutionspvtltd.in/" },
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-3 text-sm text-slate-400">
                   <span className={item.color}>{item.icon}</span>
-                  <span>{item.text}</span>
+                  {item.href ? (
+                    <a href={item.href} target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
+                      {item.text}
+                    </a>
+                  ) : (
+                    <span>{item.text}</span>
+                  )}
                 </div>
               ))}
             </div>
@@ -310,10 +311,10 @@ const Footer = () => {
             {/* Social icons */}
             <div className="flex items-center gap-2 pt-1">
               {[
-                { href: "https://facebook.com", icon: <Globe className="w-4 h-4" />, label: "Facebook", hover: "hover:bg-blue-600 hover:border-blue-500" },
-                { href: "https://twitter.com", icon: <Zap className="w-4 h-4" />, label: "Twitter", hover: "hover:bg-sky-500 hover:border-sky-400" },
-                { href: "https://instagram.com", icon: <Smartphone className="w-4 h-4" />, label: "Instagram", hover: "hover:bg-pink-600 hover:border-pink-500" },
-                { href: "https://linkedin.com", icon: <ShieldCheck className="w-4 h-4" />, label: "LinkedIn", hover: "hover:bg-blue-700 hover:border-blue-600" },
+                { href: "https://pafagelsoftwaresolutionspvtltd.in/", icon: <Globe className="w-4 h-4" />, label: "Website", hover: "hover:bg-blue-600 hover:border-blue-500" },
+                { href: "mailto:mapman6760@gmail.com", icon: <Mail className="w-4 h-4" />, label: "Email", hover: "hover:bg-sky-500 hover:border-sky-400" },
+                { href: "tel:+919342376760", icon: <Phone className="w-4 h-4" />, label: "Phone", hover: "hover:bg-emerald-600 hover:border-emerald-500" },
+                { href: "https://facebook.com", icon: <ShieldCheck className="w-4 h-4" />, label: "Facebook", hover: "hover:bg-blue-700 hover:border-blue-600" },
               ].map((s, i) => (
                 <a key={i} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label}
                   className={`w-9 h-9 rounded-xl bg-slate-800/60 border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-all duration-300 ${s.hover}`}>
@@ -367,13 +368,13 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* ── Legal & Policies ── */}
+          {/* ── Legal & Policies & Apps ── */}
           <div className="lg:col-span-3 space-y-5">
             <div>
               <h4 className="text-xs font-black text-white uppercase tracking-[0.2em] mb-1">Legal & Policies</h4>
               <div className="h-[2px] w-8 bg-gradient-to-r from-rose-400 to-orange-400 rounded-full" />
             </div>
-            <ul className="space-y-3">
+            <ul className="space-y-3 mb-6">
               {[
                 { path: "/privacy-policy", label: "Privacy Policy" },
                 { path: "/terms-conditions", label: "Terms & Conditions" },
@@ -387,6 +388,30 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
+
+            <div className="pt-4 border-t border-slate-800/60">
+              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Download App</h4>
+              <div className="flex flex-col gap-3.5">
+                <a href="https://apps.apple.com/in/app/mapman-app/id6762550173" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3.5 px-5 py-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl hover:bg-white/15 hover:border-white/30 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all group w-full sm:w-[220px]">
+                  <img
+                    src="https://cdn-icons-png.flaticon.com/128/179/179309.png"
+                    alt="App Store"
+                    className="w-8 h-8 brightness-0 invert group-hover:scale-110 transition-transform opacity-90 group-hover:opacity-100"
+                  />
+                  <div className="flex flex-col text-left">
+                    <span className="text-[9px] text-slate-400 group-hover:text-slate-300 font-bold uppercase tracking-widest leading-none mb-1 transition-colors">Download on the</span>
+                    <span className="text-[17px] text-white font-black leading-none tracking-tight">App Store</span>
+                  </div>
+                </a>
+                <a href="https://play.google.com/store/apps/details?id=com.mapman.mapman" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3.5 px-5 py-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl hover:bg-white/15 hover:border-white/30 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all group w-full sm:w-[220px]">
+                  <img src="https://cdn-icons-png.flaticon.com/128/6124/6124997.png" alt="Play Store" className="w-8 h-8 group-hover:scale-110 transition-transform opacity-90 group-hover:opacity-100" />
+                  <div className="flex flex-col text-left">
+                    <span className="text-[9px] text-slate-400 group-hover:text-slate-300 font-bold uppercase tracking-widest leading-none mb-1 transition-colors">GET IT ON</span>
+                    <span className="text-[17px] text-white font-black leading-none tracking-tight">Google Play</span>
+                  </div>
+                </a>
+              </div>
+            </div>
           </div>
 
         </div>
@@ -472,7 +497,7 @@ const Dashboard = ({ onLogout, isLoggedIn, setIsLoggedIn }) => {
       />
 
       {/* Main Content Area */}
-      <main className={`flex-1 w-full min-h-0 ${currentPage === "" ? "" : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12"}`}>
+      <main className={`flex-1 w-full min-h-0 mb-16 md:mb-24 ${currentPage === "" ? "" : "max-w-7xl mx-auto px-2 sm:px-4 lg:px-4 pt-0"}`}>
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
             <Route path="/" element={<Home onSelectCategory={navigateToMap} isLoggedIn={isLoggedIn} openLogin={() => setIsLoginDrawerOpen(true)} />} />
@@ -508,66 +533,54 @@ const Dashboard = ({ onLogout, isLoggedIn, setIsLoggedIn }) => {
       <Footer />
 
       {/* Login Drawer (Global) */}
-      <AnimatePresence>
-        {isLoginDrawerOpen && (
-          <div className="fixed inset-0 z-[200] flex justify-end">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+      {isLoginDrawerOpen && (
+        <div className="fixed inset-0 z-[200] flex justify-end">
+          <div
+            onClick={() => setIsLoginDrawerOpen(false)}
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm animate-fade-in"
+          />
+          <div
+            className="relative w-full sm:max-w-[420px] h-full bg-white/95 backdrop-blur-3xl shadow-[0_0_100px_rgba(37,99,235,0.15)] overflow-hidden flex flex-col z-50 rounded-none border-l border-white animate-slide-in-right"
+          >
+            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none -mr-32 -mt-32"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none -ml-32 -mb-32"></div>
+            <button
               onClick={() => setIsLoginDrawerOpen(false)}
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 30, stiffness: 200 }}
-              className="relative w-full sm:max-w-[420px] h-full bg-white/95 backdrop-blur-3xl shadow-[0_0_100px_rgba(37,99,235,0.15)] overflow-hidden flex flex-col z-50 rounded-none border-l border-white"
+              className="absolute top-5 right-5 z-[200] w-10 h-10 flex items-center justify-center rounded-2xl bg-white/80 hover:bg-slate-50 text-slate-400 hover:text-red-500 transition-all shadow-sm border border-slate-100/50 backdrop-blur-md group"
             >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none -mr-32 -mt-32"></div>
-              <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none -ml-32 -mb-32"></div>
-              <button
-                onClick={() => setIsLoginDrawerOpen(false)}
-                className="absolute top-5 right-5 z-[200] w-10 h-10 flex items-center justify-center rounded-2xl bg-white/80 hover:bg-slate-50 text-slate-400 hover:text-red-500 transition-all shadow-sm border border-slate-100/50 backdrop-blur-md group"
-              >
-                <X className="w-5 h-5 stroke-[2.5] group-hover:rotate-90 transition-transform duration-300" />
-              </button>
-              <div className="flex-1 overflow-y-auto no-scrollbar w-full relative">
-                <Suspense fallback={<LoadingFallback />}>
-                  <Login
-                    logo={logo}
-                    isDrawer={true}
-                    onLogin={() => {
-                      setIsLoggedIn(true);
-                      setIsLoginDrawerOpen(false);
-                    }}
-                  />
-                </Suspense>
-              </div>
-            </motion.div>
+              <X className="w-5 h-5 stroke-[2.5] group-hover:rotate-90 transition-transform duration-300" />
+            </button>
+            <div className="flex-1 overflow-y-auto no-scrollbar w-full relative">
+              <Suspense fallback={<LoadingFallback />}>
+                <Login
+                  logo={logo}
+                  isDrawer={true}
+                  onLogin={() => {
+                    setIsLoggedIn(true);
+                    setIsLoginDrawerOpen(false);
+                  }}
+                />
+              </Suspense>
+            </div>
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
 
-      {/* 4. LOGOUT DIALOG */}
-      <AnimatePresence>
-        {showLogoutDialog && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowLogoutDialog(false)} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
-            <motion.div key="logout-modal" initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative w-full max-w-[340px] bg-white rounded-[2rem] shadow-[0_30px_80px_rgba(0,0,0,0.12)] overflow-hidden p-8 text-center border border-slate-100">
-              <div className="w-16 h-16 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
-                <LogOut className="w-8 h-8 stroke-[2.5]" />
-              </div>
-              <h3 className="text-xl font-black text-slate-900 mb-2 tracking-tighter uppercase">Sign Out</h3>
-              <div className="space-y-2.5 pt-4">
-                <button onClick={onLogout} className="w-full py-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-red-600/20 transition-all active:scale-95">Confirm Sign Out</button>
-                <button onClick={() => setShowLogoutDialog(false)} className="w-full py-4 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all">Cancel</button>
-              </div>
-            </motion.div>
+      {showLogoutDialog && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div onClick={() => setShowLogoutDialog(false)} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm animate-fade-in" />
+          <div className="relative w-full max-w-[340px] bg-white rounded-[2rem] shadow-[0_30px_80px_rgba(0,0,0,0.12)] overflow-hidden p-8 text-center border border-slate-100 animate-scale-in">
+            <div className="w-16 h-16 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
+              <LogOut className="w-8 h-8 stroke-[2.5]" />
+            </div>
+            <h3 className="text-xl font-black text-slate-900 mb-2 tracking-tighter uppercase">Sign Out</h3>
+            <div className="space-y-2.5 pt-4">
+              <button onClick={onLogout} className="w-full py-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-red-600/20 transition-all active:scale-95">Confirm Sign Out</button>
+              <button onClick={() => setShowLogoutDialog(false)} className="w-full py-4 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all">Cancel</button>
+            </div>
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </div>
   );
 };
@@ -602,12 +615,12 @@ const App = () => {
 
   if (loading) return (
     <div className="min-h-screen bg-[#f0f9ff] flex items-center justify-center">
-      <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center">
+      <div className="flex flex-col items-center animate-scale-in">
         <div className="w-20 h-20 mb-6"><img src={logo} alt="Loading..." className="w-full h-full object-contain animate-pulse" /></div>
         <div className="w-32 h-1.5 bg-blue-100/50 rounded-full overflow-hidden leading-none border border-blue-100">
           <div className="w-1/2 h-full bg-primary-600 animate-[loading_1.5s_ease-in-out_infinite]"></div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 
@@ -623,11 +636,9 @@ const App = () => {
       </Helmet>
       <BrowserRouter>
         <div className="min-h-screen">
-          <AnimatePresence mode="wait">
-            <Suspense fallback={<LoadingFallback />}>
-              <Dashboard onLogout={handleLogout} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-            </Suspense>
-          </AnimatePresence>
+          <Suspense fallback={<LoadingFallback />}>
+            <Dashboard onLogout={handleLogout} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+          </Suspense>
         </div>
       </BrowserRouter>
     </HelmetProvider>

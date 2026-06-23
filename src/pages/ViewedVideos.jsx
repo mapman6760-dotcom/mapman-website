@@ -1,12 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  ArrowLeft,
-  Search,
-  Play,
-  Bookmark,
-} from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   Search,
@@ -79,24 +71,19 @@ const ViewedVideos = () => {
   );
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="min-h-screen bg-[#FDFDFE] pb-24"
+    <div
+      className="min-h-screen bg-[#FDFDFE] pb-24 animate-fade-in"
     >
       {/* ── COMPACT HEADER ── */}
       <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-3xl border-b border-slate-100/50 px-2 md:px-8 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <motion.button
-              whileHover={{ scale: 1.05, x: -2 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={() => navigate(-1)}
-              className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center shadow-sm hover:border-blue-200 transition-all group"
+              className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center shadow-sm hover:border-blue-200 transition-all hover:scale-105 active:scale-95 duration-200 group"
             >
               <ArrowLeft className="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition-colors" />
-            </motion.button>
+            </button>
             <div className="space-y-0">
               <h1 className="text-lg font-black text-slate-900 tracking-tight leading-none uppercase italic">
                 Viewed Videos
@@ -138,16 +125,13 @@ const ViewedVideos = () => {
         ) : filteredVideos.length > 0 ? (
           <div className="space-y-12">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              <AnimatePresence>
-                {filteredVideos.map((video, idx) => (
-                  <motion.div
-                    key={video.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05, duration: 0.5 }}
-                    onClick={() => navigate(`/video-player/${video.id}`, { state: { videos: [video], index: 0, isMyVideos: true } })}
-                    className="group relative overflow-hidden rounded-[20px] bg-white border border-slate-100 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.06)] hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.1)] transition-all duration-500 cursor-pointer"
-                  >
+              {filteredVideos.map((video, idx) => (
+                <div
+                  key={video.id}
+                  style={{ animationDelay: `${idx * 40}ms` }}
+                  onClick={() => navigate(`/video-player/${video.id}`, { state: { videos: [video], index: 0, isMyVideos: true } })}
+                  className="group relative overflow-hidden rounded-[20px] bg-white border border-slate-100 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.06)] hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-500 cursor-pointer animate-fade-in-up opacity-0"
+                >
                     <div className="aspect-[16/12] relative overflow-hidden bg-slate-900">
                       <video
                         src={video.video ? (video.video.startsWith('http') ? video.video : `${API_BASE_URL}${video.video}`) : ""}
@@ -218,19 +202,16 @@ const ViewedVideos = () => {
                         </div>
                       </div>
                     </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+                </div>
+              ))}
             </div>
 
             {hasMore && (
               <div className="flex justify-center pt-8">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                <button
                   onClick={handleLoadMore}
                   disabled={loadingMore}
-                  className="px-8 py-4 bg-white border border-slate-100 shadow-lg shadow-slate-200/50 rounded-2xl flex items-center gap-3 group transition-all"
+                  className="px-8 py-4 bg-white border border-slate-100 shadow-lg shadow-slate-200/50 rounded-2xl flex items-center gap-3 group transition-all hover:scale-102 active:scale-98"
                 >
                   {loadingMore ? (
                     <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
@@ -240,7 +221,7 @@ const ViewedVideos = () => {
                   <span className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">
                     {loadingMore ? 'Syncing...' : 'Load More Experiences'}
                   </span>
-                </motion.button>
+                </button>
               </div>
             )}
           </div>
@@ -258,7 +239,7 @@ const ViewedVideos = () => {
           </div>
         )}
       </main>
-    </motion.div>
+    </div>
   );
 };
 

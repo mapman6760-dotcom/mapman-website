@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+
 import {
   Play,
   User,
@@ -296,11 +296,8 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="flex flex-col h-full bg-transparent no-scrollbar relative"
+    <div
+      className="flex flex-col h-full bg-transparent no-scrollbar relative animate-fade-in"
     >
       {/* 1. PROFESSIONAL HEADER & TABS */}
       <div className="relative w-full mb-4 md:mb-8 overflow-hidden shadow-xl border-b border-slate-800 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 p-6 md:p-8 lg:px-12 lg:py-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 z-10">
@@ -356,8 +353,7 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
           </button>
 
           {activeTab === "my" && (
-            <motion.button
-              layoutId="capture-btn"
+            <button
               onClick={async () => {
                 try {
                   const res = await fetchShop();
@@ -385,17 +381,13 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
                   navigate("/edit-shop");
                 }
               }}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2.5 bg-blue-600 text-white px-7 py-4 rounded-xl font-bold text-sm shadow-lg transition-all hover:bg-blue-700"
+              className="flex items-center gap-2.5 bg-blue-600 text-white px-7 py-4 rounded-xl font-bold text-sm shadow-lg transition-all hover:bg-blue-700 hover:scale-105 active:scale-95 duration-200"
             >
               <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center">
                 <Plus className="w-4 h-4 text-white" />
               </div>
               <span className="flex items-center gap-2">Upload Video</span>
-            </motion.button>
+            </button>
           )}
         </div>
       </div>
@@ -411,15 +403,12 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
         <div
           className={`${activeTab === "all" ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6" : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 px-1 md:px-2"} gap-1.5 md:gap-5 bg-transparent pb-20 no-scrollbar`}
         >
-          <AnimatePresence mode="popLayout">
             {videos.map((vid, i) => {
               if (!vid) return null;
               return (
-                <motion.div
+                <div
                   key={vid.id || i}
-                  initial={{ opacity: 0, scale: 0.95, y: 15 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  transition={{ delay: i * 0.02 }}
+                  style={{ animationDelay: `${i * 30}ms` }}
                   onClick={() => {
                     if (activeTab === "all") {
                       navigate(`/category-videos?category=${vid.categoryName}`);
@@ -433,7 +422,7 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
                       });
                     }
                   }}
-                  className={`relative group cursor-pointer transition-all duration-500 ${activeTab === "all" ? "flex flex-col aspect-[3/4] overflow-hidden bg-white border-r border-b border-slate-100" : "flex flex-col bg-white rounded-xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 border border-slate-100"}`}
+                  className={`relative group cursor-pointer transition-all duration-500 animate-fade-in-up opacity-0 ${activeTab === "all" ? "flex flex-col aspect-[3/4] overflow-hidden bg-white border-r border-b border-slate-100" : "flex flex-col bg-white rounded-xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 border border-slate-100"}`}
                 >
                   {activeTab === "all" ? (
                     <>
@@ -522,10 +511,9 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
                       </div>
                     </div>
                   )}
-                </motion.div>
+                </div>
               );
             })}
-          </AnimatePresence>
         </div>
       ) : (
         <div className="flex-1 flex flex-col items-center justify-center bg-white/50 backdrop-blur-xl rounded-[4rem] border-2 border-slate-100 py-32 px-10 text-center relative overflow-hidden">
@@ -543,22 +531,15 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
       )}
 
       {/* 3. PREMIUM UPLOAD MODAL (ENHANCED) */}
-      <AnimatePresence>
-        {showUploadModal && (
-          <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowUploadModal(false)}
-              className="absolute inset-0 bg-slate-950/60 backdrop-blur-md"
-            />
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0, y: 30 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 30 }}
-              className="relative w-full max-w-sm bg-white rounded-[2.5rem] shadow-[0_50px_120px_rgba(0,0,0,0.25)] overflow-hidden border border-slate-100 flex flex-col no-scrollbar"
-            >
+      {showUploadModal && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
+          <div
+            onClick={() => setShowUploadModal(false)}
+            className="absolute inset-0 bg-slate-950/60 backdrop-blur-md animate-fade-in"
+          />
+          <div
+            className="relative w-full max-w-sm bg-white rounded-[2.5rem] shadow-[0_50px_120px_rgba(0,0,0,0.25)] overflow-hidden border border-slate-100 flex flex-col no-scrollbar animate-scale-in"
+          >
               {/* Decorative Top Accent */}
               <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 via-indigo-600 to-blue-500 z-50"></div>
 
@@ -617,9 +598,8 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
                       onChange={handleFileChange}
                       className="absolute inset-0 opacity-0 cursor-pointer z-10"
                     />
-                    <motion.div
-                      whileHover={{ y: -2 }}
-                      className={`w-full h-40 border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center transition-all duration-500 overflow-hidden relative shadow-inner ${videoFile || (editingVideo && !videoFile) ? "border-emerald-500 bg-slate-950" : "border-slate-200 bg-slate-50 group-hover/picker:border-blue-400 group-hover/picker:bg-blue-50/5"}`}
+                    <div
+                      className={`w-full h-40 border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center transition-all duration-500 hover:-translate-y-0.5 overflow-hidden relative shadow-inner ${videoFile || (editingVideo && !videoFile) ? "border-emerald-500 bg-slate-950" : "border-slate-200 bg-slate-50 group-hover/picker:border-blue-400 group-hover/picker:bg-blue-50/5"}`}
                     >
                       {videoFile || (editingVideo && !videoFile) ? (
                         <>
@@ -656,7 +636,7 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
                           </span>
                         </>
                       )}
-                    </motion.div>
+                    </div>
                   </div>
                   {editingVideo && (
                     <button
@@ -668,10 +648,8 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
                     </button>
                   )}
                   {fileError && (
-                    <motion.div
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="flex items-center gap-3 px-4 py-3 bg-red-50 text-red-600 rounded-2xl border border-red-100 shadow-sm shadow-red-200/20 mt-2"
+                    <div
+                      className="flex items-center gap-3 px-4 py-3 bg-red-50 text-red-600 rounded-2xl border border-red-100 shadow-sm shadow-red-200/20 mt-2 animate-fade-in"
                     >
                       <div className="shrink-0 w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm">
                         <AlertCircle className="w-4 h-4" />
@@ -679,7 +657,7 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
                       <span className="text-[10px] font-black uppercase tracking-tight">
                         {fileError}
                       </span>
-                    </motion.div>
+                    </div>
                   )}
                 </div>
 
@@ -785,47 +763,33 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
                   )}
                 </button>
               </div>
-            </motion.div>
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
 
       {/* 4. EARN REWARDS DIALOG (PROFESSIONAL) */}
-      <AnimatePresence>
-        {showRewardsModal && (
-          <div className="fixed inset-0 z-[150] flex items-center justify-center p-6 text-center">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowRewardsModal(false)}
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-xl"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 30 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 30 }}
-              className="relative w-full max-w-[300px] bg-white rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(30,58,138,0.25)] p-8 border border-white overflow-hidden"
-            >
+      {showRewardsModal && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-6 text-center">
+          <div
+            onClick={() => setShowRewardsModal(false)}
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-xl animate-fade-in"
+          />
+          <div
+            className="relative w-full max-w-[300px] bg-white rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(30,58,138,0.25)] p-8 border border-white overflow-hidden animate-scale-in"
+          >
               <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-amber-600" />
 
               {/* Treasure Chest Illustration */}
               <div className="w-32 h-32 mx-auto mb-6 relative">
-                <motion.div
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="relative z-10"
+                <div
+                  className="relative z-10 animate-[bounce_3s_infinite]"
                 >
                   <img
                     src="https://img.freepik.com/premium-vector/purple-box-with-gold-bow-top-it-there-are-many-gold-coins-scattered-around-box-vector-illustration_345238-2441.jpg?semt=ais_incoming&w=740&q=80"
                     className="w-full h-full object-cover rounded-2xl"
                     alt="Treasure"
                   />
-                </motion.div>
+                </div>
                 <div className="absolute inset-0 bg-orange-400/20 blur-3xl rounded-full" />
               </div>
 
@@ -848,11 +812,10 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
               >
                 Yes, I Got It
               </button>
-            </motion.div>
           </div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+        </div>
+      )}
+    </div>
   );
 };
 

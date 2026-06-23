@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Bookmark,
   Play,
   Store,
-  Video,
   ChevronRight,
   ExternalLink,
   Info,
   ShieldCheck,
   Loader2,
+  MapPin,
+  Clock,
+  Heart,
+  Video,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../config";
@@ -215,15 +217,13 @@ const SavedItems = () => {
 
   if (isLoading && savedShops.length === 0 && savedVideos.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-slate-50/50">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-          className="w-12 h-12 border-4 border-slate-200 border-t-blue-600 rounded-full shadow-inner"
+      <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-[#F8FAFD]">
+        <div
+          className="w-12 h-12 border-4 border-slate-200 border-t-blue-600 rounded-full shadow-inner animate-spin"
         />
         <div className="space-y-2 text-center">
           <p className="text-[10px] font-black text-slate-900 uppercase tracking-[0.4em] animate-pulse">
-            Retrieving Registry
+            Loading Your Saves
           </p>
           <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest opacity-60">
             Please wait while we sync your data
@@ -234,275 +234,259 @@ const SavedItems = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-32">
-      {/* ── PREMIUM HEADER ── */}
+    <div className="min-h-screen bg-[#F8FAFD] pb-20 animate-fade-in">
 
-      <main className="max-w-7xl mx-auto px-2 md:px-6 py-6 md:py-10 space-y-10 md:space-y-16">
-        {/* ── REDESIGNED PREMIUM HEADER CARD ── */}
-        <section className="relative w-full overflow-hidden shadow-xl rounded-[1rem] bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 p-6 md:p-8 lg:px-12 lg:py-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6 z-10 border border-slate-800">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20"></div>
-          <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none -ml-20 -mb-20"></div>
+      {/* ── TOP BANNER ── */}
+      <div className="relative w-full overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700">
+        <div className="absolute -top-16 -right-16 w-64 h-64 bg-white/5 rounded-full" />
+        <div className="absolute -bottom-10 -left-10 w-56 h-56 bg-white/5 rounded-full" />
+        <div
+          className="absolute inset-0 opacity-[0.07]"
+          style={{
+            backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
+            backgroundSize: "26px 26px"
+          }}
+        />
 
-          <div className="flex items-center gap-6 relative z-10">
-            <div className="w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] overflow-hidden border-2 border-white/10 shadow-2xl shrink-0 rotate-2 transition-transform hover:rotate-0 duration-500 bg-white/5">
-              <img
-                src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop"
-                className="w-full h-full object-cover scale-110"
-                alt="Enroll"
-              />
+        <div className="relative z-10 max-w-6xl mx-auto px-5 md:px-8 py-8 md:py-12 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="w-1.5 h-1.5 bg-cyan-300 rounded-full animate-pulse" />
+              <span className="text-[10px] font-bold text-blue-200 uppercase tracking-widest">Your Collection</span>
             </div>
-            <div className="space-y-1.5">
-              <h2 className="text-2xl md:text-3xl font-black text-white tracking-tighter uppercase italic leading-none drop-shadow-lg">
-                Enroll Shop Owners
-              </h2>
-              <div className="flex items-center gap-2 pt-1.5">
-                <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
-                <p className="text-[10px] font-black text-blue-200 uppercase tracking-[0.3em] opacity-90">
-                  Business Network
-                </p>
-              </div>
-            </div>
+            <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight leading-none">
+              Saved Items
+            </h1>
+            <p className="text-blue-200 text-xs font-medium mt-1">
+              {savedShops.length} shops · {savedVideos.length} videos saved
+            </p>
           </div>
 
-          <div className="flex items-center gap-4 relative z-10">
-            <button className="bg-white/10 backdrop-blur-xl px-8 py-3.5 rounded-2xl flex items-center gap-3 shadow-xl border border-white/10 hover:bg-white/20 transition-all active:scale-95 group text-white font-bold text-sm tracking-wider">
-              <span className="relative z-10">Join Registry</span>
-              <ChevronRight className="relative z-10 w-4 h-4 transition-transform group-hover:translate-x-1" />
-            </button>
-          </div>
-        </section>
-
-        {/* ── PREMIUM TAB SYSTEM ── */}
-        <div className="space-y-10">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-200 pb-8">
-            <div className="space-y-4">
-              <div className="flex p-1.5 bg-slate-100 rounded-2xl w-fit">
-                {[
-                  {
-                    id: "shops",
-                    label: "Shop Details",
-                    icon: "https://cdn-icons-png.flaticon.com/128/869/869432.png",
-                  },
-                  {
-                    id: "videos",
-                    label: "Videos",
-                    icon: "https://cdn-icons-png.flaticon.com/128/9973/9973070.png",
-                  },
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    type="button"
-                    className={`flex items-center gap-3 px-6 py-2.5 rounded-3xl transition-all duration-300 font-semibold text-xs  tracking-wider ${
-                      activeTab === tab.id
-                        ? "bg-blue-600 text-white shadow-md scale-105"
-                        : "bg-white text-slate-500 hover:text-slate-900"
-                    }`}
-                  >
-                    <img
-                      src={tab.icon}
-                      alt={tab.label}
-                      className="w-5 h-5 object-contain"
-                    />
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/20 rounded-2xl backdrop-blur-sm">
+              <Heart className="w-4 h-4 text-pink-300 fill-pink-300" />
+              <span className="text-white text-sm font-black">{(savedShops.length + savedVideos.length)}</span>
+              <span className="text-blue-200 text-xs font-semibold">total saves</span>
             </div>
-
-            <div className="flex items-center gap-4 px-4 py-2 bg-emerald-50/50 rounded-full border border-emerald-100">
-              <ShieldCheck className="w-4 h-4 text-emerald-500" />
-              <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-none">
-                {activeTab === "shops" ? savedShops.length : savedVideos.length}{" "}
-                Saved Entries Analyzed
-              </span>
-            </div>
-          </div>
-
-          <AnimatePresence mode="wait">
-            {activeTab === "shops" ? (
-              <motion.div
-                key="shops-grid"
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.4 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6"
-              >
-                {savedShops.map((shop, i) => (
-                  <div
-                    key={shop.id}
-                    className="group relative bg-white p-3 rounded-[1.5rem] border border-slate-100 shadow-[0_12px_40px_-15px_rgba(0,0,0,0.06)] hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] transition-all duration-700"
-                  >
-                    <div className="flex gap-4 items-center">
-                      {/* Shop Thumbnail with Navigation Icon Overlay */}
-                      <div className="relative w-24 h-24 rounded-xl overflow-hidden shadow-xl shrink-0 ring-1 ring-slate-100 ring-inset">
-                        <img
-                          src={shop.image}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
-                          alt={shop.name}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-tr from-black/5 to-transparent mix-blend-overlay" />
-
-                        {/* Pro Navigation Overlay */}
-                        <div
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (shop.latitude && shop.longitude) {
-                              window.open(
-                                `https://www.google.com/maps?q=${shop.latitude},${shop.longitude}`,
-                                "_blank",
-                              );
-                            }
-                          }}
-                          className="absolute bottom-2 right-2 w-8 h-8 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:bg-white hover:scale-110 transition-all z-10"
-                        >
-                          <div className="w-5 h-5 bg-blue-500 text-white rounded-md flex items-center justify-center rotate-45 shadow-lg shadow-blue-500/20">
-                            <ExternalLink className="w-3 h-3 rotate-[-45deg]" />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex-1 min-w-0 py-1 pr-4 flex flex-col justify-between h-full min-h-[96px]">
-                        <div className="space-y-1">
-                          <h4 className="text-base font-extrabold text-slate-900 tracking-tight leading-tight group-hover:text-blue-600 transition-colors">
-                            {shop.name}
-                          </h4>
-                          <div className="flex items-center gap-2 text-xs text-slate-500 font-semibold uppercase tracking-wider opacity-80">
-                            <span>{shop.category}</span>
-                            <span className="w-1 h-1 bg-slate-300 rounded-full" />
-                            <span>{shop.time}</span>
-                          </div>
-                        </div>
-
-                        {/* Ultra-Compact Premium Button */}
-                        <div className="mt-4 w-fit relative">
-                          <div className="absolute -inset-1 bg-gradient-to-r from-emerald-400 via-amber-300 to-indigo-500 rounded-full blur-[4px] opacity-15 group-hover:opacity-30 transition-opacity" />
-                          <div className="relative p-[1px] bg-gradient-to-r from-emerald-500 via-yellow-400 to-indigo-600 rounded-full ring-1 ring-white/5 group-hover:shadow-[0_0_12px_-5px_rgba(251,191,36,0.3)] transition-all">
-                            <button
-                              onClick={() =>
-                                navigate(`/shop-detail/${shop.id}`)
-                              }
-                              className="flex items-center gap-2 px-3 py-1 bg-slate-950 text-white rounded-full text-[10px] font-black front-normal tracking-[0.12em] transition-all active:scale-95 shadow-inner"
-                            >
-                              <div className="p-0.5 bg-white rounded-md shadow-sm">
-                                <Store className="w-3 h-3 text-slate-900" />
-                              </div>
-                              Shop Details
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Top-Right Bookmark Button - Refined Shadow */}
-                        <div className="absolute top-4 right-4">
-                          <button
-                            onClick={() => toggleSaveShop(shop.id)}
-                            disabled={unsavingId === shop.id}
-                            className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-[0_5px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.1)] transition-all active:scale-90 border border-slate-50 group/save disabled:opacity-50"
-                          >
-                            {unsavingId === shop.id ? (
-                              <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
-                            ) : (
-                              <Bookmark className="w-4 h-4 text-slate-900 fill-slate-900 group-hover/save:scale-110 transition-transform" />
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </motion.div>
-            ) : (
-              <motion.div
-                key="videos-grid"
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-4"
-              >
-                {savedVideos.map((video, idx) => (
-                  <div
-                    key={video.id}
-                    className="group relative aspect-[4/5] overflow-hidden rounded-[1.8rem] bg-slate-950 shadow-lg border border-white/5 transition-all hover:-translate-y-1 duration-500"
-                  >
-                    <video
-                      src={video.thumbnail ? (video.thumbnail.startsWith('http') ? video.thumbnail : `${API_BASE_URL}${video.thumbnail}`) : ""}
-                      className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-40 transition-all duration-700"
-                      muted
-                      playsInline
-                      loop
-                      preload="metadata"
-                    />
-
-                    <div
-                      onClick={() =>
-                        navigate(`/video-player/${video.id}`, {
-                          state: { videos: savedVideos, index: idx },
-                        })
-                      }
-                      className="absolute inset-0 flex items-center justify-center cursor-pointer"
-                    >
-                      <div className="w-14 h-14 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center text-white border border-white/20 transition-all scale-110 opacity-0 group-hover:opacity-100 group-hover:scale-100 duration-500">
-                        <Play className="w-5 h-5 fill-white ml-0.5" />
-                      </div>
-                    </div>
-
-                    <div className="absolute top-4 right-4">
-                      <button
-                        onClick={() => toggleSaveVideo(video.id)}
-                        disabled={unsavingId === video.id}
-                        className="px-2.5 py-1.5 rounded-xl bg-black/40 backdrop-blur-md flex items-center gap-2 text-[9px] font-black text-blue-400 border border-white/5 italic hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
-                      >
-                        {unsavingId === video.id ? (
-                          <Loader2 className="w-3 h-3 animate-spin" />
-                        ) : (
-                          <Bookmark className="w-3 h-3 fill-current" />
-                        )}{" "}
-                        {video.views}
-                      </button>
-                    </div>
-
-                    <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black via-black/60 to-transparent flex flex-col gap-3">
-                      <div className="space-y-0.5">
-                        <h4 className="text-[10px] font-black text-white uppercase tracking-tighter leading-tight truncate">
-                          {video.title}
-                        </h4>
-                        <p className="text-[7.5px] font-black text-blue-400 uppercase tracking-widest opacity-80">
-                          {video.shopName}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => navigate(`/shop-detail/1`)}
-                        className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-[10px] shadow-lg transition-all flex items-center justify-center gap-2"
-                      >
-                        <Store className="w-3.5 h-3.5" /> Visit Store
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </main>
-
-      {/* ── PROFESSIONAL FOOTER EMPTY STATE ── */}
-      <div className="flex flex-col items-center justify-center gap-8 py-20">
-        <div className="w-24 h-24 bg-slate-100 rounded-[2.5rem] flex items-center justify-center text-slate-300 relative group transition-all hover:bg-blue-50 hover:text-blue-200">
-          <ShieldCheck className="w-10 h-10 transition-transform group-hover:scale-110" />
-          <div className="absolute -top-2 -right-2 w-8 h-8 bg-white shadow-xl rounded-full flex items-center justify-center">
-            <Info className="w-3.5 h-3.5 text-blue-500" />
           </div>
         </div>
-        <div className="text-center space-y-2">
-          <p className="text-[10px] font-black uppercase tracking-[0.6em] text-slate-900 italic">
-            Registry Integrity Verified
-          </p>
-          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest opacity-60">
-            End-to-End Encryption Enabled
-          </p>
+
+        {/* Wave */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
+            <path d="M0 40L1440 40L1440 12C1200 40 960 0 720 12C480 24 240 0 0 12V40Z" fill="#F8FAFD" />
+          </svg>
         </div>
       </div>
+
+      <main className="max-w-6xl mx-auto px-4 md:px-6 pt-4 pb-10 space-y-6">
+
+        {/* ── TAB BAR ── */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex p-1.5 bg-white border border-slate-100 rounded-2xl shadow-sm w-fit">
+            {[
+              { id: "shops", label: "Saved Shops", icon: Store },
+              { id: "videos", label: "Saved Videos", icon: Video },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                type="button"
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all duration-300 font-bold text-xs tracking-wider ${
+                  activeTab === tab.id
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                }`}
+              >
+                <tab.icon className="w-3.5 h-3.5" />
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-100 rounded-full">
+            <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
+            <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">
+              {activeTab === "shops" ? savedShops.length : savedVideos.length} saved
+            </span>
+          </div>
+        </div>
+
+        {/* ── SHOPS GRID ── */}
+        {activeTab === "shops" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 animate-fade-in">
+            {savedShops.length === 0 ? (
+              <div className="col-span-full flex flex-col items-center justify-center py-20 text-center bg-white rounded-3xl border border-slate-100 shadow-sm">
+                <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-4">
+                  <Store className="w-8 h-8 text-blue-300" />
+                </div>
+                <h3 className="text-base font-black text-slate-800 mb-1">No Saved Shops</h3>
+                <p className="text-sm text-slate-400 font-medium max-w-xs">Explore the map and bookmark shops you love — they'll appear here.</p>
+              </div>
+            ) : (
+              savedShops.map((shop, i) => (
+                <div
+                  key={shop.id}
+                  className="group bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-400 flex flex-col"
+                >
+                  {/* Image Header */}
+                  <div className="relative h-44 overflow-hidden bg-slate-100">
+                    <img
+                      src={shop.image}
+                      alt={shop.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/5 to-transparent" />
+
+                    {/* Category badge */}
+                    <div className="absolute top-3 left-3">
+                      <span className="px-2.5 py-1 bg-white/90 backdrop-blur-sm border border-white/80 rounded-lg text-[9px] font-black text-slate-700 uppercase tracking-widest">
+                        {shop.category || "General"}
+                      </span>
+                    </div>
+
+                    {/* Unsave button */}
+                    <div className="absolute top-3 right-3">
+                      <button
+                        onClick={() => toggleSaveShop(shop.id)}
+                        disabled={unsavingId === shop.id}
+                        className="w-9 h-9 bg-white/90 backdrop-blur-sm border border-white/80 rounded-xl flex items-center justify-center shadow-sm hover:bg-red-50 hover:border-red-200 transition-all active:scale-90 disabled:opacity-50 group/unsave"
+                      >
+                        {unsavingId === shop.id ? (
+                          <Loader2 className="w-3.5 h-3.5 text-blue-600 animate-spin" />
+                        ) : (
+                          <Bookmark className="w-3.5 h-3.5 text-blue-600 fill-blue-600 group-hover/unsave:text-red-500 group-hover/unsave:fill-red-500 transition-colors" />
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Shop name on image */}
+                    <div className="absolute bottom-3 left-4 right-4">
+                      <h4 className="text-base font-black text-white tracking-tight line-clamp-1 uppercase drop-shadow-md">
+                        {shop.name}
+                      </h4>
+                    </div>
+                  </div>
+
+                  {/* Card Body */}
+                  <div className="p-4 flex flex-col gap-3 flex-1">
+                    {/* Location & Time */}
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2 text-slate-500">
+                        <MapPin className="w-3.5 h-3.5 text-blue-500 mt-0.5 shrink-0" />
+                        <span className="text-xs font-medium leading-snug line-clamp-2">{shop.location}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-500">
+                        <Clock className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                        <span className="text-xs font-semibold text-slate-600">{shop.time}</span>
+                      </div>
+                    </div>
+
+                    {/* Action Row */}
+                    <div className="flex items-center gap-2 pt-2 border-t border-slate-100 mt-auto">
+                      <button
+                        onClick={() => navigate(`/shop-detail/${shop.id}`)}
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[11px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-sm"
+                      >
+                        <Store className="w-3.5 h-3.5" />
+                        View Shop
+                      </button>
+                      {shop.latitude && shop.longitude && (
+                        <button
+                          onClick={() =>
+                            window.open(`https://www.google.com/maps?q=${shop.latitude},${shop.longitude}`, "_blank")
+                          }
+                          className="w-10 h-10 flex items-center justify-center bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 rounded-xl transition-all active:scale-95"
+                        >
+                          <ExternalLink className="w-4 h-4 text-slate-500 hover:text-blue-600" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {/* ── VIDEOS GRID ── */}
+        {activeTab === "videos" && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 animate-fade-in">
+            {savedVideos.length === 0 ? (
+              <div className="col-span-full flex flex-col items-center justify-center py-20 text-center bg-white rounded-3xl border border-slate-100 shadow-sm">
+                <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-4">
+                  <Play className="w-8 h-8 text-blue-300" />
+                </div>
+                <h3 className="text-base font-black text-slate-800 mb-1">No Saved Videos</h3>
+                <p className="text-sm text-slate-400 font-medium max-w-xs">Browse the video feed and save clips you love — they'll appear here.</p>
+              </div>
+            ) : (
+              savedVideos.map((video, idx) => (
+                <div
+                  key={video.id}
+                  className="group relative aspect-[4/5] overflow-hidden rounded-3xl bg-slate-950 shadow-md border border-slate-100 transition-all hover:-translate-y-1 duration-400"
+                >
+                  <video
+                    src={video.thumbnail ? (video.thumbnail.startsWith('http') ? video.thumbnail : `${API_BASE_URL}${video.thumbnail}`) : ""}
+                    className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-50 transition-all duration-700"
+                    muted
+                    playsInline
+                    loop
+                    preload="metadata"
+                  />
+
+                  <div
+                    onClick={() => navigate(`/video-player/${video.id}`, { state: { videos: savedVideos, index: idx } })}
+                    className="absolute inset-0 flex items-center justify-center cursor-pointer"
+                  >
+                    <div className="w-12 h-12 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center text-white border border-white/20 transition-all scale-110 opacity-0 group-hover:opacity-100 group-hover:scale-100 duration-400">
+                      <Play className="w-5 h-5 fill-white ml-0.5" />
+                    </div>
+                  </div>
+
+                  {/* Unsave button */}
+                  <div className="absolute top-2.5 right-2.5">
+                    <button
+                      onClick={() => toggleSaveVideo(video.id)}
+                      disabled={unsavingId === video.id}
+                      className="w-8 h-8 bg-white/90 backdrop-blur-md rounded-xl flex items-center justify-center shadow-sm hover:bg-red-50 transition-all active:scale-95 disabled:opacity-50"
+                    >
+                      {unsavingId === video.id ? (
+                        <Loader2 className="w-3 h-3 animate-spin text-blue-600" />
+                      ) : (
+                        <Bookmark className="w-3 h-3 text-blue-600 fill-blue-600" />
+                      )}
+                    </button>
+                  </div>
+
+                  <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
+                    <h5 className="text-[10px] font-black text-white uppercase tracking-tight leading-tight truncate mb-0.5">
+                      {video.title}
+                    </h5>
+                    <p className="text-[8px] font-bold text-blue-300 uppercase tracking-widest truncate">
+                      {video.shopName}
+                    </p>
+                    <button
+                      onClick={() => navigate(`/shop-detail/${video.shopId || 1}`)}
+                      className="mt-2 w-full py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-[9px] shadow-lg transition-all flex items-center justify-center gap-1.5 active:scale-95"
+                    >
+                      <Store className="w-3 h-3" /> Visit Store
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {/* Footer verification strip */}
+        <div className="flex items-center justify-center gap-3 pt-6">
+          <div className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-100 rounded-full shadow-sm">
+            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Registry Integrity Verified</span>
+          </div>
+        </div>
+      </main>
     </div>
   );
 };

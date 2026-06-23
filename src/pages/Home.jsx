@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+
 import {
   ChevronRight,
   ChevronLeft,
@@ -234,11 +234,8 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="relative"
+    <div
+      className="relative animate-fade-in"
     >
       <SEO
         title="Discover Local Businesses & Shop Videos"
@@ -247,30 +244,22 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
         schema={homeSchema}
       />
       {/* --- TOAST --- */}
-      <AnimatePresence>
-        {toastMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: -20, x: "-50%" }}
-            animate={{ opacity: 1, y: 0, x: "-50%" }}
-            exit={{ opacity: 0, y: -20, x: "-50%" }}
-            className="fixed top-20 left-1/2 z-[200] flex items-center gap-2 px-4 py-3 bg-slate-900 text-white rounded-xl shadow-2xl border border-slate-800"
-          >
-            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-            <span className="text-xs font-bold tracking-wide">
-              {toastMessage}
-            </span>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {toastMessage && (
+        <div
+          className="fixed top-20 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-2 px-4 py-3 bg-slate-900 text-white rounded-xl shadow-2xl border border-slate-800 animate-fade-in"
+        >
+          <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+          <span className="text-xs font-bold tracking-wide">
+            {toastMessage}
+          </span>
+        </div>
+      )}
 
       {/* --- DYNAMIC TOP BANNERS SLIDER --- */}
       {topBanners.length > 0 && (
         <section className="relative w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="overflow-hidden relative group"
+          <div
+            className="overflow-hidden relative group animate-fade-in-up"
           >
             <Swiper
               modules={[Autoplay, Pagination, Navigation]}
@@ -291,33 +280,43 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
               className="w-full h-[250px] md:h-[350px] lg:h-[450px]"
             >
               {topBanners.map((banner) => (
-                <SwiperSlide key={banner.id} className="relative w-full h-full bg-blue-50">
+                <SwiperSlide key={banner.id} className="relative w-full h-full bg-slate-900">
+                  {/* Background image */}
                   <div
-                    className="absolute inset-0 bg-cover bg-center"
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-[8s] scale-105"
                     style={{
                       backgroundImage: banner.backgroundImage
                         ? `url(${getImageUrl(banner.backgroundImage)})`
-                        : "linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)",
+                        : "linear-gradient(135deg, #1e3a8a 0%, #312e81 100%)",
                     }}
                   />
-                  {/* Subtle overlay for text readability */}
-                  {/* <div className="absolute inset-0 bg-gradient-to-r from-blue-900/60 via-blue-900/20 to-transparent" /> */}
+                  {/* Rich layered overlays */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-900/50 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
+
+                  {/* Decorative accent line */}
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-400 to-transparent" />
 
                   <div className="relative z-10 w-full h-full flex items-center px-6 md:px-16 lg:px-24">
-                    <div className="w-full max-w-2xl text-left space-y-3 md:space-y-4">
-                      <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter leading-[1.1] max-w-[80%] md:max-w-full capitalize">
+                    <div className="w-full max-w-2xl text-left space-y-3 md:space-y-5">
+                      {/* Badge */}
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-md border border-white/15 rounded-full">
+                        <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse" />
+                        <span className="text-[10px] font-bold text-white/80 uppercase tracking-[0.2em]">Mapman Spotlight</span>
+                      </div>
+                      <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] capitalize drop-shadow-xl">
                         {banner.title}
                       </h2>
-                      <div className="flex flex-wrap items-center gap-3 md:gap-4 pt-2 md:pt-4">
+                      <div className="flex flex-wrap items-center gap-3 md:gap-4 pt-1 md:pt-2">
                         {banner.contact && (
                           <button
                             onClick={handleRegisterClick}
-                            className="px-4 md:px-6 py-2.5 md:py-3 bg-[#1e3a8a] hover:bg-blue-900 text-white rounded-xl font-bold text-xs md:text-sm transition-all capitalize"
+                            className="flex items-center gap-2 px-5 md:px-7 py-2.5 md:py-3.5 bg-white hover:bg-blue-50 text-slate-900 rounded-2xl font-black text-xs md:text-sm transition-all capitalize shadow-2xl shadow-white/10 active:scale-95"
                           >
                             {banner.contact}
+                            <ArrowUpRight className="w-4 h-4" />
                           </button>
                         )}
-
                       </div>
                     </div>
                   </div>
@@ -342,7 +341,7 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
               <ChevronRight className="w-4 h-4 md:w-6 md:h-6" />
             </div>
 
-          </motion.div>
+          </div>
         </section>
       )}
 
@@ -465,15 +464,13 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
                 const imageUrl = getImageUrl(cat.categoryImage);
 
                 return (
-                  <motion.div
+                  <div
                     key={cat.id || i}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
+                    style={{ animationDelay: `${i * 40}ms` }}
                     onClick={() =>
                       onSelectCategory(cat.categoryName.toLowerCase())
                     }
-                    className="group cursor-pointer"
+                    className="group cursor-pointer animate-fade-in-up opacity-0"
                   >
                     <div className="relative h-full bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_-10px_rgba(0,0,0,0.04)] hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] transition-all duration-700 overflow-hidden flex flex-col">
                       <div
@@ -540,22 +537,92 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
                         />
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 );
               })}
           </div>
         </section>
 
+        {/* --- PLATFORM INFO & WHY MAPMAN (Combined Premium Layout) --- */}
+        <section className="relative px-1 pb-4">
+          <div className="relative rounded-[0rem] bg-gradient-to-b from-slate-50 to-white border border-slate-100 p-8 md:p-12 shadow-[0_15px_40px_-15px_rgba(0,0,0,0.05)] overflow-hidden group">
+            {/* Background elements */}
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-100/50 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 pointer-events-none transition-transform duration-1000 group-hover:scale-110" />
+            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-50/50 rounded-full blur-[60px] translate-y-1/3 -translate-x-1/3 pointer-events-none transition-transform duration-1000 group-hover:scale-110" />
+            <div className="absolute top-1/2 left-1/2 w-[500px] h-[500px] bg-purple-50/40 rounded-full blur-[80px] -translate-y-1/2 -translate-x-1/2 pointer-events-none transition-transform duration-1000 group-hover:scale-105" />
+
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+              {/* Left Content (Why Mapman) */}
+              <div className="lg:col-span-5 space-y-7 relative z-10">
+                <span className="text-[16px] font-black uppercase tracking-[0.2em]">The Mapman Advantage</span>
+
+                <h3 className="text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-[1.15]">
+                  Local Discovery, <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">Reimagined.</span>
+                </h3>
+
+                <p className="text-slate-500 font-medium text-base md:text-lg leading-relaxed max-w-lg">
+                  Experience a seamless, interactive platform designed to connect you with the best local businesses through live maps and engaging video reels.
+                </p>
+
+                <div className="grid grid-cols-2 gap-y-4 gap-x-2 max-w-sm">
+                  {[
+                    { icon: <MapPin className="w-4 h-4" />, text: "Live Map Search", bg: "bg-blue-100", color: "text-blue-600" },
+                    { icon: <Play className="w-4 h-4" />, text: "Business Reels", bg: "bg-indigo-100", color: "text-indigo-600" },
+                    { icon: <Search className="w-4 h-4" />, text: "Smart Filters", bg: "bg-purple-100", color: "text-purple-600" },
+                    { icon: <Smartphone className="w-4 h-4" />, text: "Mobile Optimized", bg: "bg-emerald-100", color: "text-emerald-600" },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-2.5">
+                      <div className={`w-7 h-7 rounded-lg ${item.bg} flex items-center justify-center ${item.color} shrink-0`}>
+                        {item.icon}
+                      </div>
+                      <span className="text-[11px] md:text-xs font-bold text-slate-700">{item.text}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-4 flex flex-col sm:flex-row gap-3 sm:gap-4">
+                  <button className="px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-bold text-sm transition-all shadow-[0_8px_20px_-6px_rgba(79,70,229,0.4)] hover:shadow-[0_12px_25px_-6px_rgba(79,70,229,0.5)] flex items-center justify-center gap-2 hover:-translate-y-0.5">
+                    <MapPin className="w-4 h-4" /> Start Exploring
+                  </button>
+                  <button className="px-6 py-3.5 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl font-bold text-sm transition-all shadow-sm flex items-center justify-center gap-2 hover:-translate-y-0.5">
+                    <Play className="w-4 h-4 text-blue-500" /> Watch Demo
+                  </button>
+                </div>
+              </div>
+
+              {/* Right Content (Bento Grid of Stats) */}
+              <div className="lg:col-span-7 grid grid-cols-2 gap-3 md:gap-4 relative z-10 max-w-2xl ml-auto">
+                {[
+                  { title: "100+", sub: "Verified Businesses", icon: <ShoppingBag className="w-5 h-5 text-blue-600" />, bg: "bg-gradient-to-br from-blue-50/80 to-blue-100/40 hover:from-blue-100/80 hover:to-blue-50", border: "border-white/60 shadow-[0_4px_20px_rgb(0,0,0,0.02)]", text: "text-blue-900", gradText: "from-blue-600 to-blue-400" },
+                  { title: "70+", sub: "Active Daily Users", icon: <Users className="w-5 h-5 text-emerald-600" />, bg: "bg-gradient-to-br from-emerald-50/80 to-emerald-100/40 hover:from-emerald-100/80 hover:to-emerald-50", border: "border-white/60 shadow-[0_4px_20px_rgb(0,0,0,0.02)]", text: "text-emerald-900", gradText: "from-emerald-600 to-emerald-400" },
+                  { title: "100+", sub: "Cities Mapped", icon: <Compass className="w-5 h-5 text-indigo-600" />, bg: "bg-gradient-to-br from-indigo-50/80 to-indigo-100/40 hover:from-indigo-100/80 hover:to-indigo-50", border: "border-white/60 shadow-[0_4px_20px_rgb(0,0,0,0.02)]", text: "text-indigo-900", gradText: "from-indigo-600 to-indigo-400" },
+                  { title: "4.8★", sub: "Platform Rating", icon: <Star className="w-5 h-5 text-amber-500 fill-amber-400" />, bg: "bg-gradient-to-br from-amber-50/80 to-amber-100/40 hover:from-amber-100/80 hover:to-amber-50", border: "border-white/60 shadow-[0_4px_20px_rgb(0,0,0,0.02)]", text: "text-amber-900", gradText: "from-amber-500 to-orange-400" },
+                ].map((stat, i) => (
+                  <div key={i} className={`p-5 md:p-6 rounded-2xl md:rounded-[1.5rem] ${stat.bg} border ${stat.border} flex flex-col justify-between transition-all duration-500 cursor-default relative overflow-hidden backdrop-blur-sm group/card hover:-translate-y-1 hover:shadow-lg hover:border-white min-h-[140px] md:min-h-[160px]`}>
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-white/60 rounded-full blur-xl -mr-8 -mt-8 pointer-events-none transition-opacity duration-500 opacity-50 group-hover/card:opacity-100" />
+
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-[0.85rem] bg-white shadow-sm border border-white/50 flex items-center justify-center mb-3 md:mb-4 transition-transform duration-500 relative z-10 group-hover/card:scale-110">
+                      {stat.icon}
+                    </div>
+                    <div className="relative z-10">
+                      <h4 className={`text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br ${stat.gradText} tracking-tight mb-1`}>{stat.title}</h4>
+                      <p className={`text-[9px] md:text-[10px] font-bold uppercase tracking-widest opacity-80 ${stat.text}`}>{stat.sub}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
         {/* --- CATEGORY BANNERS SLIDER --- */}
         {categoryBanners.length > 0 && (
           <section className="relative px-1 mt-6 md:mt-10 lg:mt-14">
             <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar gap-4 pb-4">
               {categoryBanners.map((banner) => (
-                <motion.div
+                <div
                   key={banner.id}
-                  whileHover={{ y: 0 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  className="group relative snap-center shrink-0 w-[85%] sm:w-[60%] md:w-[45%] lg:w-[40%] xl:w-[35%] h-[160px] sm:h-[180px] md:h-[230px] rounded-2xl sm:rounded-3xl overflow-hidden bg-white border border-slate-200 shadow-[0_10px_40px_rgba(0,0,0,0.06)] flex-none"
+                  onClick={() => navigate(`/map?category=${encodeURIComponent(banner.category)}`)}
+                  className="group relative snap-center shrink-0 w-[85%] sm:w-[60%] md:w-[45%] lg:w-[40%] xl:w-[35%] h-[160px] sm:h-[180px] md:h-[230px] rounded-2xl sm:rounded-3xl overflow-hidden bg-white border border-slate-200 shadow-[0_10px_40px_rgba(0,0,0,0.06)] flex-none transition-transform duration-300 hover:-translate-y-1 cursor-pointer"
                 >
                   {/* Subtle Gradient Background */}
                   <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-50 opacity-100" />
@@ -626,7 +693,7 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
                       />
                     </div>
                   )}
-                </motion.div>
+                </div>
               ))}
             </div>
           </section>
@@ -639,30 +706,30 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
             {[
               {
                 icon: <Compass />,
-                title: "Discovery Elite",
+                title: "Explore Local Gems",
                 color: "text-blue-600",
                 bg: "bg-blue-600/10",
-                desc: "MapMan leverages premium mapping to reveal top-tier local services and exclusive business hubs near you.",
+                desc: "Discover hidden local businesses, trending shops, and popular destinations near your location with ease.",
               },
               {
                 icon: <Zap />,
-                title: "Quantum Connect",
+                title: "Showcase Your Brand",
                 color: "text-amber-600",
                 bg: "bg-amber-600/10",
-                desc: "Accelerate your journey from discovery to booking with our instant, real-time service activation engine.",
+                desc: "Empower your business with engaging video content that captures attention and builds customer trust.",
               },
               {
                 icon: <Users />,
-                title: "Verified Trust",
+                title: "Connect Communities",
                 color: "text-emerald-600",
                 bg: "bg-emerald-600/10",
-                desc: "Join a high-integrity community of 2M+ users who define local excellence through authentic reviews.",
+                desc: "Bringing customers and local businesses together through a seamless platform built for discovery and growth.",
               },
             ].map((feat, i) => (
-              <motion.div
+              <div
                 key={i}
-                whileHover={{ y: -8 }}
-                className="group relative bg-slate-50/50 hover:bg-white p-6 md:p-8 lg:p-10 rounded-[2.5rem] border border-slate-100/50 hover:shadow-[0_40px_80px_-15px_rgba(30,58,138,0.1)] transition-all duration-500 overflow-hidden"
+                style={{ animationDelay: `${i * 100}ms` }}
+                className="group relative bg-slate-50/50 hover:bg-white p-6 md:p-8 lg:p-10 rounded-[2.5rem] border border-slate-100/50 hover:shadow-[0_40px_80px_-15px_rgba(30,58,138,0.1)] transition-all duration-500 hover:-translate-y-2 overflow-hidden animate-fade-in-up opacity-0"
               >
                 <div
                   className={`absolute top-0 right-0 w-32 h-32 ${feat.bg} rounded-bl-[5rem] opacity-20 -mr-8 -mt-8 transition-transform duration-700 group-hover:scale-110`}
@@ -691,12 +758,12 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
                     </span>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </section>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

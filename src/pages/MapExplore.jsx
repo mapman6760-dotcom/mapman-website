@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+
 import {
   Search,
   MapPin,
@@ -165,7 +165,7 @@ const MapExplore = ({ isCollapsed }) => {
 
   return (
     <div
-      className="relative w-full h-[88vh] min-h-[700px] transition-all duration-500 ease-in-out bg-[#F8FAFC] z-10 flex flex-col overflow-hidden rounded-none shadow-2xl border border-slate-200/60"
+      className="relative w-full h-[88vh] min-h-[700px] mt-6 md:mt-10 transition-all duration-500 ease-in-out bg-[#F8FAFC] z-10 flex flex-col overflow-hidden rounded-t-[2.5rem] shadow-2xl border-x border-t border-slate-200/60"
     >
       <SEO
         title={searchInput ? `Find ${searchInput} Nearby` : "Explore Local Businesses on Map"}
@@ -190,25 +190,20 @@ const MapExplore = ({ isCollapsed }) => {
                   onChange={(e) => setSearchInput(e.target.value)}
                   className="flex-1 h-10 bg-transparent outline-none text-[13px] font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-medium"
                 />
-                <AnimatePresence>
-                  {searchInput && (
-                    <motion.button
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      type="button"
-                      onClick={() => {
-                        setSearchInput("");
-                        setSuggestions([]);
-                        loadShops("");
-                        navigate("/map");
-                      }}
-                      className="w-8 h-8 flex items-center justify-center text-slate-300 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </motion.button>
-                  )}
-                </AnimatePresence>
+                {searchInput && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchInput("");
+                      setSuggestions([]);
+                      loadShops("");
+                      navigate("/map");
+                    }}
+                    className="w-8 h-8 flex items-center justify-center text-slate-300 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors animate-scale-in"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
                 <button
                   type="submit"
                   className="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-md hover:bg-blue-600 hover:shadow-blue-600/30 active:scale-95 transition-all"
@@ -218,14 +213,10 @@ const MapExplore = ({ isCollapsed }) => {
               </div>
 
               {/* --- COMPACT AUTOCOMPLETE DROPDOWN --- */}
-              <AnimatePresence>
-                {showSuggestions && suggestions.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-3xl border border-white/40 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.1)] overflow-hidden z-[60]"
-                  >
+              {showSuggestions && suggestions.length > 0 && (
+                <div
+                  className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-3xl border border-white/40 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.1)] overflow-hidden z-[60] animate-fade-in-up"
+                >
                     <div className="p-1.5 max-h-[350px] overflow-y-auto no-scrollbar">
                       {suggestions.map((shop, i) => (
                         <button
@@ -284,9 +275,8 @@ const MapExplore = ({ isCollapsed }) => {
                         Matched {suggestions.length} Hubs
                       </span>
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                </div>
+              )}
             </div>
           </form>
         </div>
@@ -294,23 +284,18 @@ const MapExplore = ({ isCollapsed }) => {
 
       {/* 2. MAP AREA with SATURATION */}
       <div className="flex-1 relative overflow-hidden bg-slate-100">
-        <AnimatePresence>
-          {loading && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 flex items-center justify-center bg-white/40 z-50 backdrop-blur-xl"
-            >
-              <div className="flex flex-col items-center gap-4">
-                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                <span className="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em] animate-pulse">
-                  Syncing Map Data...
-                </span>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {loading && (
+          <div
+            className="absolute inset-0 flex items-center justify-center bg-white/40 z-50 backdrop-blur-xl animate-fade-in"
+          >
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em] animate-pulse">
+                Syncing Map Data...
+              </span>
+            </div>
+          </div>
+        )}
 
         <div className="h-full w-full">
           <Map
@@ -375,17 +360,15 @@ const MapExplore = ({ isCollapsed }) => {
           <div className="flex gap-5 overflow-x-auto no-scrollbar pb-6 -mx-2 px-2 snap-x scroll-smooth">
             {sortedShops.length > 0
               ? sortedShops.map((shop, i) => (
-                  <motion.div
+                  <div
                     key={shop.id}
+                    style={{ animationDelay: `${i * 60}ms` }}
                     onClick={() => {
                       setSelectedShop(shop);
                       setCenter([parseFloat(shop.lat), parseFloat(shop.long)]);
                       navigate(`/shop-detail/${shop.id}`);
                     }}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.08 }}
-                    className={`min-w-[280px] sm:min-w-[320px] lg:min-w-[340px] h-[115px] bg-white border flex items-center p-3 rounded-[1.5rem] transition-all duration-500 cursor-pointer group snap-center relative ${selectedShop?.id === shop.id ? "border-blue-600 ring-4 ring-blue-500/5 shadow-[0_30px_60px_-15px_rgba(37,99,235,0.12)] scale-[1.02] z-10" : "border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.04)] hover:border-blue-200"}`}
+                    className={`min-w-[280px] sm:min-w-[320px] lg:min-w-[340px] h-[115px] bg-white border flex items-center p-3 rounded-[1.5rem] transition-all duration-500 cursor-pointer group snap-center relative animate-fade-in-up opacity-0 ${selectedShop?.id === shop.id ? "border-blue-600 ring-4 ring-blue-500/5 shadow-[0_30px_60px_-15px_rgba(37,99,235,0.12)] scale-[1.02] z-10" : "border-slate-100 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.04)] hover:border-blue-200"}`}
                   >
                     {/* Left: Enhanced Image Frame */}
                     <div className="w-[85px] h-full flex-shrink-0 relative overflow-hidden rounded-[1.2rem] bg-slate-50 border border-slate-100/50 group-hover:shadow-md transition-all duration-700">
@@ -455,7 +438,7 @@ const MapExplore = ({ isCollapsed }) => {
                         </div>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 ))
               : !loading && (
                   <div className="w-full h-[130px] flex flex-col items-center justify-center bg-white/80 backdrop-blur-xl rounded-[1.5rem] border-2 border-dashed border-slate-200">
@@ -469,79 +452,102 @@ const MapExplore = ({ isCollapsed }) => {
         </div>
       </div>
 
-      <AnimatePresence>
-        {showShopModal && selectedShop && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowShopModal(false)}>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-[320px] bg-white rounded-[2rem] shadow-[0_30px_80px_rgba(0,0,0,0.12)] overflow-hidden flex flex-col border border-slate-100"
-            >
+      {showShopModal && selectedShop && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in" onClick={() => setShowShopModal(false)}>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-[320px] bg-slate-900 text-white rounded-[2rem] shadow-[0_30px_80px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col border border-white/10 animate-scale-in"
+          >
               <button 
                 onClick={() => setShowShopModal(false)}
-                className="absolute top-4 right-4 z-10 w-8 h-8 bg-black/20 hover:bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all"
+                className="absolute top-4 right-4 z-20 w-8 h-8 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all shadow-lg border border-white/10"
               >
                 <X className="w-4 h-4" />
               </button>
               
-              <div className="h-36 relative bg-slate-100">
+              <div className="h-40 relative bg-slate-800">
                 {selectedShop.shopImage ? (
                   <img src={selectedShop.shopImage} alt={selectedShop.shopName} className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-slate-200">
-                    <ImageIcon className="w-10 h-10 text-slate-400 opacity-50" />
+                  <div className="w-full h-full flex items-center justify-center bg-slate-800">
+                    <ImageIcon className="w-10 h-10 text-slate-500 opacity-50" />
                   </div>
                 )}
-                <div className="absolute bottom-3 left-3 px-3 py-1 bg-blue-600/90 backdrop-blur-md rounded-lg text-[10px] font-black text-white uppercase tracking-widest shadow-lg">
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent z-0"></div>
+                
+                <div className="absolute bottom-3 left-4 px-3 py-1 bg-blue-600/90 backdrop-blur-md rounded-lg text-[10px] font-black text-white uppercase tracking-widest shadow-lg border border-white/20 z-10">
                   {selectedShop.category}
                 </div>
               </div>
               
-              <div className="p-5 flex flex-col gap-3">
+              <div className="p-6 flex flex-col gap-4 relative z-10 -mt-2">
                 <div>
-                  <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase leading-tight mb-1">
+                  <h3 className="text-xl font-black text-white tracking-tight uppercase leading-tight mb-1.5 drop-shadow-md">
                     {selectedShop.shopName}
                   </h3>
-                  <p className="text-xs text-slate-500 font-medium leading-relaxed flex items-start gap-1">
-                    <MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0 text-blue-500" />
+                  <p className="text-xs text-blue-200/80 font-medium leading-relaxed flex items-start gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0 text-cyan-400" />
                     {selectedShop.address || "Local Hub, Mapman sector"}
                   </p>
                 </div>
                 
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
-                    <Navigation className="w-4 h-4 text-blue-600" />
-                    <span className="text-[11px] font-black text-slate-800 tracking-tight">
+                  <div className="flex items-center gap-2 bg-white/5 px-3 py-2 rounded-xl border border-white/10 shadow-inner">
+                    <Navigation className="w-4 h-4 text-cyan-400" />
+                    <span className="text-[11px] font-black text-white tracking-tight">
                       {getRawDistance(parseFloat(selectedShop.lat), parseFloat(selectedShop.long)).toFixed(2)} km away
                     </span>
                   </div>
                 </div>
                 
-                <div className="mt-1 pt-3 border-t border-slate-100 grid grid-cols-2 gap-2">
+                <div className="mt-2 pt-4 border-t border-white/10 grid grid-cols-2 gap-3">
                   <button 
                     onClick={() => {
                       if (selectedShop.lat && selectedShop.long) {
                         window.open(`https://www.google.com/maps?q=${selectedShop.lat},${selectedShop.long}`, "_blank");
                       }
                     }}
-                    className="flex items-center justify-center gap-2 py-3 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all"
+                    className="flex items-center justify-center gap-2 py-3.5 bg-white/10 hover:bg-white/20 text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all backdrop-blur-md"
                   >
-                    <Navigation className="w-3.5 h-3.5" /> Directions
+                    <Navigation className="w-3.5 h-3.5 text-cyan-400" /> Directions
                   </button>
                   <button 
                     onClick={() => navigate(`/shop-detail/${selectedShop.id}`)}
-                    className="flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-600/20 transition-all active:scale-95"
+                    className="flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-500/25 transition-all active:scale-95"
                   >
                     <Store className="w-3.5 h-3.5" /> View Shop
                   </button>
                 </div>
               </div>
-            </motion.div>
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
+
+      {/* ── MAP BOTTOM INFO STRIP ── */}
+      <div className="absolute bottom-0 left-0 right-0 z-30 pointer-events-none">
+        <div className="bg-gradient-to-t from-white/95 via-white/70 to-transparent pt-6 pb-4 px-4 md:px-6">
+          <div className="pointer-events-auto flex flex-wrap items-center justify-between gap-3 max-w-5xl mx-auto">
+            <div className="flex items-center gap-3 flex-wrap">
+              {[
+                { icon: <Search className="w-3.5 h-3.5" />, text: "Search by category", color: "text-blue-600 bg-blue-50 border-blue-100" },
+                { icon: <MapPin className="w-3.5 h-3.5" />, text: "Click a pin for details", color: "text-emerald-600 bg-emerald-50 border-emerald-100" },
+                { icon: <Navigation className="w-3.5 h-3.5" />, text: "Get directions", color: "text-indigo-600 bg-indigo-50 border-indigo-100" },
+              ].map((tip, i) => (
+                <div key={i} className={`inline-flex items-center gap-2 px-3 py-1.5 ${tip.color} border rounded-full text-[10px] font-bold`}>
+                  {tip.icon} {tip.text}
+                </div>
+              ))}
+            </div>
+            {shops.length > 0 && (
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900/80 backdrop-blur-md rounded-full">
+                <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                <span className="text-[10px] font-black text-white uppercase tracking-widest">{shops.length} Businesses Found</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
 
     </div>
   );
@@ -552,12 +558,10 @@ const MarkerUI = React.memo(({ shop, isActive, delay = 0, onClick }) => {
   const bgColorClass = getCategoryColor(shop.category);
   const borderColorClass = getCategoryBorderColor(shop.category);
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0, y: 10 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ type: "spring", stiffness: 300, damping: 15, delay }}
+    <div
+      style={{ animationDelay: `${delay}s` }}
       onClick={onClick}
-      className={`relative z-10 -translate-x-1/2 -translate-y-1/2 group cursor-pointer pointer-events-auto transition-all ${isActive ? "z-20 scale-125" : ""}`}
+      className={`relative z-10 -translate-x-1/2 -translate-y-1/2 group cursor-pointer pointer-events-auto transition-all animate-scale-in opacity-0 ${isActive ? "z-20 scale-125" : ""}`}
     >
       <div
         className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white border-2 ${borderColorClass} px-3 py-1.5 rounded-[10px] shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-all flex flex-col items-center justify-center min-w-[70px] ${isActive ? "scale-105 z-30 ring-2 ring-blue-500/20" : "scale-100 opacity-90 hover:opacity-100"}`}
@@ -571,7 +575,7 @@ const MarkerUI = React.memo(({ shop, isActive, delay = 0, onClick }) => {
           className={`w-5 h-5 rounded-full border-[3px] border-white shadow-sm ${bgColorClass} transition-transform duration-300 ${isActive ? "ring-4 ring-blue-500/20" : ""}`}
         ></div>
       </div>
-    </motion.div>
+    </div>
   );
 });
 

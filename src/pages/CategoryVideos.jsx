@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+
 import {
   API_BASE_URL
 } from "../config";
@@ -104,11 +104,8 @@ const CategoryVideos = () => {
 
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="min-h-screen bg-slate-50/50 pb-32"
+    <div
+      className="min-h-screen bg-slate-50/50 pb-32 animate-fade-in"
     >
       {/* ── STICKY HEADER ── */}
 
@@ -161,19 +158,17 @@ const CategoryVideos = () => {
         ) : videos.length > 0 ? (
           <div className="space-y-12">
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-6">
-              <AnimatePresence mode="popLayout">
+
                 {videos.map((vid, i) => (
-                  <motion.div
+                  <div
                     key={vid.id || i}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: i * 0.05 }}
+                    style={{ animationDelay: `${i * 45}ms` }}
                     onClick={() =>
                       navigate(`/video-player/${vid.id || i}`, {
                         state: { videos: videos, index: i, isMyVideos: false },
                       })
                     }
-                    className="group relative flex flex-col rounded-2xl overflow-hidden cursor-pointer bg-slate-950 border border-slate-800 shadow-xl hover:shadow-[0_20px_60px_-15px_rgba(59,130,246,0.25)] hover:-translate-y-1 transition-all duration-500 h-full"
+                    className="group relative flex flex-col rounded-2xl overflow-hidden cursor-pointer bg-slate-950 border border-slate-800 shadow-xl hover:shadow-[0_20px_60px_-15px_rgba(59,130,246,0.25)] hover:-translate-y-1 transition-all duration-500 h-full animate-fade-in-up opacity-0"
                   >
                     {/* VIDEO */}
                     <div className="relative aspect-[3/4] overflow-hidden bg-slate-900">
@@ -216,9 +211,9 @@ const CategoryVideos = () => {
                         </div>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
-              </AnimatePresence>
+
             </div>
 
             {hasMore && (
@@ -249,7 +244,7 @@ const CategoryVideos = () => {
           </div>
         )}
       </main>
-    </motion.div>
+    </div>
   );
 };
 
