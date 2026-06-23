@@ -219,7 +219,7 @@ const ContactUs = () => {
       </div>
 
       {/* ── FAQ STRIP ── */}
-      <div className="max-w-6xl mx-auto px-6 md:px-10 pb-16">
+      {/* <div className="max-w-6xl mx-auto px-6 md:px-10 pb-16">
         <div className="bg-white border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl p-8 md:p-12">
           <div className="text-center mb-10">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-100 rounded-full mb-4">
@@ -250,7 +250,7 @@ const ContactUs = () => {
             ))}
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

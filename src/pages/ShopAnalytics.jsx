@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft,
+  ChevronLeft,
   Play,
   Eye,
   Clapperboard,
@@ -36,7 +36,10 @@ const ShopAnalytics = () => {
       setLoading(true);
       const res = await getShopAnalytics();
       if (res.status === 200) {
-        setData(res.data);
+        const apiData = res.data || {};
+        const videos = Array.isArray(apiData) ? apiData : (apiData.totalVideos || apiData.videos || []);
+        const views = apiData.totalViews !== undefined ? apiData.totalViews : videos.reduce((acc, curr) => acc + (curr.viewCount || curr.views || 0), 0);
+        setData({ totalVideos: videos, totalViews: views });
       } else {
         throw new Error("Failed to load data");
       }
@@ -49,8 +52,11 @@ const ShopAnalytics = () => {
   };
 
   const getTimeAgo = (dateString) => {
-    const now = new Date();
+    if (!dateString) return "Recently";
     const past = new Date(dateString);
+    if (isNaN(past.getTime())) return "Recently";
+    
+    const now = new Date();
     const diffInMs = now - past;
     const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 

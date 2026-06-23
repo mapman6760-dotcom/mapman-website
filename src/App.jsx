@@ -581,6 +581,30 @@ const Dashboard = ({ onLogout, isLoggedIn, setIsLoggedIn }) => {
           </div>
         </div>
       )}
+
+      {/* ── FLOATING CONTACT ICON ── */}
+      {currentPage !== "contact-us" && (
+        <button
+          onClick={() => navigate("/contact-us")}
+          className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-[100] group flex items-center justify-center"
+          aria-label="Contact Us"
+        >
+          {/* Pulse rings */}
+          <div className="absolute inset-0 bg-green-500 rounded-full animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite] opacity-40" />
+          <div className="absolute inset-0 bg-emerald-400 rounded-full animate-[ping_2.5s_cubic-bezier(0,0,0.2,1)_infinite] opacity-30 delay-300" />
+
+          {/* Main Bubble */}
+          <div className="relative w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-green-500 to-emerald-700 rounded-full shadow-[0_10px_40px_-10px_rgba(16,185,129,0.8)] border border-white/20 flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-active:scale-95">
+            <MessageCircle className="w-6 h-6 md:w-7 md:h-7 text-white drop-shadow-md group-hover:rotate-12 transition-transform duration-300" />
+
+            {/* Tooltip */}
+            <span className="absolute right-full mr-4 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest px-3 py-2 rounded-xl opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all duration-300 pointer-events-none whitespace-nowrap shadow-xl">
+              Get in Touch
+              <div className="absolute top-1/2 -right-1 -translate-y-1/2 w-2 h-2 bg-slate-900 rotate-45" />
+            </span>
+          </div>
+        </button>
+      )}
     </div>
   );
 };

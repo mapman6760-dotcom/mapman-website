@@ -283,7 +283,7 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
                 <SwiperSlide key={banner.id} className="relative w-full h-full bg-slate-900">
                   {/* Background image */}
                   <div
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-[8s] scale-105"
+                    className="absolute inset-0 bg-[length:100%_100%] bg-no-repeat bg-center transition-transform duration-[8s] scale-105"
                     style={{
                       backgroundImage: banner.backgroundImage
                         ? `url(${getImageUrl(banner.backgroundImage)})`
@@ -291,8 +291,8 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
                     }}
                   />
                   {/* Rich layered overlays */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-900/50 to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-slate-950/40 via-slate-900/50 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/30 via-transparent to-transparent" />
 
                   {/* Decorative accent line */}
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-400 to-transparent" />
@@ -300,10 +300,6 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
                   <div className="relative z-10 w-full h-full flex items-center px-6 md:px-16 lg:px-24">
                     <div className="w-full max-w-2xl text-left space-y-3 md:space-y-5">
                       {/* Badge */}
-                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-md border border-white/15 rounded-full">
-                        <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse" />
-                        <span className="text-[10px] font-bold text-white/80 uppercase tracking-[0.2em]">Mapman Spotlight</span>
-                      </div>
                       <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] capitalize drop-shadow-xl">
                         {banner.title}
                       </h2>
@@ -325,7 +321,7 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
                       <img
                         src={`${API_BASE_URL}${banner.image}`}
                         alt={banner.title}
-                        className="w-full h-full object-contain object-bottom filter drop-shadow-2xl"
+                        className="w-full h-full object-cover object-bottom filter drop-shadow-2xl"
                       />
                     </div>
                   )}
