@@ -1,431 +1,384 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import {
-  ArrowLeft,
-  Bookmark,
-  Phone,
-  ChevronRight,
-  MapPin,
-  ShieldCheck,
-  Video,
-  Maximize2,
-  Clock,
-  Briefcase,
-  Info,
-  X,
-  Play,
-  Navigation,
-  MessageCircle,
-  Star,
-  Hash,
+  Bookmark, Phone, MapPin, ShieldCheck, Video, Maximize2,
+  Clock, X, Play, Navigation, MessageCircle, Star,
+  Globe, Hash, CheckCircle2, CalendarCheck, ChevronRight, Eye, AlertCircle
 } from "lucide-react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Autoplay } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/pagination";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_BASE_URL } from "../config";
 import SEO from "../components/SEO";
 import { ShopDetailSkeleton } from "../components/SkeletonLoaders";
 
-
-
-
 const ShopDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("details");
   const [loading, setLoading] = useState(true);
   const [shopInfo, setShopInfo] = useState(null);
   const [videos, setVideos] = useState([]);
   const [isSaved, setIsSaved] = useState(false);
   const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [mainVideo, setMainVideo] = useState(null);
+  const [toastMessage, setToastMessage] = useState("");
+  const videoRef = useRef(null);
 
-  useEffect(() => {
-    fetchShopData();
-  }, [id]);
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(""), 3000);
+  };
+
+  useEffect(() => { fetchShopData(); }, [id]);
 
   const fetchShopData = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_BASE_URL}/shop/getShopById`, {
+      const res = await fetch(`${API_BASE_URL}/shop/getShopById`, {
         method: "POST",
         headers: { "Content-Type": "application/json", usertoken: token },
         body: JSON.stringify({ shopId: parseInt(id) }),
       });
-      const text = await response.text();
-      try {
-        const result = JSON.parse(text);
-        if (result.status === 200) {
-          setShopInfo(result.data.shop);
-          setVideos(result.data.shopVideos || []);
-          setIsSaved(result.data.shopSavedAlready);
-        } else {
-          setError(result.message || "Store information unavailable");
-        }
-      } catch {
-        setError("Service temporarily unavailable");
-      }
-    } catch {
-      setError("Unable to connect to the network");
-    } finally {
-      setLoading(false);
-    }
+      const result = JSON.parse(await res.text());
+      if (result.status === 200) {
+        setShopInfo(result.data.shop);
+        const vids = result.data.shopVideos || [];
+        setVideos(vids);
+        if (vids.length > 0) setMainVideo(vids[0]);
+        setIsSaved(result.data.shopSavedAlready);
+      } else setError(result.message || "Unavailable");
+    } catch { setError("Network error"); }
+    finally { setLoading(false); }
   };
 
   if (loading) return <ShopDetailSkeleton />;
-
-
-  if (error || !shopInfo) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-8 p-10 bg-white rounded-3xl border border-slate-100 shadow-xl max-w-lg mx-auto text-center">
-        <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center border border-slate-100">
-          <img src="https://cdn-icons-png.flaticon.com/128/869/869432.png" alt="empty" className="w-10 h-10" />
-        </div>
-        <div>
-          <h2 className="text-2xl font-black text-slate-900 tracking-tighter uppercase mb-2">Store Not Found</h2>
-          <p className="text-sm text-slate-500 leading-relaxed">We couldn't retrieve data for this business. It may be inactive or under synchronization.</p>
-        </div>
-        <div className="flex gap-3 w-full">
-          <button onClick={() => navigate("/map")} className="flex-1 py-3.5 bg-blue-50 text-blue-600 border border-blue-100 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all active:scale-95">
-            Explore Map
-          </button>
-        </div>
+  if (error || !shopInfo) return (
+    <div className="min-h-[50vh] flex flex-col items-center justify-center gap-4 text-center p-8">
+      <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center">
+        <ShieldCheck className="w-8 h-8 text-slate-300" />
       </div>
-    );
-  }
+      <h2 className="text-xl font-black text-slate-800">Store Not Found</h2>
+      <p className="text-sm text-slate-500 max-w-xs">This business may be inactive or under review.</p>
+      <button onClick={() => navigate("/map")} className="px-6 py-2.5 bg-green-600 text-white rounded-xl font-bold text-sm">Explore Map</button>
+    </div>
+  );
 
-  const shopBanner = shopInfo.shopImage;
   const gallery = [shopInfo.image1, shopInfo.image2, shopInfo.image3, shopInfo.image4].filter(Boolean);
-
-  const contactLinks = [
-    {
-      title: "WhatsApp",
-      sub: "Instant Message",
-      img: "https://cdn-icons-png.flaticon.com/128/5968/5968841.png",
-      href: `https://wa.me/${shopInfo.whatsappNumber}`,
-      bg: "bg-emerald-50",
-      border: "border-emerald-100",
-      text: "text-emerald-700",
-    },
-    {
-      title: "Call Store",
-      sub: "Direct Support",
-      img: "https://cdn-icons-png.flaticon.com/128/9840/9840108.png",
-      href: `tel:${shopInfo.shopNumber}`,
-      bg: "bg-blue-50",
-      border: "border-blue-100",
-      text: "text-blue-700",
-    },
-    {
-      title: "Directions",
-      sub: "Open in Maps",
-      img: "https://cdn-icons-png.flaticon.com/128/1865/1865269.png",
-      href: `https://www.google.com/maps/dir/?api=1&destination=${shopInfo.lat},${shopInfo.long}`,
-      bg: "bg-rose-50",
-      border: "border-rose-100",
-      text: "text-rose-700",
-    },
-  ];
-
-  const shopSchema = {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": shopInfo.shopName,
-    "image": shopInfo.shopImage,
-    "url": window.location.href,
-    "telephone": shopInfo.shopNumber,
-    "priceRange": "$$",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": shopInfo.address,
-    },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": parseFloat(shopInfo.lat) || 0.0,
-      "longitude": parseFloat(shopInfo.long) || 0.0
-    }
-  };
+  const videoSrc = (v) => v?.video ? (v.video.startsWith("http") ? v.video : `${API_BASE_URL}${v.video}`) : "";
 
   return (
-    <div className="max-w-6xl mx-auto w-full pb-20 px-2 md:px-4 space-y-5 md:space-y-7 animate-fade-in">
-      <SEO
-        title={`${shopInfo.shopName} | ${shopInfo.category}`}
-        description={`Get address, location, telephone number, verified photos, video reel tour, and google directions for ${shopInfo.shopName} in ${shopInfo.address?.split(',').slice(0, 2).join(', ')}.`}
-        canonical={window.location.href}
-        schema={shopSchema}
-      />
-      {/* Image Lightbox */}
-      {selectedImage && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/95 backdrop-blur-md animate-fade-in"
-          onClick={() => setSelectedImage(null)}
-        >
-          <div
-            className="relative max-w-4xl w-full overflow-hidden rounded-3xl bg-black shadow-2xl animate-scale-in"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img src={selectedImage} alt="Full view" className="w-full h-auto max-h-[85vh] object-contain" />
-            <button
-              onClick={() => setSelectedImage(null)}
-              className="absolute top-5 right-5 p-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white border border-white/10 transition-all"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      )}
+    <div className="w-full mx-auto pb-24">
+      <SEO title={`${shopInfo.shopName} | ${shopInfo.category}`} description={shopInfo.address} canonical={window.location.href} />
 
-      {/* ── SAVE ROW ── */}
-      <div className="flex items-center justify-end pt-1">
-
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-100 rounded-full">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-            <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Verified</span>
-          </div>
-          <button
-            onClick={() => setIsSaved(!isSaved)}
-            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all border ${isSaved ? "bg-amber-500 border-amber-500 text-white shadow-lg shadow-amber-500/25" : "bg-white border-slate-200 text-slate-400 hover:text-amber-500 hover:border-amber-200"}`}
-          >
-            <Bookmark className="w-4 h-4" fill={isSaved ? "currentColor" : "none"} />
+      {/* Lightbox */}
+      {selectedImage && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 p-4" onClick={() => setSelectedImage(null)}>
+          <button className="absolute top-5 right-5 p-2 bg-white/10 hover:bg-white/20 transition-all rounded-full text-white" onClick={() => setSelectedImage(null)}>
+            <X className="w-5 h-5" />
           </button>
-        </div>
-      </div>
+          <img src={selectedImage} className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl" alt="preview" onClick={(e) => e.stopPropagation()} />
+        </div>,
+        document.body
+      )}
 
       {/* ── HERO BANNER ── */}
-      <section className="relative rounded-2xl md:rounded-[2rem] overflow-hidden shadow-2xl bg-slate-900 h-[180px] sm:h-[220px] md:h-[280px] w-full group cursor-pointer" onClick={() => setSelectedImage(shopBanner)}>
-        <img
-          src={shopBanner}
-          className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-105"
-          alt={shopInfo.shopName}
-        />
-        {/* Layered gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/30 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/50 via-transparent to-transparent" />
-
-        {/* Category chip – top left */}
-        <div className="absolute top-4 left-4 md:top-6 md:left-6">
-          <span className="px-3 py-1.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[9px] font-black text-white uppercase tracking-widest">
-            {shopInfo.category}
-          </span>
-        </div>
-
-        {/* Expand icon – top right */}
-        <button
-          onClick={(e) => { e.stopPropagation(); setSelectedImage(shopBanner); }}
-          className="absolute top-4 right-4 md:top-6 md:right-6 p-2 bg-white/10 hover:bg-white/25 backdrop-blur-md rounded-xl border border-white/20 text-white transition-all opacity-0 group-hover:opacity-100"
-        >
-          <Maximize2 className="w-4 h-4" />
-        </button>
-
-        {/* Bottom info */}
-        <div className="absolute bottom-4 left-4 right-4 md:bottom-8 md:left-8 md:right-8 z-10">
-          <div className="flex items-center gap-1.5 text-white/70 text-[10px] font-medium mb-2 md:mb-3">
-            <MapPin className="w-3 h-3 text-rose-400 flex-shrink-0" />
-            <span className="line-clamp-1">{shopInfo.address?.split(",").slice(0, 3).join(", ")}</span>
-          </div>
-          <h1 className="text-2xl md:text-5xl font-black text-white tracking-tight leading-none drop-shadow-2xl">
-            {shopInfo.shopName}
-          </h1>
-        </div>
-      </section>
-
-      {/* ── QUICK STATS ROW ── */}
-      <div className="grid grid-cols-3 gap-2 md:gap-4">
-        {[
-          { icon: <Clock className="w-4 h-4" />, label: "Hours", value: `${shopInfo.openTime} – ${shopInfo.closeTime}`, color: "blue" },
-          { icon: <Briefcase className="w-4 h-4" />, label: "Category", value: shopInfo.category, color: "indigo" },
-          { icon: <Video className="w-4 h-4" />, label: "Reels", value: `${videos.length} Videos`, color: "violet" },
-        ].map((stat, i) => (
-          <div key={i} className="bg-white border border-slate-100 rounded-2xl p-3 md:p-5 flex flex-col gap-2 shadow-sm hover:shadow-md hover:border-blue-100 transition-all">
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">{stat.icon}</div>
-            <p className="text-[8px] md:text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">{stat.label}</p>
-            <p className="text-[10px] md:text-sm font-black text-slate-900 leading-tight line-clamp-1">{stat.value}</p>
-          </div>
-        ))}
+      <div className="relative h-[200px] sm:h-[260px] rounded-none md:rounded-b-none overflow-hidden bg-slate-800 cursor-pointer group" onClick={() => setSelectedImage(shopInfo.shopImage)}>
+        {shopInfo.shopImage
+          ? <img src={shopInfo.shopImage} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2s]" alt={shopInfo.shopName} />
+          : <div className="w-full h-full bg-gradient-to-br from-green-900 to-slate-900" />}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
       </div>
 
-      {/* ── GALLERY STRIP ── */}
-      {gallery.length > 0 && (
-        <div className="bg-white border border-slate-100 rounded-2xl md:rounded-[1.5rem] p-2 md:p-3 shadow-sm overflow-hidden">
-          <Swiper
-            modules={[Pagination, Autoplay]}
-            spaceBetween={10}
-            slidesPerView="auto"
-            autoplay={{ delay: 3200, disableOnInteraction: false }}
-            className="!w-full"
-            style={{ height: "110px" }}
-          >
-            {gallery.map((img, i) => (
-              <SwiperSlide key={i} style={{ width: "auto" }}>
-                <div
-                  className="h-full w-[140px] md:w-[240px] rounded-xl overflow-hidden border border-slate-50 group cursor-pointer relative shadow-sm"
-                  onClick={() => setSelectedImage(img)}
-                >
-                  <img src={img} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt={`Gallery ${i + 1}`} />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 flex items-center justify-center transition-all">
-                    <Maximize2 className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100" />
-                  </div>
+      {/* ── SHOP IDENTITY CARD ── */}
+      <div className="bg-white border-b border-slate-100 px-4 md:px-6 pt-4 pb-5">
+        <div className="flex items-start gap-4">
+          {/* Logo */}
+          <div className="w-20 h-20 rounded-2xl border-4 border-white shadow-lg bg-amber-50 flex items-center justify-center overflow-hidden shrink-0 -mt-10 relative z-10">
+            {shopInfo.shopImage
+              ? <img src={shopInfo.shopImage} className="w-full h-full object-cover" alt="logo" />
+              : <span className="text-3xl font-black text-amber-600">{shopInfo.shopName?.[0]}</span>}
+          </div>
+          <div className="flex-1 pt-1 min-w-0">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h1 className="text-xl font-black text-slate-900 leading-tight">{shopInfo.shopName}</h1>
+                  <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
                 </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
-      )}
-
-      {/* ── TABS ── */}
-      <nav className="flex items-center gap-2 bg-white border border-slate-100 rounded-2xl p-1.5 shadow-sm w-fit">
-        {[
-          { id: "details", label: "Store Info", icon: <Info className="w-3.5 h-3.5" /> },
-          { id: "videos", label: "Store Reel", icon: <Video className="w-3.5 h-3.5" /> },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${activeTab === tab.id
-              ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-              : "text-slate-500 hover:bg-slate-50"
-              }`}
-          >
-            {tab.icon} {tab.label}
-          </button>
-        ))}
-      </nav>
-
-      {/* ── TAB CONTENT ── */}
-      <div>
-        {activeTab === "details" ? (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 md:gap-8 animate-fade-in">
-            {/* LEFT COLUMN */}
-            <div className="lg:col-span-8 space-y-5 md:space-y-7">
-
-              {/* Description card */}
-              <div className="bg-white border border-slate-100 rounded-2xl md:rounded-[1.5rem] p-6 md:p-8 shadow-sm space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-1 h-6 bg-blue-600 rounded-full" />
-                  <h3 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">Business Story</h3>
-                </div>
-                <p className="text-base md:text-lg font-semibold text-slate-700 leading-relaxed">
-                  {shopInfo.description ||
-                    "Welcome to our premium establishment. We are committed to providing exceptional service and quality. Visit us to experience our unique offerings firsthand."}
+                <p className="text-sm text-green-600 font-semibold flex items-center gap-1.5 mt-0.5">
+                  <span className="w-3 h-3 rounded-full bg-green-500 inline-block" />{shopInfo.category}
                 </p>
+                {/* <div className="flex items-center gap-1 mt-1">
+                  {[1,2,3,4].map(s => <Star key={s} className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />)}
+                  <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-200" />
+                  <span className="text-xs text-slate-400 ml-1">(0 Reviews)</span>
+                </div> */}
               </div>
-
-              {/* Location dark card */}
-              <div className="relative bg-slate-900 rounded-2xl md:rounded-[1.5rem] p-6 md:p-8 text-white shadow-2xl overflow-hidden">
-                <div className="absolute top-0 right-0 w-56 h-56 bg-blue-500/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-                <div className="relative z-10 space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center border border-white/10">
-                      <MapPin className="w-5 h-5 text-blue-400" />
-                    </div>
-                    <div>
-                      <h3 className="text-[9px] font-black uppercase tracking-[0.4em] text-blue-400">Location</h3>
-                      <p className="text-[8px] text-white/40 uppercase font-medium">Verified Physical Address</p>
-                    </div>
-                  </div>
-                  <p className="text-base md:text-lg font-bold leading-relaxed opacity-90">{shopInfo.address}</p>
-                  <div className="pt-4 border-t border-white/10 flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="text-[9px] font-bold uppercase tracking-widest text-white/50">Directions Ready</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* RIGHT SIDEBAR */}
-            <aside className="lg:col-span-4">
-              <div className="sticky top-24 bg-white border border-slate-100 rounded-2xl md:rounded-[1.5rem] p-5 md:p-7 shadow-xl space-y-5">
-                {/* Header */}
-                <div className="text-center pb-4 border-b border-slate-50">
-                  <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-blue-100">
-                    <Phone className="w-7 h-7 text-blue-600" />
-                  </div>
-                  <h3 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-0.5">Get in Touch</h3>
-                  <p className="text-[9px] text-slate-400 font-medium uppercase tracking-widest">Responds quickly</p>
-                </div>
-
-                {/* Links */}
-                <div className="space-y-2.5">
-                  {contactLinks.map((link, i) => (
-                    <a
-                      key={i}
-                      href={link.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={`flex items-center justify-between p-3.5 rounded-2xl border ${link.bg} ${link.border} group/link transition-all hover:shadow-md active:scale-[0.98]`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-slate-100 shadow-sm group-hover/link:scale-110 transition-transform">
-                          <img src={link.img} className="w-6 h-6 object-contain" alt={link.title} />
-                        </div>
-                        <div>
-                          <p className={`text-[10px] font-black uppercase tracking-widest leading-none mb-0.5 ${link.text}`}>{link.title}</p>
-                          <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest">{link.sub}</p>
-                        </div>
-                      </div>
-                      <ChevronRight className="w-3.5 h-3.5 text-slate-300 group-hover/link:translate-x-1 group-hover/link:text-slate-600 transition-all" />
-                    </a>
-                  ))}
-                </div>
-
-                {/* CTA */}
-                <button
-                  onClick={() => window.open(`tel:${shopInfo.shopNumber}`)}
-                  className="w-full py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2"
-                >
-                  <Phone className="w-4 h-4" /> Contact Now
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1.5 bg-green-50 border border-green-200 text-green-700 text-xs font-bold rounded-lg">Active</span>
+                <button onClick={() => setIsSaved(!isSaved)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${isSaved ? "bg-amber-50 border-amber-200 text-amber-600" : "bg-white border-slate-200 text-slate-600"}`}>
+                  <Bookmark className="w-3.5 h-3.5" fill={isSaved ? "currentColor" : "none"} /> Save
                 </button>
               </div>
-            </aside>
+            </div>
           </div>
-        ) : (
-          <div className="animate-fade-in">
-            {videos.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
-                {videos.map((video, idx) => (
-                  <div
-                    key={video.id}
-                    onClick={() => navigate(`/video-player/${video.id}`, { state: { videos, index: idx } })}
-                    className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-900 shadow-lg group cursor-pointer"
-                  >
-                    <video
-                      src={video.video ? (video.video.startsWith('http') ? video.video : `${API_BASE_URL}${video.video}`) : ""}
-                      className="absolute inset-0 w-full h-full object-cover filter brightness-[0.8] group-hover:brightness-100 transition-all duration-700"
-                      muted
-                      loop
-                      playsInline
-                      preload="metadata"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-100 group-hover:opacity-50 transition-opacity" />
-                    {/* Play icon */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
-                      <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30">
-                        <Play className="w-5 h-5 fill-white text-white ml-0.5" />
-                      </div>
-                    </div>
-                    <div className="absolute bottom-3 left-3 right-3 text-[10px] font-bold text-white leading-tight line-clamp-2 drop-shadow-lg">
-                      {video.videoTitle}
+        </div>
+
+        {/* Info strip */}
+        <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-500">
+          {shopInfo.address && <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />{shopInfo.address}</span>}
+          {shopInfo.openTime && <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-slate-400" />{shopInfo.openTime} – {shopInfo.closeTime} <span className="text-green-600 font-bold">Open Today</span></span>}
+          {shopInfo.shopNumber && <span className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-slate-400" />{shopInfo.shopNumber} <span className="text-slate-400">Shop Number</span></span>}
+          {shopInfo.websiteLink && <span className="flex items-center gap-1.5"><Globe className="w-3.5 h-3.5 text-slate-400" />{shopInfo.websiteLink} <span className="text-slate-400">Website</span></span>}
+        </div>
+
+        {/* Action buttons */}
+        <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <a href={`tel:${shopInfo.shopNumber}`} className="flex items-center justify-center gap-2 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-xs transition-all">
+            <Phone className="w-3.5 h-3.5" /> Call Now
+          </a>
+          <a href={`https://wa.me/${shopInfo.whatsappNumber}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 py-2.5 bg-white border border-slate-200 hover:border-green-300 text-slate-700 rounded-xl font-bold text-xs transition-all">
+            <MessageCircle className="w-3.5 h-3.5 text-green-500" /> WhatsApp
+          </a>
+          <a href={`https://www.google.com/maps/dir/?api=1&destination=${shopInfo.lat},${shopInfo.long}`} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 py-2.5 bg-white border border-slate-200 hover:border-blue-300 text-slate-700 rounded-xl font-bold text-xs transition-all">
+            <Navigation className="w-3.5 h-3.5 text-blue-500" /> Get Directions
+          </a>
+          <a href={shopInfo.websiteLink ? (shopInfo.websiteLink.startsWith("http") ? shopInfo.websiteLink : `https://${shopInfo.websiteLink}`) : "#"} target="_blank" rel="noreferrer" onClick={(e) => { if (!shopInfo.websiteLink) { e.preventDefault(); showToast("Website not found"); } }} className="flex items-center justify-center gap-2 py-2.5 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 rounded-xl font-bold text-xs transition-all shadow-sm hover:shadow-md">
+            <Globe className="w-3.5 h-3.5 text-slate-400" /> Visit Website
+          </a>
+        </div>
+      </div>
+
+      {/* ── SECTION 1: About | Highlights | Images ── */}
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 px-0 md:px-0">
+        {/* About */}
+        <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
+          <h3 className="text-sm font-black text-slate-900 mb-3">About {shopInfo.shopName}</h3>
+          <p className="text-xs text-slate-600 leading-relaxed mb-4">
+            {shopInfo.description || `${shopInfo.shopName} is your one-stop destination for premium quality products. We are committed to providing healthy and natural products at affordable prices.`}
+          </p>
+          <div className="space-y-2 text-xs border-t border-slate-100 pt-3">
+            {[
+              { label: "Category", value: shopInfo.category, color: "text-green-600" },
+              { label: "Status", value: "Active", color: "text-green-600" },
+              { label: "Joined On", value: shopInfo.joinedDate || "–", color: "text-slate-700" },
+              { label: "Last Updated", value: shopInfo.updatedDate || "–", color: "text-slate-700" },
+            ].map((row, i) => (
+              <div key={i} className="flex items-center justify-between">
+                <span className="text-slate-400 flex items-center gap-1.5">
+                  {i === 0 && <Hash className="w-3 h-3" />}
+                  {i === 1 && <CheckCircle2 className="w-3 h-3" />}
+                  {i === 2 && <CalendarCheck className="w-3 h-3" />}
+                  {i === 3 && <Clock className="w-3 h-3" />}
+                  {row.label}
+                </span>
+                <span className={`font-bold ${row.color}`}>{row.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Business Highlights */}
+        <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
+          <h3 className="text-sm font-black text-slate-900 mb-4">Business Highlights</h3>
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { label: "Videos", value: videos.length, icon: "https://cdn-icons-png.flaticon.com/128/3074/3074767.png", bg: "bg-green-50 border-green-100", num: "text-green-700" },
+              { label: "Photos", value: gallery.length, icon: "https://cdn-icons-png.flaticon.com/128/2659/2659360.png", bg: "bg-blue-50 border-blue-100", num: "text-blue-700" },
+              { label: "Category", value: "1", icon: "https://cdn-icons-png.flaticon.com/128/7183/7183999.png", bg: "bg-amber-50 border-amber-100", num: "text-amber-700" },
+              { label: "Status", value: "Active", icon: "https://cdn-icons-png.flaticon.com/128/4315/4315445.png", bg: "bg-emerald-50 border-emerald-100", num: "text-emerald-700" },
+            ].map((item, i) => (
+              <div key={i} className={`${item.bg} border rounded-xl p-3 flex flex-col gap-1`}>
+                <img src={item.icon} alt="icons" height={25} width={25} className="mb-3" />
+                <span className={`text-2xl font-black ${item.num}`}>{item.value}</span>
+                <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wide">{item.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Shop Images */}
+        <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
+          <h3 className="text-sm font-black text-slate-900 mb-3">Shop Images</h3>
+          {gallery.length > 0 ? (
+            <>
+              <div className="grid grid-cols-2 gap-2">
+                {gallery.slice(0, 4).map((img, i) => (
+                  <div key={i} className="aspect-video rounded-lg overflow-hidden cursor-pointer group relative" onClick={() => setSelectedImage(img)}>
+                    <img src={img} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={`img ${i + 1}`} />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
+                      <Maximize2 className="w-4 h-4 text-white opacity-0 group-hover:opacity-100" />
                     </div>
                   </div>
                 ))}
               </div>
-            ) : (
-              <div className="h-64 flex flex-col items-center justify-center gap-4 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
-                <Video className="w-10 h-10 text-slate-300" />
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">No Store Reels Available</p>
-              </div>
-            )}
-          </div>
-        )}
+            </>
+          ) : (
+            <div className="h-32 flex items-center justify-center bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">
+              <p className="text-xs text-slate-400 font-bold">No Images Available</p>
+            </div>
+          )}
+        </div>
       </div>
 
-      <style>{`
-        .swiper-pagination-bullet { background: #CBD5E1 !important; }
-        .swiper-pagination-bullet-active { background: #2563EB !important; width: 20px !important; border-radius: 10px; }
-      `}</style>
+      {/* ── FEATURED VIDEOS ROW ── */}
+      {videos.length > 0 && (
+        <div className="mt-4 bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-black text-slate-900">Featured Videos</h3>
+            <button className="text-xs text-blue-600 font-bold flex items-center gap-1">View All Videos <ChevronRight className="w-3 h-3" /></button>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-1 no-scrollbar">
+            {videos.map((v, idx) => (
+              <div key={v.id} className="shrink-0 w-56 cursor-pointer group" onClick={() => setMainVideo(v)}>
+                <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-900">
+                  <video src={videoSrc(v)} className="w-full h-full object-cover brightness-75 group-hover:brightness-100 transition-all" muted playsInline preload="metadata" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow group-hover:scale-110 transition-transform">
+                      <Play className="w-3.5 h-3.5 text-slate-900 fill-slate-900 ml-0.5" />
+                    </div>
+                  </div>
+                  <span className="absolute bottom-1.5 right-1.5 bg-black/70 text-white text-[9px] px-1 py-0.5 rounded">0:30</span>
+                </div>
+                <p className="text-[10px] font-bold text-slate-800 mt-1.5 line-clamp-1">{v.videoTitle}</p>
+                <p className="text-[9px] text-green-600 font-semibold">{shopInfo.category}</p>
+                <p className="text-[9px] text-slate-400 flex items-center gap-0.5 mt-0.5"><Eye className="w-2.5 h-2.5" /> 0</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── MAP | VIDEO PLAYER | MORE VIDEOS ── */}
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Map */}
+        <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
+          <h3 className="text-sm font-black text-slate-900 mb-3">Shop Location</h3>
+          <div className="rounded-xl overflow-hidden border border-slate-100 mb-3" style={{ height: 160 }}>
+            {shopInfo.lat && shopInfo.long
+              ? <iframe title="map" width="100%" height="100%" style={{ border: 0 }} loading="lazy" src={`https://maps.google.com/maps?q=${shopInfo.lat},${shopInfo.long}&z=15&output=embed`} />
+              : <div className="w-full h-full bg-slate-100 flex items-center justify-center"><MapPin className="w-8 h-8 text-slate-300" /></div>}
+          </div>
+          <p className="text-xs text-slate-500 leading-relaxed mb-3">{shopInfo.address}</p>
+          <a href={`https://www.google.com/maps/dir/?api=1&destination=${shopInfo.lat},${shopInfo.long}`} target="_blank" rel="noreferrer"
+            className="flex items-center justify-center gap-2 w-full py-2 bg-green-50 border border-green-200 text-green-700 rounded-xl font-bold text-xs hover:bg-green-100 transition-all">
+            <Navigation className="w-3.5 h-3.5" /> Get Directions ↗
+          </a>
+        </div>
+
+        {/* Main Video Player */}
+        <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
+          {mainVideo ? (
+            <>
+              <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-900 cursor-pointer group" onClick={() => navigate(`/video-player/${mainVideo.id}`, { state: { videos } })}>
+                <video ref={videoRef} src={videoSrc(mainVideo)} className="w-full h-full object-contain" controls playsInline preload="metadata" />
+              </div>
+              <div className="mt-3">
+                <p className="text-sm font-bold text-slate-800">{mainVideo.videoTitle}</p>
+                <span className="inline-block mt-1 px-2 py-0.5 bg-green-50 text-green-600 text-[9px] font-black uppercase rounded">{shopInfo.category}</span>
+                <p className="text-[10px] text-slate-400 mt-1 flex items-center gap-1"><Eye className="w-3 h-3" /> 0 Views</p>
+              </div>
+            </>
+          ) : (
+            <div className="aspect-video rounded-xl bg-slate-100 flex flex-col items-center justify-center gap-2">
+              <Video className="w-10 h-10 text-slate-300" />
+              <p className="text-xs text-slate-400 font-bold">No Videos</p>
+            </div>
+          )}
+        </div>
+
+        {/* More Videos */}
+        <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
+          <h3 className="text-sm font-black text-slate-900 mb-3">More Videos</h3>
+          {videos.length > 0 ? (
+            <div className="space-y-3">
+              {videos.slice(0, 4).map((v, idx) => (
+                <div key={v.id} className="flex items-center gap-3 cursor-pointer group" onClick={() => setMainVideo(v)}>
+                  <div className="relative w-20 h-13 rounded-lg overflow-hidden bg-slate-900 shrink-0">
+                    <video src={videoSrc(v)} className="w-full h-full object-cover" muted preload="metadata" style={{ height: 52 }} />
+                    <div className="absolute inset-0 flex items-center justify-center"><Play className="w-3.5 h-3.5 text-white fill-white" /></div>
+                    <span className="absolute bottom-0.5 right-0.5 bg-black/70 text-white text-[8px] px-1 rounded">{idx === 0 ? "0:31" : idx === 1 ? "0:27" : "0:28"}</span>
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-bold text-slate-800 line-clamp-1 group-hover:text-blue-600 transition-colors">{v.videoTitle}</p>
+                    <p className="text-[9px] text-slate-400 mt-0.5">{v.viewCount || 0} Views</p>
+                  </div>
+                </div>
+              ))}
+              {videos.length > 4 && (
+                <button className="w-full py-2 mt-1 border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50">View All Videos</button>
+              )}
+            </div>
+          ) : (
+            <div className="h-32 flex items-center justify-center"><p className="text-xs text-slate-400">No videos yet</p></div>
+          )}
+        </div>
+      </div>
+
+      {/* ── CONTACT + WHY CHOOSE US ── */}
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Contact Cards */}
+        <div className="md:col-span-2 bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
+          <h3 className="text-sm font-black text-slate-900 mb-4">Contact {shopInfo.shopName}</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: "Call Shop", sub: shopInfo.shopNumber, icon: "https://cdn-icons-png.flaticon.com/128/724/724664.png", href: `tel:${shopInfo.shopNumber}`, btn: "Call Now", bg: "bg-blue-50", btnCls: "bg-slate-900 text-white shadow hover:shadow-lg" },
+              { label: "WhatsApp", sub: shopInfo.whatsappNumber, icon: "https://cdn-icons-png.flaticon.com/128/3670/3670051.png", href: `https://wa.me/${shopInfo.whatsappNumber}`, btn: "Chat Now", bg: "bg-green-50", btnCls: "bg-green-600 text-white shadow hover:shadow-lg" },
+              { label: "Website", sub: shopInfo.websiteLink || "—", icon: "https://cdn-icons-png.flaticon.com/128/10453/10453141.png", href: shopInfo.websiteLink ? (shopInfo.websiteLink.startsWith("http") ? shopInfo.websiteLink : `https://${shopInfo.websiteLink}`) : "#", btn: "Visit Website", bg: "bg-blue-50", btnCls: "bg-blue-600 text-white shadow hover:shadow-lg", onClick: (e) => { if (!shopInfo.websiteLink) { e.preventDefault(); showToast("Website not found"); } } },
+              { label: "Shop Number", sub: shopInfo.shopNumber, icon: "https://cdn-icons-png.flaticon.com/128/16103/16103201.png", href: `tel:${shopInfo.shopNumber}`, btn: "Call Now", bg: "bg-purple-50", btnCls: "bg-slate-900 text-white shadow hover:shadow-lg" },
+            ].map((c, i) => (
+              <div key={i} className={`${c.bg} rounded-xl p-3 flex flex-col items-center gap-2 text-center shadow-sm hover:shadow-md transition-all duration-300 border border-slate-100/50 hover:-translate-y-1`}>
+                <img src={c.icon} alt="contacts" width={25} height={25} className="mb-3 drop-shadow-sm" />
+                <p className="text-[10px] font-black text-slate-700">{c.label}</p>
+                <p className="text-[9px] text-slate-400 line-clamp-1">{c.sub || "—"}</p>
+                <a href={c.href} target="_blank" rel="noreferrer" onClick={c.onClick} className={`w-full py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wide transition-all ${c.btnCls}`}>{c.btn}</a>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Why Choose Mapman */}
+        <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
+          <h3 className="text-sm font-black text-slate-900 mb-3">Why Mapman?</h3>
+          <ul className="space-y-2.5">
+            {[
+              "Verified Local Businesses",
+              "Interactive Video Previews",
+              "Accurate Location & Directions",
+              "Direct WhatsApp & Call Booking"
+            ].map((p, i) => (
+              <li key={i} className="flex items-center gap-2 text-xs text-slate-700">
+                <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" /> {p}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* ── TRUST BAR ── */}
+      <div className="mt-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-100 rounded-2xl shadow-sm">
+        <div className="grid grid-cols-2 md:grid-cols-3 divide-x divide-green-100">
+          {[
+            { icon: <ShieldCheck className="w-4 h-4" />, label: "Verified Business" },
+            { icon: <CheckCircle2 className="w-4 h-4" />, label: "Active Status" },
+            { icon: <Clock className="w-4 h-4" />, label: "Open Today" },
+          ].map((item, i) => (
+            <div key={i} className="flex items-center justify-center gap-2 py-3 text-green-700 hover:bg-green-100/50 transition-colors first:rounded-l-2xl last:rounded-r-2xl">
+              {item.icon}
+              <span className="text-xs font-bold">{item.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── TOAST MESSAGE ── */}
+      {toastMessage && createPortal(
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[99999] bg-slate-900 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-2 border border-slate-700">
+          <AlertCircle className="w-4 h-4 text-rose-500" />
+          <p className="text-xs font-black uppercase tracking-widest">{toastMessage}</p>
+        </div>,
+        document.body
+      )}
     </div>
   );
 };

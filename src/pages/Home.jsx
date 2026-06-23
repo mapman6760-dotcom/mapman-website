@@ -581,10 +581,10 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
                 </div>
 
                 <div className="pt-4 flex flex-col sm:flex-row gap-3 sm:gap-4">
-                  <button className="px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-bold text-sm transition-all shadow-[0_8px_20px_-6px_rgba(79,70,229,0.4)] hover:shadow-[0_12px_25px_-6px_rgba(79,70,229,0.5)] flex items-center justify-center gap-2 hover:-translate-y-0.5">
+                  <button onClick={() => navigate('/map')} className="px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-bold text-sm transition-all shadow-[0_8px_20px_-6px_rgba(79,70,229,0.4)] hover:shadow-[0_12px_25px_-6px_rgba(79,70,229,0.5)] flex items-center justify-center gap-2 hover:-translate-y-0.5">
                     <MapPin className="w-4 h-4" /> Start Exploring
                   </button>
-                  <button className="px-6 py-3.5 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl font-bold text-sm transition-all shadow-sm flex items-center justify-center gap-2 hover:-translate-y-0.5">
+                  <button onClick={() => navigate('/video-feed')} className="px-6 py-3.5 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl font-bold text-sm transition-all shadow-sm flex items-center justify-center gap-2 hover:-translate-y-0.5">
                     <Play className="w-4 h-4 text-blue-500" /> Watch Demo
                   </button>
                 </div>
@@ -750,13 +750,6 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
                   <p className="text-sm text-slate-500 font-medium leading-relaxed max-w-[260px]">
                     {feat.desc}
                   </p>
-                  <div className="pt-6">
-                    <span
-                      className={`inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest ${feat.color} group-hover:gap-4 transition-all`}
-                    >
-                      Learn More <ArrowUpRight className="w-3.5 h-3.5" />
-                    </span>
-                  </div>
                 </div>
               </div>
             ))}

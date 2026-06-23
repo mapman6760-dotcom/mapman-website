@@ -8,9 +8,16 @@ const NotificationList = ({ notifications = [], onNotificationClick }) => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {notifications.map((notif) => {
-                const avatarUrl = notif.msgImage
-                    ? (notif.msgImage.startsWith('http') ? notif.msgImage : `${API_BASE_URL}${notif.msgImage}`)
-                    : "/assets/placeholder.jpg";
+                let avatarUrl = "/assets/placeholder.jpg";
+                if (notif.msgImage) {
+                    if (notif.msgImage.includes('.m3u8')) {
+                        avatarUrl = "https://cdn-icons-png.flaticon.com/128/3845/3845856.png";
+                    } else if (notif.msgImage.startsWith('http')) {
+                        avatarUrl = notif.msgImage;
+                    } else {
+                        avatarUrl = `${API_BASE_URL}${notif.msgImage}`;
+                    }
+                }
 
                 const isNotOpened = notif.openStatus === 'notOpened';
                 const indicatorColor = notif.msgStatus === 'accepted' ? 'bg-emerald-500' : 'bg-red-500';

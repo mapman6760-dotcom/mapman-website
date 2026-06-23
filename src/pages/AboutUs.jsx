@@ -4,7 +4,7 @@ import SEO from "../components/SEO";
 
 const AboutUs = () => {
   return (
-    <div className="w-full bg-white min-h-screen animate-fade-in">
+    <div className="w-full bg-white min-h-screen animate-fade-in overflow-x-hidden">
       <SEO
         title="About Us | Mapman"
         description="Learn about Mapman — the modern local discovery platform connecting communities to the best businesses around them."
@@ -14,7 +14,7 @@ const AboutUs = () => {
       {/* ── TOP BANNER ── */}
       <div
         className="relative w-[100vw] left-1/2 -translate-x-1/2 overflow-hidden bg-slate-900 bg-cover bg-center"
-        style={{ backgroundImage: `url(assets/aboutus.jpeg)` }}
+        style={{ backgroundImage: `url(/assets/aboutus.jpeg)` }}
       >
         {/* Text Readability Overlay */}
         <div className="absolute inset-0 bg-slate-900/60" />
@@ -135,17 +135,17 @@ const AboutUs = () => {
                 text: "To become the most trusted platform for local business discovery and digital advertising. We aim to connect communities with businesses while helping every local shop grow and succeed in the digital world."
               }
             ].map((card, i) => (
-              <div key={i} className={`group relative overflow-hidden bg-white border border-slate-100 hover:${card.borderColor} rounded-[2rem] p-8 sm:p-10 transition-all duration-500 ${card.hoverShadow} hover:-translate-y-2 cursor-default`}>
+              <div key={i} className={`group relative overflow-hidden ${card.lightBg} border-2 border-white hover:border-white/50 rounded-[2rem] p-8 sm:p-10 transition-all duration-500 shadow-md ${card.hoverShadow} hover:-translate-y-2 cursor-default`}>
 
                 {/* Decorative Background Blob */}
-                <div className={`absolute -top-20 -right-20 w-56 h-56 rounded-full ${card.bgGradient} opacity-[0.03] group-hover:opacity-[0.08] blur-3xl transition-all duration-700 group-hover:scale-150`} />
+                <div className={`absolute -top-20 -right-20 w-56 h-56 rounded-full ${card.bgGradient} opacity-[0.1] group-hover:opacity-[0.2] blur-3xl transition-all duration-700 group-hover:scale-150`} />
 
                 {/* Top Section */}
                 <div className="flex items-start justify-between mb-8 relative z-10">
-                  <div className={`w-16 h-16 ${card.lightBg} border border-white rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-500`}>
+                  <div className={`w-16 h-16 bg-white border border-slate-100 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:bg-white transition-all duration-500`}>
                     <card.icon className={`w-8 h-8 ${card.iconColor}`} />
                   </div>
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ${card.lightBg}`}>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 bg-white shadow-sm`}>
                     <ArrowRight className={`w-5 h-5 ${card.iconColor}`} />
                   </div>
                 </div>
@@ -155,8 +155,8 @@ const AboutUs = () => {
                   <h3 className="text-2xl font-black text-slate-900 tracking-tight mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-slate-900 group-hover:to-slate-600 transition-all duration-300">
                     {card.label}
                   </h3>
-                  <div className={`w-12 h-1.5 ${card.bgGradient} rounded-full mb-6 opacity-70 group-hover:w-24 transition-all duration-500`} />
-                  <p className="text-slate-500 leading-relaxed font-medium text-[15px] group-hover:text-slate-600 transition-colors duration-300">
+                  <div className={`w-12 h-1.5 ${card.bgGradient} rounded-full mb-6 opacity-80 group-hover:w-24 transition-all duration-500`} />
+                  <p className="text-slate-500 leading-relaxed font-medium text-[15px] group-hover:text-slate-700 transition-colors duration-300">
                     {card.text}
                   </p>
                 </div>
@@ -212,11 +212,6 @@ const AboutUs = () => {
                 We focus on delivering high-quality visual discoveries, trusted community ratings, and seamless search tools.
               </p>
 
-              <div className="pt-4">
-                <button className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl transition-all shadow-lg active:scale-95">
-                  Join the Community <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

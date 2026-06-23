@@ -83,13 +83,29 @@ const Notifications = () => {
       console.error("Failed to update notification status:", err);
     }
 
-    // 3. Navigation logic
     if (notif.msgType === "newShop") {
       const shopId = parseInt(notif.msgLink);
       navigate(`/shop-detail/${shopId}`);
     } else {
-      // Professionally navigate to video player
-      navigate(`/video-player/${notif.msgLink}`);
+      let finalVideoUrl = "https://assets.mixkit.co/videos/preview/mixkit-hand-applying-henna-on-another-hand-40049-large.mp4";
+      if (notif.msgImage) {
+        finalVideoUrl = notif.msgImage.startsWith("http") 
+          ? notif.msgImage 
+          : `https://d7bnll1h35b3b.cloudfront.net${notif.msgImage}`;
+      }
+
+      // Professionally navigate to video player with fallback state
+      navigate(`/video-player/${notif.msgLink}`, {
+        state: {
+          videos: [{
+            id: notif.msgLink,
+            title: notif.msgTitle || "Notification Video",
+            description: notif.msgDesc || "Video from your notification",
+            videoUrl: finalVideoUrl,
+          }],
+          index: 0
+        }
+      });
     }
   };
 

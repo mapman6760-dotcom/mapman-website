@@ -102,24 +102,6 @@ const ShopList = () => {
 
       {/* ── CONTENT ── */}
       <main className="max-w-6xl mx-auto px-4 md:px-6 pt-4 pb-10">
-
-        {/* Stats summary bar */}
-        {shops.length > 0 && (
-          <div className="flex items-center gap-3 mb-7 p-4 bg-white border border-slate-100 rounded-2xl shadow-sm">
-            <div className="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center">
-              <Building2 className="w-5 h-5 text-blue-600" />
-            </div>
-            <div>
-              <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Total Listings</span>
-              <div className="text-lg font-black text-slate-900 leading-none">{shops.length} <span className="text-sm font-medium text-slate-500">shops registered</span></div>
-            </div>
-            <div className="ml-auto flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-100 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Active Account</span>
-            </div>
-          </div>
-        )}
-
         {shops.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center bg-white rounded-3xl border border-slate-100 shadow-sm">
             <div className="w-20 h-20 bg-blue-50 rounded-3xl flex items-center justify-center mb-5 shadow-inner">

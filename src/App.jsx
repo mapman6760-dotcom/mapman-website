@@ -502,7 +502,7 @@ const Dashboard = ({ onLogout, isLoggedIn, setIsLoggedIn }) => {
           <Routes>
             <Route path="/" element={<Home onSelectCategory={navigateToMap} isLoggedIn={isLoggedIn} openLogin={() => setIsLoginDrawerOpen(true)} />} />
             <Route path="/dashboard" element={<Navigate to="/" replace />} />
-            <Route path="/map" element={<MapExplore />} />
+            <Route path="/map" element={<MapExplore isLoggedIn={isLoggedIn} openLogin={() => setIsLoginDrawerOpen(true)} />} />
             <Route path="/video" element={<VideoFeed isLoggedIn={isLoggedIn} openLogin={() => setIsLoginDrawerOpen(true)} />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/profile" element={<Profile onLogout={() => setShowLogoutDialog(true)} isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} openLogin={() => setIsLoginDrawerOpen(true)} />} />

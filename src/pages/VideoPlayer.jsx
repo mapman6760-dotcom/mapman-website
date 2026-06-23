@@ -236,19 +236,30 @@ const VideoPlayer = () => {
     }
   };
 
-  // Auto-play/pause logic for sound
   useEffect(() => {
     videoRefs.current.forEach((video, idx) => {
       if (video) {
         if (idx === currentIndex) {
           if (isPlaying) {
-            video.play().catch((err) => console.log("Autoplay blocked:", err));
+            video._playPromise = video.play();
+            video._playPromise.catch((err) => console.log("Autoplay blocked:", err));
           } else {
-            video.pause();
+            if (video._playPromise) {
+              video._playPromise.then(() => video.pause()).catch(() => {});
+            } else {
+              video.pause();
+            }
           }
         } else {
-          video.pause();
-          video.currentTime = 0;
+          if (video._playPromise) {
+            video._playPromise.then(() => {
+              video.pause();
+              video.currentTime = 0;
+            }).catch(() => {});
+          } else {
+            video.pause();
+            video.currentTime = 0;
+          }
         }
       }
     });

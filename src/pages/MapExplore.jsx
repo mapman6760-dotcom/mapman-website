@@ -49,7 +49,7 @@ const fetchShops = async (input = "") => {
   }
 };
 
-const MapExplore = ({ isCollapsed }) => {
+const MapExplore = ({ isCollapsed, isLoggedIn, openLogin }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialSearch = searchParams.get("category") || "";
@@ -164,9 +164,10 @@ const MapExplore = ({ isCollapsed }) => {
   };
 
   return (
-    <div
-      className="relative w-full h-[88vh] min-h-[700px] mt-6 md:mt-10 transition-all duration-500 ease-in-out bg-[#F8FAFC] z-10 flex flex-col overflow-hidden rounded-t-[2.5rem] shadow-2xl border-x border-t border-slate-200/60"
-    >
+    <>
+      <div
+        className="relative w-full h-[88vh] min-h-[700px] mt-6 md:mt-10 transition-all duration-500 ease-in-out bg-[#F8FAFC] z-10 flex flex-col overflow-hidden rounded-t-[2.5rem] shadow-2xl border-x border-t border-slate-200/60"
+      >
       <SEO
         title={searchInput ? `Find ${searchInput} Nearby` : "Explore Local Businesses on Map"}
         description={searchInput ? `Locate the best verified ${searchInput} in your area. View geo-coordinates, distances, and contact detail cards on Mapman.` : "Use our interactive map directory to discover nearby shops, restaurants, services, and local business hubs."}
@@ -452,78 +453,6 @@ const MapExplore = ({ isCollapsed }) => {
         </div>
       </div>
 
-      {showShopModal && selectedShop && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in" onClick={() => setShowShopModal(false)}>
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-[320px] bg-slate-900 text-white rounded-[2rem] shadow-[0_30px_80px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col border border-white/10 animate-scale-in"
-          >
-              <button 
-                onClick={() => setShowShopModal(false)}
-                className="absolute top-4 right-4 z-20 w-8 h-8 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all shadow-lg border border-white/10"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              
-              <div className="h-40 relative bg-slate-800">
-                {selectedShop.shopImage ? (
-                  <img src={selectedShop.shopImage} alt={selectedShop.shopName} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-slate-800">
-                    <ImageIcon className="w-10 h-10 text-slate-500 opacity-50" />
-                  </div>
-                )}
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent z-0"></div>
-                
-                <div className="absolute bottom-3 left-4 px-3 py-1 bg-blue-600/90 backdrop-blur-md rounded-lg text-[10px] font-black text-white uppercase tracking-widest shadow-lg border border-white/20 z-10">
-                  {selectedShop.category}
-                </div>
-              </div>
-              
-              <div className="p-6 flex flex-col gap-4 relative z-10 -mt-2">
-                <div>
-                  <h3 className="text-xl font-black text-white tracking-tight uppercase leading-tight mb-1.5 drop-shadow-md">
-                    {selectedShop.shopName}
-                  </h3>
-                  <p className="text-xs text-blue-200/80 font-medium leading-relaxed flex items-start gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0 text-cyan-400" />
-                    {selectedShop.address || "Local Hub, Mapman sector"}
-                  </p>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2 bg-white/5 px-3 py-2 rounded-xl border border-white/10 shadow-inner">
-                    <Navigation className="w-4 h-4 text-cyan-400" />
-                    <span className="text-[11px] font-black text-white tracking-tight">
-                      {getRawDistance(parseFloat(selectedShop.lat), parseFloat(selectedShop.long)).toFixed(2)} km away
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="mt-2 pt-4 border-t border-white/10 grid grid-cols-2 gap-3">
-                  <button 
-                    onClick={() => {
-                      if (selectedShop.lat && selectedShop.long) {
-                        window.open(`https://www.google.com/maps?q=${selectedShop.lat},${selectedShop.long}`, "_blank");
-                      }
-                    }}
-                    className="flex items-center justify-center gap-2 py-3.5 bg-white/10 hover:bg-white/20 text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all backdrop-blur-md"
-                  >
-                    <Navigation className="w-3.5 h-3.5 text-cyan-400" /> Directions
-                  </button>
-                  <button 
-                    onClick={() => navigate(`/shop-detail/${selectedShop.id}`)}
-                    className="flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-blue-500/25 transition-all active:scale-95"
-                  >
-                    <Store className="w-3.5 h-3.5" /> View Shop
-                  </button>
-                </div>
-              </div>
-          </div>
-        </div>
-      )}
-
       {/* ── MAP BOTTOM INFO STRIP ── */}
       <div className="absolute bottom-0 left-0 right-0 z-30 pointer-events-none">
         <div className="bg-gradient-to-t from-white/95 via-white/70 to-transparent pt-6 pb-4 px-4 md:px-6">
@@ -549,8 +478,89 @@ const MapExplore = ({ isCollapsed }) => {
         </div>
       </div>
 
-    </div>
-  );
+    </div> {/* END OF MAP CONTAINER */}
+
+    {showShopModal && selectedShop && (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in" onClick={() => setShowShopModal(false)}>
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="relative w-full max-w-[340px] bg-white text-slate-900 rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col animate-scale-in mt-16 sm:mt-0"
+        >
+            <button 
+              onClick={() => setShowShopModal(false)}
+              className="absolute top-4 right-4 z-20 w-8 h-8 bg-black/20 hover:bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all shadow-sm"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            
+            <div className="h-44 relative bg-slate-100">
+              {selectedShop.shopImage ? (
+                <img src={selectedShop.shopImage} alt={selectedShop.shopName} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-slate-100">
+                  <ImageIcon className="w-12 h-12 text-slate-300" />
+                </div>
+              )}
+              {/* Subtle bottom shadow on image */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-0"></div>
+              
+              <div className="absolute bottom-4 left-5 px-3 py-1.5 bg-white/95 backdrop-blur-md rounded-lg text-[10px] font-black text-blue-600 uppercase tracking-widest shadow-sm z-10">
+                {selectedShop.category}
+              </div>
+            </div>
+            
+            <div className="p-6 flex flex-col gap-5 relative z-10 bg-white">
+              <div>
+                <h3 className="text-xl font-black text-slate-900 tracking-tight leading-tight mb-2">
+                  {selectedShop.shopName}
+                </h3>
+                <p className="text-[13px] text-slate-500 font-medium leading-relaxed flex items-start gap-2">
+                  <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-blue-500" />
+                  {selectedShop.address || "Local Hub, Mapman sector"}
+                </p>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 bg-blue-50/50 px-3 py-2 rounded-xl border border-blue-100/50">
+                  <Navigation className="w-4 h-4 text-blue-600" />
+                  <span className="text-[11px] font-black text-blue-700 tracking-tight">
+                    {getRawDistance(parseFloat(selectedShop.lat), parseFloat(selectedShop.long)).toFixed(2)} km away
+                  </span>
+                </div>
+              </div>
+              
+              <div className="pt-2 grid grid-cols-2 gap-3">
+                <button 
+                  onClick={() => {
+                    if (selectedShop.lat && selectedShop.long) {
+                      window.open(`https://www.google.com/maps?q=${selectedShop.lat},${selectedShop.long}`, "_blank");
+                    }
+                  }}
+                  className="flex items-center justify-center gap-2 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all"
+                >
+                  <Navigation className="w-3.5 h-3.5 text-slate-500" /> Directions
+                </button>
+                <button 
+                  onClick={() => {
+                    if (!isLoggedIn) {
+                      setShowShopModal(false);
+                      openLogin();
+                    } else {
+                      navigate(`/shop-detail/${selectedShop.id}`);
+                    }
+                  }}
+                  className="flex items-center justify-center gap-2 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-[0_8px_16px_-6px_rgba(37,99,235,0.4)] transition-all active:scale-95"
+                >
+                  <Store className="w-3.5 h-3.5" /> View Shop
+                </button>
+              </div>
+            </div>
+        </div>
+      </div>
+    )}
+
+  </>
+);
 };
 
 // --- MEMOIZED MARKER UI COMPONENT ---

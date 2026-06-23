@@ -142,7 +142,7 @@ const EditShop = () => {
     registerNumber: "",
     openTime: "",
     closeTime: "",
-    website: "",
+    websiteLink: "",
     shopImage: null, // File object for upload
     shopImageUrl: null, // For preview
     gallery: [null, null, null, null], // File objects for image1-image4
@@ -208,7 +208,7 @@ const EditShop = () => {
       registerNumber: d.registerNumber || "",
       openTime: parseTo24Hour(d.openTime) || "",
       closeTime: parseTo24Hour(d.closeTime) || "",
-      website: d.website || "",
+      websiteLink: d.websiteLink || d.website || "",
       shopImage: null,
       shopImageUrl: currentShopImage,
       gallery: [null, null, null, null],
@@ -450,6 +450,7 @@ const EditShop = () => {
       formData.append("registerNumber", shopData.registerNumber);
       formData.append("shopNumber", shopData.contact);
       formData.append("whatsappNumber", shopData.whatsapp);
+      formData.append("websiteLink", shopData.websiteLink);
 
       if (shopData.shopImage instanceof File) {
         formData.append("shopImage", shopData.shopImage);
@@ -878,6 +879,13 @@ const EditShop = () => {
                     placeholder="Enter contact number"
                     value={shopData.contact}
                     onChange={(v) => setShopData({ ...shopData, contact: v })}
+                  />
+                  <InputField
+                    label="Website Link"
+                    icon={Globe}
+                    placeholder="Enter website url"
+                    value={shopData.websiteLink}
+                    onChange={(v) => setShopData({ ...shopData, websiteLink: v })}
                   />
                 </div>
               </div>

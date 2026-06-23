@@ -79,32 +79,32 @@ const Profile = ({ onLogout, isLoggedIn, setIsLoggedIn, openLogin }) => {
   const actionTiles = [
     {
       title: "Profile Details",
-      desc: "Verify Information",
-      icon: <UserCircle2 className="w-6 h-6" />,
+      desc: "View your details",
+      icon: "https://cdn-icons-png.flaticon.com/128/1077/1077012.png",
       gradient: "from-blue-500 to-blue-700",
       glow: "shadow-blue-500/30",
       onClick: () => navigate("/edit-profile"),
     },
     {
       title: "Shop Details",
-      desc: "Active Business",
-      icon: <Store className="w-6 h-6" />,
+      desc: "View list of shops",
+      icon: "https://cdn-icons-png.flaticon.com/128/869/869432.png",
       gradient: "from-emerald-500 to-teal-700",
       glow: "shadow-emerald-500/30",
       onClick: () => navigate("/shop-list"),
     },
     {
       title: "Analytics",
-      desc: "Weekly Growth",
-      icon: <BarChart2 className="w-6 h-6" />,
+      desc: "Shop metrics",
+      icon: "https://cdn-icons-png.flaticon.com/128/10050/10050999.png",
       gradient: "from-violet-500 to-purple-700",
       glow: "shadow-violet-500/30",
       onClick: () => navigate("/shop-analytics"),
     },
     {
       title: "Support",
-      desc: "24/7 Access",
-      icon: <Headphones className="w-6 h-6" />,
+      desc: "24/7 Customer support",
+      icon: "https://cdn-icons-png.flaticon.com/128/4961/4961759.png",
       gradient: "from-orange-500 to-rose-600",
       glow: "shadow-orange-500/30",
       onClick: () => navigate("/support"),
@@ -245,9 +245,7 @@ const Profile = ({ onLogout, isLoggedIn, setIsLoggedIn, openLogin }) => {
               {/* Hover glow */}
               <div className={`absolute inset-0 bg-gradient-to-br ${tile.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500 rounded-[1.5rem]`} />
 
-              <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${tile.gradient} shadow-lg ${tile.glow} flex items-center justify-center mb-3 text-white transition-transform duration-300 group-hover:scale-110`}>
-                {tile.icon}
-              </div>
+             <img src={tile.icon} alt="profile-icons" height={30} width={30} className="mb-4"/>
               <h3 className="font-black text-slate-800 tracking-tight uppercase text-[10px] mb-1 leading-tight">
                 {tile.title}
               </h3>

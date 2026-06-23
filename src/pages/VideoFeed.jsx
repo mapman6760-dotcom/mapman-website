@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import { createPortal } from "react-dom";
 import {
   Play,
   User,
@@ -531,8 +531,8 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
       )}
 
       {/* 3. PREMIUM UPLOAD MODAL (ENHANCED) */}
-      {showUploadModal && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-6">
+      {showUploadModal && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6">
           <div
             onClick={() => setShowUploadModal(false)}
             className="absolute inset-0 bg-slate-950/60 backdrop-blur-md animate-fade-in"
@@ -764,12 +764,13 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
                 </button>
               </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* 4. EARN REWARDS DIALOG (PROFESSIONAL) */}
-      {showRewardsModal && (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-6 text-center">
+      {showRewardsModal && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6 text-center">
           <div
             onClick={() => setShowRewardsModal(false)}
             className="absolute inset-0 bg-slate-900/40 backdrop-blur-xl animate-fade-in"
@@ -813,7 +814,8 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
                 Yes, I Got It
               </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

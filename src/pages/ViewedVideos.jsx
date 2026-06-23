@@ -139,10 +139,22 @@ const ViewedVideos = () => {
                         muted
                         loop
                         preload="metadata"
-                        onMouseEnter={(e) => e.target.play().catch(err => console.log("Hover play blocked", err))}
+                        onMouseEnter={(e) => {
+                          const video = e.currentTarget;
+                          video._playPromise = video.play();
+                          video._playPromise.catch(err => console.log("Hover play blocked", err));
+                        }}
                         onMouseLeave={(e) => {
-                          e.target.pause();
-                          e.target.currentTime = 0;
+                          const video = e.currentTarget;
+                          if (video._playPromise) {
+                            video._playPromise.then(() => {
+                              video.pause();
+                              video.currentTime = 0;
+                            }).catch(() => {});
+                          } else {
+                            video.pause();
+                            video.currentTime = 0;
+                          }
                         }}
                       />
 

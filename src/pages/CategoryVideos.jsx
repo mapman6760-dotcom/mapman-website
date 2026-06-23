@@ -178,8 +178,23 @@ const CategoryVideos = () => {
                         muted
                         loop
                         preload="metadata"
-                        onMouseEnter={(e) => e.target.play().catch(err => console.log("Play blocked", err))}
-                        onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
+                        onMouseEnter={(e) => {
+                          const video = e.currentTarget;
+                          video._playPromise = video.play();
+                          video._playPromise.catch(err => console.log("Play blocked", err));
+                        }}
+                        onMouseLeave={(e) => {
+                          const video = e.currentTarget;
+                          if (video._playPromise) {
+                            video._playPromise.then(() => {
+                              video.pause();
+                              video.currentTime = 0;
+                            }).catch(() => {});
+                          } else {
+                            video.pause();
+                            video.currentTime = 0;
+                          }
+                        }}
                       />
 
                       {/* Gradient overlay */}

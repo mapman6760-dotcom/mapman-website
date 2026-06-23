@@ -60,7 +60,7 @@ const EditProfile = () => {
                     district: data.district || "",
                     country: data.country || "India",
                     avatar: data.profilePic
-                        ? `${API_BASE_URL}${data.profilePic}`
+                        ? (data.profilePic.startsWith("http") ? data.profilePic : `${API_BASE_URL}${data.profilePic}`)
                         : "https://cdn-icons-png.flaticon.com/128/3135/3135715.png",
                 });
             }
@@ -136,12 +136,12 @@ const EditProfile = () => {
     }
 
     return (
-        <div className="w-full max-w-5xl mx-auto pb-16 px-2 md:px-8">
+        <div className="w-full mx-auto pb-16 pt-8">
 
             <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-[2rem] border border-slate-100 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.06)] overflow-hidden"
+                className="bg-white rounded-none border-y border-slate-100 shadow-sm overflow-hidden"
             >
                 <div className="flex flex-col lg:flex-row min-h-[500px]">
 
@@ -360,7 +360,7 @@ const EditProfile = () => {
                                     ) : (
                                         <>
                                             <CheckCircle2 className="w-4 h-4" />
-                                            Commit Changes
+                                           Update Profile
                                         </>
                                     )}
                                 </motion.button>
@@ -369,7 +369,7 @@ const EditProfile = () => {
                                     onClick={() => navigate("/profile")}
                                     className="btn-secondary w-full sm:w-auto px-12"
                                 >
-                                    Abort
+                                    Cancel
                                 </button>
                             </div>
 

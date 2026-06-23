@@ -24,7 +24,7 @@ const ContactUs = () => {
   };
 
   return (
-    <div className="w-full bg-white min-h-screen animate-fade-in">
+    <div className="w-full bg-white min-h-screen animate-fade-in overflow-x-hidden">
       <SEO
         title="Contact Us | Mapman"
         description="Get in touch with the Mapman team for support, partnership inquiries, or feedback. We'd love to hear from you."
@@ -34,7 +34,7 @@ const ContactUs = () => {
       {/* ── TOP BANNER ── */}
       <div
         className="relative w-[100vw] left-1/2 -translate-x-1/2 overflow-hidden bg-slate-900 bg-cover bg-center"
-        style={{ backgroundImage: `url(assets/contactus.jpeg)` }}
+        style={{ backgroundImage: `url(/assets/contactus.jpeg)` }}
       >
         {/* Text Readability Overlay */}
         <div className="absolute inset-0 bg-slate-900/60" />
