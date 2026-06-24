@@ -257,7 +257,7 @@ const Header = ({ isLoggedIn, profileData, onLogout, openLogin, currentPage, isM
 // --- Footer Component ---
 const Footer = () => {
   return (
-    <footer className="relative bg-gradient-to-br from-slate-950 via-[#00003a] to-slate-950 text-blue-100 overflow-hidden mt-auto border-t border-slate-800">
+    <footer className="relative bg-slate-950 text-blue-100 overflow-hidden mt-auto border-t border-slate-800">
 
       {/* Ambient glows */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[150px] pointer-events-none -mr-40 -mt-40" />
@@ -470,6 +470,18 @@ const Dashboard = ({ onLogout, isLoggedIn, setIsLoggedIn }) => {
 
   const currentPage = getCurrentPageId();
 
+  const fullBleedPages = [
+    "",
+    "profile",
+    "viewed-videos",
+    "category-videos",
+    "contact-us",
+    "about-us",
+    "saved",
+    "shop-list"
+  ];
+  const isFullBleed = fullBleedPages.includes(currentPage) || currentPage.startsWith("shop-detail");
+
   useEffect(() => {
     // Scroll the main content area to top whenever path changes
     try {
@@ -497,7 +509,7 @@ const Dashboard = ({ onLogout, isLoggedIn, setIsLoggedIn }) => {
       />
 
       {/* Main Content Area */}
-      <main className={`flex-1 w-full min-h-0 mb-16 md:mb-24 ${currentPage === "" ? "" : "max-w-7xl mx-auto px-2 sm:px-4 lg:px-4 pt-0"}`}>
+      <main className={`flex-1 w-full min-h-0 mb-16 md:mb-24 ${isFullBleed ? "" : "max-w-7xl mx-auto px-2 sm:px-4 lg:px-4 pt-0"}`}>
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
             <Route path="/" element={<Home onSelectCategory={navigateToMap} isLoggedIn={isLoggedIn} openLogin={() => setIsLoginDrawerOpen(true)} />} />
@@ -584,26 +596,51 @@ const Dashboard = ({ onLogout, isLoggedIn, setIsLoggedIn }) => {
 
       {/* ── FLOATING CONTACT ICON ── */}
       {currentPage !== "contact-us" && (
-        <button
-          onClick={() => navigate("/contact-us")}
-          className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-[100] group flex items-center justify-center"
-          aria-label="Contact Us"
-        >
-          {/* Pulse rings */}
-          <div className="absolute inset-0 bg-green-500 rounded-full animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite] opacity-40" />
-          <div className="absolute inset-0 bg-emerald-400 rounded-full animate-[ping_2.5s_cubic-bezier(0,0,0.2,1)_infinite] opacity-30 delay-300" />
+        <div className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-[100] group flex flex-col items-center justify-end">
 
-          {/* Main Bubble */}
-          <div className="relative w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-green-500 to-emerald-700 rounded-full shadow-[0_10px_40px_-10px_rgba(16,185,129,0.8)] border border-white/20 flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-active:scale-95">
-            <MessageCircle className="w-6 h-6 md:w-7 md:h-7 text-white drop-shadow-md group-hover:rotate-12 transition-transform duration-300" />
-
-            {/* Tooltip */}
-            <span className="absolute right-full mr-4 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest px-3 py-2 rounded-xl opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all duration-300 pointer-events-none whitespace-nowrap shadow-xl">
-              Get in Touch
-              <div className="absolute top-1/2 -right-1 -translate-y-1/2 w-2 h-2 bg-slate-900 rotate-45" />
-            </span>
+          {/* Quick Actions (Hover to reveal) */}
+          <div className="absolute bottom-full pb-3 flex flex-col gap-3 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto">
+            {/* WhatsApp */}
+            <a
+              href="https://wa.me/919342376760"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 md:w-12 md:h-12 bg-[#25D366] rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform text-white border border-green-400"
+              title="WhatsApp Us"
+            >
+              <svg className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
+            </a>
+            {/* Call */}
+            <a
+              href="tel:+919342376760"
+              className="w-10 h-10 md:w-12 md:h-12 bg-blue-500 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform text-white border border-blue-400"
+              title="Call Us"
+            >
+              <Phone className="w-5 h-5 md:w-6 md:h-6 fill-current" />
+            </a>
           </div>
-        </button>
+
+          {/* Main Button */}
+          <button
+            onClick={() => navigate("/contact-us")}
+            className="relative w-12 h-12 md:w-14 md:h-14 bg-gradient-to-tr from-blue-600 to-cyan-500 rounded-full shadow-[0_8px_30px_-5px_rgba(59,130,246,0.5)] border border-blue-400/50 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-active:scale-95 animate-bounce group-hover:animate-none"
+            aria-label="Contact Us"
+          >
+            <MessageCircle className="w-5 h-5 md:w-6 md:h-6 text-white drop-shadow-md group-hover:rotate-12 transition-transform duration-300" />
+
+            {/* Enhanced Tooltip */}
+            <div className="absolute right-full mr-4 opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all duration-300 pointer-events-none flex items-center">
+              <span className="relative bg-slate-900 text-white border border-slate-700/50 text-[10px] font-black uppercase tracking-widest px-4 py-2.5 rounded-xl shadow-2xl whitespace-nowrap overflow-visible group-hover:shadow-blue-500/20">
+                <span className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-cyan-500/20 pointer-events-none rounded-xl" />
+                <span className="relative z-10 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                  Get in Touch
+                </span>
+                <div className="absolute top-1/2 -right-1.5 -translate-y-1/2 w-3 h-3 bg-slate-900 border-t border-r border-slate-700/50 rotate-45" />
+              </span>
+            </div>
+          </button>
+        </div>
       )}
     </div>
   );

@@ -112,7 +112,7 @@ const Notifications = () => {
   return (
     <div className="min-h-screen pb-32">
       {/* ── DESIGNER HEADER (BANNER) ── */}
-      <header className="relative h-[120px] md:h-[150px] bg-slate-950 overflow-hidden flex items-end shadow-2xl">
+      <header className="relative w-[100vw] left-1/2 -translate-x-1/2 h-[120px] md:h-[150px] bg-slate-950 overflow-hidden flex items-end shadow-2xl border-b border-slate-800">
         <div className="absolute inset-0">
           <img
             src="assets/notification-banner.jpg"

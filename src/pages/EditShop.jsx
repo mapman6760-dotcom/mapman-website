@@ -611,7 +611,7 @@ const EditShop = () => {
         canonical="https://mapman.in/edit-shop"
       />
       {/* ─── REDESIGNED PREMIUM HEADER CARD ─── */}
-      <div className="relative w-full mb-6 md:mb-8 overflow-hidden shadow-xl rounded-none border-b border-slate-800 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 p-6 md:p-8 lg:px-12 lg:py-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 z-10">
+      <div className="relative w-[100vw] left-1/2 -translate-x-1/2 mb-6 md:mb-8 overflow-hidden shadow-xl rounded-none border-b border-slate-800 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 py-6 md:py-8 lg:py-10 px-6 md:px-8 lg:px-12 flex flex-col lg:flex-row lg:items-center justify-between gap-6 z-10">
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20"></div>
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none -ml-20 -mb-20"></div>
 
@@ -789,8 +789,8 @@ const EditShop = () => {
                     {categories.filter(cat => cat.categoryName?.toLowerCase() !== 'others').map((cat, idx) => {
                       const isSelected = shopData.category === cat.categoryName;
                       const verifiedCategories = [
-                        'theater', 'restaurant', 'hospital', 'bar', 'grocery', 
-                        'textile', 'resort', 'bunk', 'spa', 'hotel', 'jewellery', 
+                        'theater', 'restaurant', 'hospital', 'bar', 'grocery',
+                        'textile', 'resort', 'bunk', 'spa', 'hotel', 'jewellery',
                         'furniture', 'salons'
                       ];
                       const isVerified = verifiedCategories.includes(cat.categoryName?.toLowerCase());

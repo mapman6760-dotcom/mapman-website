@@ -55,7 +55,7 @@ const ShopAnalytics = () => {
     if (!dateString) return "Recently";
     const past = new Date(dateString);
     if (isNaN(past.getTime())) return "Recently";
-    
+
     const now = new Date();
     const diffInMs = now - past;
     const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
@@ -72,17 +72,21 @@ const ShopAnalytics = () => {
       label: "Total Videos",
       value: data.totalVideos.length.toString(),
       change: "+4", // Mocked for design
-      icon: <Clapperboard className="w-5 h-5 text-blue-600" />,
-      bgColor: "bg-blue-50",
+      icon: <Clapperboard className="w-7 h-7 text-blue-600" />,
+      badgeColor: "bg-white text-blue-600 shadow-[0_2px_10px_-2px_rgba(37,99,235,0.15)]",
+      bgGradient: "bg-gradient-to-br from-blue-50/80 via-white to-indigo-50/80",
+      iconBg: "bg-white shadow-[0_8px_30px_-5px_rgba(37,99,235,0.2)]",
       borderColor: "border-blue-100",
     },
     {
       label: "Total Views",
       value: data.totalViews.toLocaleString(),
       change: "+24%", // Mocked for design
-      icon: <Eye className="w-5 h-5 text-indigo-600" />,
-      bgColor: "bg-indigo-50",
-      borderColor: "border-indigo-100",
+      icon: <Eye className="w-7 h-7 text-emerald-600" />,
+      badgeColor: "bg-white text-emerald-600 shadow-[0_2px_10px_-2px_rgba(16,185,129,0.15)]",
+      bgGradient: "bg-gradient-to-br from-emerald-50/80 via-white to-teal-50/80",
+      iconBg: "bg-white shadow-[0_8px_30px_-5px_rgba(16,185,129,0.2)]",
+      borderColor: "border-emerald-100",
     },
   ];
 
@@ -103,7 +107,7 @@ const ShopAnalytics = () => {
         canonical="https://mapman.in/shop-analytics"
       />
       {/* ── REDESIGNED PREMIUM HEADER CARD ── */}
-      <div className="relative w-full mb-6 md:mb-10 overflow-hidden shadow-xl rounded-none border-b border-slate-800 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 p-6 md:p-8 lg:px-12 lg:py-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 z-10">
+      <div className="relative w-[100vw] left-1/2 -translate-x-1/2 mb-6 md:mb-10 overflow-hidden shadow-xl rounded-none border-b border-slate-800 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 py-6 md:py-8 lg:py-10 px-6 md:px-8 lg:px-12 flex flex-col lg:flex-row lg:items-center justify-between gap-6 z-10">
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20"></div>
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none -ml-20 -mb-20"></div>
 
@@ -140,39 +144,39 @@ const ShopAnalytics = () => {
           </div>
         )}
 
-        {/* ── REDESIGNED METRIC CARDS (SMALLER & COMPACT) ── */}
+        {/* ── REDESIGNED METRIC CARDS (LIGHT PASTEL) ── */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {getStats().map((stat, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              whileHover={{ scale: 1.01 }}
-              className={`relative group p-6 rounded-[1rem] overflow-hidden border border-white/20 shadow-xl transition-all duration-500
-                                ${i === 0 ? "bg-gradient-to-br from-blue-600 via-indigo-600 to-indigo-700 shadow-blue-500/20" : "bg-gradient-to-br from-emerald-500 via-teal-600 to-teal-700 shadow-emerald-500/20"}
-                            `}
+              whileHover={{ y: -4 }}
+              className={`relative group p-6 md:p-8 rounded-[2rem] border ${stat.borderColor} ${stat.bgGradient} shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 overflow-hidden backdrop-blur-xl`}
             >
+              {/* Background ambient shapes */}
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-white rounded-full blur-2xl opacity-80 pointer-events-none group-hover:scale-150 transition-transform duration-1000" />
+              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-white rounded-full blur-2xl opacity-80 pointer-events-none group-hover:scale-150 transition-transform duration-1000" />
+
               <div className="relative z-10 flex items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <h4 className="text-[9px] font-black text-white/70 uppercase tracking-[0.2em]">
+                <div className="space-y-3">
+                  <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest">
                     {stat.label}
                   </h4>
-                  <div className="flex items-center gap-2">
-                    <p className="text-2xl md:text-3xl font-black text-white tracking-tighter">
+                  <div className="flex items-center gap-3">
+                    <p className="text-4xl md:text-5xl font-black text-slate-800 tracking-tighter drop-shadow-sm">
                       {stat.value}
                     </p>
-                    <div className="flex items-center gap-1 bg-white/10 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/10">
-                      <TrendingUp className="w-3 h-3 text-emerald-300" />
-                      <span className="text-[10px] font-black text-white">{stat.change}</span>
+                    <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg ${stat.badgeColor}`}>
+                      <TrendingUp className="w-3.5 h-3.5" />
+                      <span className="text-[11px] font-black leading-none">{stat.change}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="w-12 h-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:rotate-6 transition-transform">
-                  {React.cloneElement(stat.icon, {
-                    className: "w-6 h-6 stroke-[2.5]",
-                  })}
+                <div className={`w-16 h-16 md:w-20 md:h-20 ${stat.iconBg} rounded-[1.5rem] flex items-center justify-center group-hover:scale-110 transition-transform duration-500 group-hover:rotate-3`}>
+                  {stat.icon}
                 </div>
               </div>
             </motion.div>

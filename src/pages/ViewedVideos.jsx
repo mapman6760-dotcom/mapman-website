@@ -1,256 +1,484 @@
-import React, { useState, useEffect } from "react";
-import {
-  ArrowLeft,
-  Search,
-  Play,
-  Bookmark,
-  Store,
-  ChevronRight,
-  Loader2,
-  Calendar,
-  Eye
-} from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { API_BASE_URL } from "../config";
+import {
+  ChevronLeft, Loader2, Play, Eye, Search, Bookmark,
+  Share2, MessageCircle, TrendingUp, BarChart2, VideoOff,
+  Heart, X, History, Clock,
+} from "lucide-react";
 import { VideoCardSkeleton } from "../components/SkeletonLoaders";
+import SEO from "../components/SEO";
 
+// Extracted VideoCard to prevent re-renders on parent state changes
+const VideoCard = ({ vidObj, i, videos, savedIds, likedIds, hoveredId, navigate, handleVideoHover, toggleLike, toggleSave, handleShare, handleWhatsApp, videoRefs }) => {
+  // Handle case where viewed videos are wrapped in a model class (e.g. vid.videoId)
+  const vid = vidObj.videoId || vidObj;
 
+  const videoSrc = vid.video
+    ? vid.video.startsWith("http")
+      ? vid.video
+      : `${API_BASE_URL}${vid.video}`
+    : "";
+  const isSaved = savedIds.has(vid.id || vidObj.id);
+  const isLiked = likedIds.has(vid.id || vidObj.id);
+  const isHovered = hoveredId === (vid.id || vidObj.id);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: (i % 12) * 0.05, duration: 0.4 }}
+      onClick={() => navigate(`/video-player/${vid.id || vidObj.id || i}`, { state: { videos, index: i, isMyVideos: true } })}
+      className="group relative flex flex-col rounded-2xl overflow-hidden cursor-pointer bg-white border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-500"
+    >
+      {/* Thumbnail */}
+      <div
+        className="relative overflow-hidden bg-slate-900"
+        style={{ aspectRatio: "16/10" }}
+        onMouseEnter={() => handleVideoHover(vid.id || vidObj.id, true)}
+        onMouseLeave={() => handleVideoHover(vid.id || vidObj.id, false)}
+      >
+        <video
+          ref={(el) => { if (el) videoRefs.current[vid.id || vidObj.id] = el; }}
+          src={videoSrc}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          muted
+          loop
+          playsInline
+          preload="metadata"
+        />
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/10" />
+
+        {/* Top badges */}
+        <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between z-10">
+          <span className="px-2 py-1 bg-black/50 backdrop-blur-md rounded-lg text-[9px] font-black text-white uppercase tracking-widest border border-white/10">
+            Viewed
+          </span>
+          <div className="flex items-center gap-1 px-2 py-1 bg-black/50 backdrop-blur-md rounded-lg border border-white/10">
+            <Eye className="w-3 h-3 text-white/80" />
+            <span className="text-[9px] font-black text-white">{vid.views || 0}</span>
+          </div>
+        </div>
+
+        {/* Play overlay */}
+        <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${isHovered ? "opacity-100" : "opacity-0"}`}>
+          <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border-2 border-white/40 shadow-2xl">
+            <Play className="w-6 h-6 text-white fill-white ml-0.5" />
+          </div>
+        </div>
+
+        {/* Shop avatar bottom left */}
+        {vid.shopImage && (
+          <div className="absolute bottom-3 left-3 z-10">
+            <div className="w-8 h-8 rounded-xl overflow-hidden border-2 border-white/30 shadow-lg">
+              <img src={vid.shopImage.startsWith("http") ? vid.shopImage : `${API_BASE_URL}${vid.shopImage}`} className="w-full h-full object-cover" alt="" />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Card Body */}
+      <div className="p-3.5 flex flex-col gap-2.5 flex-1">
+        <div>
+          <h4 className="font-black text-slate-900 text-sm leading-tight line-clamp-1 group-hover:text-blue-600 transition-colors">
+            {vid.videoTitle || "Untitled Video"}
+          </h4>
+          <p className="text-[10px] text-slate-500 font-semibold mt-0.5 truncate">
+            {vid.shopName || "Unknown Shop"}
+          </p>
+        </div>
+
+        {vid.description && (
+          <p className="text-[10px] text-slate-400 leading-relaxed line-clamp-2">{vid.description}</p>
+        )}
+
+        {/* Action row */}
+        <div className="flex items-center justify-between pt-2 border-t border-slate-50 mt-auto">
+          <div className="flex items-center gap-1">
+            <button
+              onClick={(e) => toggleLike(e, vid.id || vidObj.id)}
+              className={`p-1.5 rounded-lg transition-all hover:scale-110 ${isLiked ? "text-rose-500 bg-rose-50" : "text-slate-400 hover:text-rose-400 hover:bg-rose-50"}`}
+            >
+              <Heart className={`w-3.5 h-3.5 ${isLiked ? "fill-rose-500" : ""}`} />
+            </button>
+            <button
+              onClick={(e) => toggleSave(e, vid.id || vidObj.id)}
+              className={`p-1.5 rounded-lg transition-all hover:scale-110 ${isSaved ? "text-blue-600 bg-blue-50" : "text-slate-400 hover:text-blue-500 hover:bg-blue-50"}`}
+            >
+              <Bookmark className={`w-3.5 h-3.5 ${isSaved ? "fill-blue-600" : ""}`} />
+            </button>
+            <button
+              onClick={(e) => handleShare(e, vid)}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-violet-500 hover:bg-violet-50 transition-all hover:scale-110"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          {vid.shopNumber && (
+            <button
+              onClick={(e) => handleWhatsApp(e, vid)}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[9px] font-black uppercase tracking-wider transition-all hover:scale-105 active:scale-95"
+            >
+              <MessageCircle className="w-3 h-3" />
+              WhatsApp
+            </button>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 const ViewedVideos = () => {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [viewedVideos, setViewedVideos] = useState([]);
+
+  const [videos, setVideos] = useState([]);
+  const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const [fetchingMore, setFetchingMore] = useState(false);
+  const [userPoints, setUserPoints] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [savedIds, setSavedIds] = useState(new Set());
+  const [likedIds, setLikedIds] = useState(new Set());
+  const [hoveredId, setHoveredId] = useState(null);
+  const videoRefs = useRef({});
 
   useEffect(() => {
     fetchViewedVideos(1, false);
+    fetchPoints();
   }, []);
 
-  const fetchViewedVideos = async (pageNum, isLoadMore = false) => {
-    if (isLoadMore) setLoadingMore(true);
-    else setLoading(true);
+  useEffect(() => {
+    const q = searchQuery.toLowerCase();
+    setFiltered(
+      q
+        ? videos.filter((vObj) => {
+          const v = vObj.videoId || vObj;
+          return (v.videoTitle || "").toLowerCase().includes(q) ||
+            (v.shopName || "").toLowerCase().includes(q);
+        })
+        : videos
+    );
+  }, [searchQuery, videos]);
 
+  const fetchPoints = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_BASE_URL}/shop/fetchMyViewedVideos?page=${pageNum}`, {
-        headers: { "usertoken": token }
+      const res = await fetch(`${API_BASE_URL}/shop/fetchPoints`, {
+        headers: { usertoken: token },
       });
-      const result = await response.json();
+      const result = await res.json();
+      if (result.status === 200) setUserPoints(result.data || 0);
+    } catch (e) { }
+  };
 
-      if (result.status === 200 && result.data) {
+  const fetchViewedVideos = async (pageNum, isLoadMore = false) => {
+    if (isLoadMore) setFetchingMore(true);
+    else setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(
+        `${API_BASE_URL}/shop/fetchMyViewedVideos?page=${pageNum}`,
+        { headers: { usertoken: token } }
+      );
+      const result = await res.json();
+      if (result.status === 200 && Array.isArray(result.data)) {
+        const newVids = result.data;
         if (isLoadMore) {
-          setViewedVideos(prev => [...prev, ...result.data]);
+          setVideos((prev) => [...prev, ...newVids]);
         } else {
-          setViewedVideos(result.data);
+          setVideos(newVids);
         }
-        setHasMore(result.data.length === 10); // Assuming 10 per page
+        if (newVids.length < 10) setHasMore(false); // Assuming 10 per page
       } else {
-        if (!isLoadMore) setViewedVideos([]);
+        if (!isLoadMore) { setVideos([]); }
         setHasMore(false);
       }
-    } catch (error) {
-      console.error("Error fetching viewed videos:", error);
+    } catch (e) {
+      if (!isLoadMore) { setVideos([]); }
     } finally {
       setLoading(false);
-      setLoadingMore(false);
+      setFetchingMore(false);
     }
   };
 
   const handleLoadMore = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    fetchViewedVideos(nextPage, true);
+    const next = page + 1;
+    setPage(next);
+    fetchViewedVideos(next, true);
   };
 
-  const filteredVideos = viewedVideos.filter(video =>
-    video.videoTitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    video.shopName?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const toggleSave = (e, id) => {
+    e.stopPropagation();
+    setSavedIds((prev) => {
+      const n = new Set(prev);
+      n.has(id) ? n.delete(id) : n.add(id);
+      return n;
+    });
+  };
+
+  const toggleLike = (e, id) => {
+    e.stopPropagation();
+    setLikedIds((prev) => {
+      const n = new Set(prev);
+      n.has(id) ? n.delete(id) : n.add(id);
+      return n;
+    });
+  };
+
+  const handleShare = (e, vid) => {
+    e.stopPropagation();
+    if (navigator.share) {
+      navigator.share({ title: vid.videoTitle, url: window.location.href });
+    }
+  };
+
+  const handleWhatsApp = (e, vid) => {
+    e.stopPropagation();
+    if (vid.shopNumber) {
+      window.open(`https://wa.me/${vid.shopNumber}`, "_blank");
+    }
+  };
+
+  const handleVideoHover = (id, enter) => {
+    setHoveredId(enter ? id : null);
+    const el = videoRefs.current[id];
+    if (!el) return;
+    if (enter) {
+      el._p = el.play();
+      el._p.catch(() => { });
+    } else {
+      if (el._p) el._p.then(() => { el.pause(); el.currentTime = 0; }).catch(() => { });
+      else { el.pause(); el.currentTime = 0; }
+    }
+  };
+
+  const totalViews = videos.reduce((acc, vObj) => {
+    const v = vObj.videoId || vObj;
+    return acc + (v.views || 0);
+  }, 0);
+
+  const sidebarStats = [
+    { label: "Total History", value: videos.length, icon: <History className="w-4 h-4" />, color: "text-blue-600", bg: "bg-blue-50" },
+    { label: "Total Views", value: totalViews.toLocaleString(), icon: <Eye className="w-4 h-4" />, color: "text-violet-600", bg: "bg-violet-50" },
+    { label: "Saved", value: savedIds.size, icon: <Bookmark className="w-4 h-4" />, color: "text-emerald-600", bg: "bg-emerald-50" },
+    { label: "Liked", value: likedIds.size, icon: <Heart className="w-4 h-4" />, color: "text-rose-600", bg: "bg-rose-50" },
+  ];
 
   return (
-    <div
-      className="min-h-screen bg-[#FDFDFE] pb-24 animate-fade-in"
-    >
-      {/* ── COMPACT HEADER ── */}
-      <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-3xl border-b border-slate-100/50 px-2 md:px-8 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate(-1)}
-              className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center shadow-sm hover:border-blue-200 transition-all hover:scale-105 active:scale-95 duration-200 group"
-            >
-              <ArrowLeft className="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition-colors" />
-            </button>
-            <div className="space-y-0">
-              <h1 className="text-lg font-black text-slate-900 tracking-tight leading-none uppercase italic">
-                Viewed Videos
-              </h1>
-            </div>
-          </div>
+    <div className="min-h-screen bg-slate-50/80 pb-32 overflow-x-hidden">
+      <SEO
+        title="Viewed Videos | Mapman"
+        description="Your history of viewed videos on Mapman."
+        canonical="https://mapman.in/viewed-videos"
+      />
 
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-100 rounded-lg">
-            <Eye className="w-3 h-3 text-blue-600" />
-            <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest leading-none">
-              {viewedVideos.length} Records
-            </span>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-6xl mx-auto px-2 md:px-8 py-8 space-y-8">
-        {/* ── SEARCH ARCHITECTURE ── */}
-        <div className="relative group max-w-md">
-          <div className="absolute left-4 top-1/2 -translate-y-1/2">
-            <Search className="w-4 h-4 text-slate-300 group-focus-within:text-blue-600 transition-colors" />
-          </div>
-          <input
-            type="text"
-            placeholder="Search within your history..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-11 pl-11 pr-6 bg-white border border-slate-100 rounded-2xl outline-none shadow-sm focus:border-blue-500/20 transition-all text-xs font-bold tracking-tight"
-          />
-        </div>
-
-        {/* ── VIDEO FEED ── */}
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <VideoCardSkeleton key={i} />
-            ))}
-          </div>
-        ) : filteredVideos.length > 0 ? (
-          <div className="space-y-12">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {filteredVideos.map((video, idx) => (
-                <div
-                  key={video.id}
-                  style={{ animationDelay: `${idx * 40}ms` }}
-                  onClick={() => navigate(`/video-player/${video.id}`, { state: { videos: [video], index: 0, isMyVideos: true } })}
-                  className="group relative overflow-hidden rounded-[20px] bg-white border border-slate-100 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.06)] hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-500 cursor-pointer animate-fade-in-up opacity-0"
-                >
-                    <div className="aspect-[16/12] relative overflow-hidden bg-slate-900">
-                      <video
-                        src={video.video ? (video.video.startsWith('http') ? video.video : `${API_BASE_URL}${video.video}`) : ""}
-                        className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out"
-                        muted
-                        loop
-                        preload="metadata"
-                        onMouseEnter={(e) => {
-                          const video = e.currentTarget;
-                          video._playPromise = video.play();
-                          video._playPromise.catch(err => console.log("Hover play blocked", err));
-                        }}
-                        onMouseLeave={(e) => {
-                          const video = e.currentTarget;
-                          if (video._playPromise) {
-                            video._playPromise.then(() => {
-                              video.pause();
-                              video.currentTime = 0;
-                            }).catch(() => {});
-                          } else {
-                            video.pause();
-                            video.currentTime = 0;
-                          }
-                        }}
-                      />
-
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-
-                      {/* Glass Badges */}
-                      <div className="absolute top-4 left-4">
-                        <div className="px-2 py-1 bg-black/40 backdrop-blur-md rounded-lg border border-white/10 flex items-center gap-1.5">
-                          <Eye className="w-3 h-3 text-white" />
-                          <span className="text-[8px] font-black text-white uppercase tracking-widest">
-                            {video.views} Views
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="absolute top-4 right-4">
-                        <div className="px-2 py-1 bg-white/10 backdrop-blur-md rounded-lg border border-white/10 flex items-center gap-1.5">
-                          <Calendar className="w-3 h-3 text-white/70" />
-                          <span className="text-[7px] font-black text-white/70 uppercase tracking-widest">
-                            {new Date(video.updatedAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Central Play Hub */}
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 scale-90 group-hover:scale-100">
-                        <div className="w-14 h-14 bg-blue-600 shadow-xl shadow-blue-600/40 rounded-full flex items-center justify-center text-white transition-all duration-300">
-                          <Play className="w-5 h-5 fill-current ml-0.5" />
-                        </div>
-                      </div>
-
-                      {/* Action Footer */}
-                      <div className="absolute inset-x-2 bottom-2 p-2 bg-white/10 backdrop-blur-2xl rounded-xl border border-white/20 shadow-xl overflow-hidden">
-                        <div className="flex items-center justify-between gap-2.5">
-                          <div className="flex items-center gap-2 overflow-hidden">
-                            <div className="w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center shrink-0">
-                              <Store className="w-3.5 h-3.5 text-white" />
-                            </div>
-                            <div className="flex flex-col min-w-0">
-                              <h3 className="text-[10px] font-black text-white tracking-tight leading-none italic uppercase truncate">
-                                {video.videoTitle}
-                              </h3>
-                              <span className="text-[7px] font-bold text-white/50 uppercase tracking-widest truncate mt-0.5">
-                                {video.shopName}
-                              </span>
-                            </div>
-                          </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/shop-detail/${video.shopId}`);
-                            }}
-                            className="px-3 py-1.5 bg-white/10 hover:bg-white text-white hover:text-blue-600 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all shadow-md active:scale-95 whitespace-nowrap"
-                          >
-                            Explore
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+      {/* ── PREMIUM HEADER ── */}
+      <div className="relative w-full overflow-hidden shadow-xl border-b border-slate-800 bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950 py-8 md:py-10 px-6 md:px-10 z-10">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] -mr-20 -mt-20 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px] -ml-20 -mb-20 pointer-events-none" />
+        <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-6">
+          {/* Top row */}
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => navigate(-1)}
+                className="w-11 h-11 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-white hover:bg-white/15 hover:scale-105 transition-all"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse" />
+                  <span className="text-[10px] font-black text-blue-300 uppercase tracking-[0.3em]">Watch History</span>
                 </div>
-              ))}
+                <h1 className="text-2xl md:text-3xl font-black text-white tracking-tighter leading-none">
+                  Viewed <span className="text-cyan-400">Videos</span>
+                </h1>
+              </div>
             </div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl">
+                <img src="https://cdn-icons-png.flaticon.com/128/7892/7892416.png" className="w-5 h-5 object-contain" alt="points" />
+                <span className="font-black text-white text-sm">{userPoints}</span>
+                <span className="text-[9px] text-white/50 font-bold uppercase tracking-widest">pts</span>
+              </div>
+            </div>
+          </div>
 
-            {hasMore && (
-              <div className="flex justify-center pt-8">
-                <button
-                  onClick={handleLoadMore}
-                  disabled={loadingMore}
-                  className="px-8 py-4 bg-white border border-slate-100 shadow-lg shadow-slate-200/50 rounded-2xl flex items-center gap-3 group transition-all hover:scale-102 active:scale-98"
-                >
-                  {loadingMore ? (
-                    <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
-                  ) : (
-                    <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition-colors" />
-                  )}
-                  <span className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em]">
-                    {loadingMore ? 'Syncing...' : 'Load More Experiences'}
-                  </span>
-                </button>
+          {/* Search bar */}
+          <div className="relative max-w-2xl">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search your viewing history..."
+              className="w-full bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl pl-11 pr-4 py-3 text-white placeholder-white/30 text-sm font-medium focus:outline-none focus:border-blue-400/50 focus:bg-white/15 transition-all"
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Stats strip */}
+          <div className="flex items-center gap-6 flex-wrap">
+            <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">
+              {filtered.length} video{filtered.length !== 1 ? "s" : ""} found
+            </span>
+            {searchQuery && (
+              <span className="px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full text-[10px] font-black text-blue-300 uppercase tracking-widest">
+                Filtering: "{searchQuery}"
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── MAIN LAYOUT ── */}
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-8">
+        <div className="flex gap-8 items-start">
+
+          {/* ── VIDEO GRID ── */}
+          <div className="flex-1 min-w-0 space-y-8">
+            {loading ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
+                {[...Array(8)].map((_, i) => <VideoCardSkeleton key={i} />)}
+              </div>
+            ) : filtered.length > 0 ? (
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
+                  {filtered.map((vidObj, i) => (
+                    <VideoCard
+                      key={vidObj.id || (vidObj.videoId && vidObj.videoId.id) || i}
+                      vidObj={vidObj}
+                      i={i}
+                      videos={videos}
+                      savedIds={savedIds}
+                      likedIds={likedIds}
+                      hoveredId={hoveredId}
+                      navigate={navigate}
+                      handleVideoHover={handleVideoHover}
+                      toggleLike={toggleLike}
+                      toggleSave={toggleSave}
+                      handleShare={handleShare}
+                      handleWhatsApp={handleWhatsApp}
+                      videoRefs={videoRefs}
+                    />
+                  ))}
+                </div>
+                {hasMore && !searchQuery && (
+                  <div className="flex justify-center pt-4">
+                    <button
+                      onClick={handleLoadMore}
+                      disabled={fetchingMore}
+                      className="flex items-center gap-3 px-10 py-4 bg-slate-900 hover:bg-blue-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                    >
+                      {fetchingMore && <Loader2 className="w-4 h-4 animate-spin" />}
+                      {fetchingMore ? "Loading..." : "Load More Videos"}
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center bg-white rounded-3xl border border-slate-100 shadow-sm py-32 px-10 text-center">
+                <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mb-6 border border-slate-100">
+                  <VideoOff className="w-9 h-9 text-slate-300" />
+                </div>
+                <h3 className="text-xl font-black text-slate-800 tracking-tight mb-2">No Videos Found</h3>
+                <p className="text-sm text-slate-400 font-medium max-w-xs leading-relaxed">
+                  {searchQuery ? `No results for "${searchQuery}". Try a different search.` : "Your watch history is empty."}
+                </p>
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery("")} className="mt-6 px-6 py-2.5 bg-blue-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all">
+                    Clear Search
+                  </button>
+                )}
               </div>
             )}
           </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-32 space-y-6 text-center">
-            <div className="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center border border-slate-100 shadow-inner">
-              <Play className="w-8 h-8 text-slate-200" />
+
+          {/* ── ANALYTICS SIDEBAR ── */}
+          <aside className="hidden xl:flex flex-col gap-5 w-72 shrink-0 sticky top-8">
+            {/* Stats card */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+              <div className="px-5 py-4 border-b border-slate-50 flex items-center gap-2">
+                <BarChart2 className="w-4 h-4 text-blue-600" />
+                <span className="font-black text-slate-900 text-xs uppercase tracking-widest">History Stats</span>
+              </div>
+              <div className="p-4 grid grid-cols-2 gap-3">
+                {sidebarStats.map((s, i) => (
+                  <div key={i} className={`${s.bg} rounded-xl p-3 flex flex-col gap-1.5`}>
+                    <div className={`${s.color}`}>{s.icon}</div>
+                    <div className="font-black text-slate-900 text-lg leading-none">{s.value}</div>
+                    <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{s.label}</div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="space-y-2">
-              <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest">No Narrative Trail</h3>
-              <p className="text-[10px] text-slate-300 font-bold uppercase tracking-widest max-w-[240px] leading-relaxed">
-                Your visual session history is currently waiting for initial data points.
-              </p>
+
+            {/* Trending card */}
+            {videos.length > 0 && (
+              <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                <div className="px-5 py-4 border-b border-slate-50 flex items-center gap-2">
+                  <History className="w-4 h-4 text-rose-500" />
+                  <span className="font-black text-slate-900 text-xs uppercase tracking-widest">Recent Watches</span>
+                </div>
+                <div className="p-3 space-y-2">
+                  {[...videos]
+                    .slice(0, 5)
+                    .map((vidObj, i) => {
+                      const vid = vidObj.videoId || vidObj;
+                      const src = vid.video
+                        ? vid.video.startsWith("http") ? vid.video : `${API_BASE_URL}${vid.video}`
+                        : "";
+                      return (
+                        <button
+                          key={vid.id || vidObj.id || i}
+                          onClick={() => navigate(`/video-player/${vid.id || vidObj.id || i}`, { state: { videos, index: i, isMyVideos: true } })}
+                          className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition-colors text-left group"
+                        >
+                          <div className="relative w-14 h-10 rounded-lg overflow-hidden bg-slate-900 shrink-0">
+                            <video src={src} className="w-full h-full object-cover" muted preload="metadata" />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                              <Play className="w-3 h-3 text-white fill-white" />
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[11px] font-black text-slate-800 line-clamp-1 group-hover:text-blue-600 transition-colors">{vid.videoTitle || "Untitled"}</p>
+                            <div className="flex items-center gap-1 mt-0.5">
+                              <Clock className="w-3 h-3 text-slate-400" />
+                              <span className="text-[9px] text-slate-400 font-bold">Viewed</span>
+                            </div>
+                          </div>
+                          <span className="text-[10px] font-black text-slate-300">#{i + 1}</span>
+                        </button>
+                      );
+                    })}
+                </div>
+              </div>
+            )}
+
+            {/* History badge */}
+            <div className="bg-gradient-to-br from-slate-900 to-blue-950 rounded-2xl p-5 text-center border border-slate-800">
+              <div className="text-4xl mb-2">🕰️</div>
+              <h3 className="font-black text-white text-sm tracking-tight">Watch History</h3>
+              <p className="text-[10px] text-blue-300 font-bold uppercase tracking-widest mt-1">Activity Log</p>
+              <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-center gap-1.5">
+                <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                <span className="text-[9px] text-white/50 font-black uppercase tracking-widest">Tracking Active</span>
+              </div>
             </div>
-          </div>
-        )}
-      </main>
+          </aside>
+
+        </div>
+      </div>
     </div>
   );
 };

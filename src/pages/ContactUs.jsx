@@ -33,7 +33,7 @@ const ContactUs = () => {
 
       {/* ── TOP BANNER ── */}
       <div
-        className="relative w-[100vw] left-1/2 -translate-x-1/2 overflow-hidden bg-slate-900 bg-cover bg-center"
+        className="relative w-full overflow-hidden bg-slate-900 bg-cover bg-center"
         style={{ backgroundImage: `url(/assets/contactus.jpeg)` }}
       >
         {/* Text Readability Overlay */}
@@ -95,34 +95,39 @@ const ContactUs = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:items-stretch">
 
           {/* ── LEFT: Contact Info ── */}
-          <div className="lg:col-span-5 relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 p-8 md:p-10 shadow-xl flex flex-col justify-between">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -mr-16 -mt-16 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-white/5 rounded-full -ml-10 -mb-10 pointer-events-none" />
+          <div className="lg:col-span-5 relative overflow-hidden rounded-[2.5rem] bg-slate-900 p-8 md:p-12 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.2)] flex flex-col justify-between border border-slate-800 group/card">
+            {/* Ambient Background Glows */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 rounded-full blur-[60px] -mr-16 -mt-16 pointer-events-none transition-transform duration-1000 group-hover/card:scale-150" />
+            <div className="absolute bottom-0 left-0 w-56 h-56 bg-cyan-500/20 rounded-full blur-[60px] -ml-10 -mb-10 pointer-events-none transition-transform duration-1000 group-hover/card:scale-150" />
 
-            <div className="relative z-10 space-y-8">
+            <div className="relative z-10 space-y-10">
               <div>
-                <h3 className="text-2xl font-black text-white tracking-tight mb-2">Contact Information</h3>
-                <p className="text-blue-200 text-sm font-medium leading-relaxed">
-                  Reach out to us through any of our channels or visit our headquarters.
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full mb-4">
+                  <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                  <span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">We are online</span>
+                </div>
+                <h3 className="text-3xl font-black text-white tracking-tight mb-3 leading-tight">Contact <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Information</span></h3>
+                <p className="text-slate-400 text-sm font-medium leading-relaxed max-w-[280px]">
+                  Reach out to us through any of our channels or visit our headquarters. We usually reply within minutes.
                 </p>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {[
-                  { icon: Mail, bg: "bg-white/10", color: "text-white", title: "Email Address", detail: "mapman6760@gmail.com", href: "mailto:mapman6760@gmail.com" },
-                  { icon: Phone, bg: "bg-white/10", color: "text-white", title: "Phone Number", detail: "+91 9342376760", href: "tel:+919342376760" },
-                  { icon: MapPin, bg: "bg-white/10", color: "text-white", title: "Office Address", detail: "Chennai, Tamil Nadu, India", href: null },
+                  { icon: Mail, title: "Email Address", detail: "mapman6760@gmail.com", href: "mailto:mapman6760@gmail.com", glow: "group-hover/item:shadow-[0_0_20px_rgba(56,189,248,0.2)]", iconColor: "text-sky-400" },
+                  { icon: Phone, title: "Phone Number", detail: "+91 9342376760", href: "tel:+919342376760", glow: "group-hover/item:shadow-[0_0_20px_rgba(52,211,153,0.2)]", iconColor: "text-emerald-400" },
+                  { icon: MapPin, title: "Office Address", detail: "Chennai, Tamil Nadu, India", href: null, glow: "group-hover/item:shadow-[0_0_20px_rgba(167,139,250,0.2)]", iconColor: "text-purple-400" },
                 ].map((item, i) => (
-                  <div key={i} className="flex gap-4 items-start group">
-                    <div className={`w-11 h-11 ${item.bg} border border-white/20 rounded-2xl flex items-center justify-center ${item.color} shrink-0 group-hover:bg-white/20 transition-colors`}>
-                      <item.icon className="w-5 h-5" />
+                  <div key={i} className={`group/item flex items-center gap-5 p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.06] hover:border-white/10 transition-all duration-300 cursor-default ${item.glow} hover:-translate-y-1`}>
+                    <div className={`w-12 h-12 bg-slate-800/80 border border-slate-700/50 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover/item:scale-110`}>
+                      <item.icon className={`w-5 h-5 ${item.iconColor}`} />
                     </div>
                     <div>
-                      <div className="text-[10px] font-black text-blue-200 uppercase tracking-widest mb-1">{item.title}</div>
+                      <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">{item.title}</div>
                       {item.href ? (
-                        <a href={item.href} className="text-white font-semibold text-sm hover:text-cyan-300 transition-colors">{item.detail}</a>
+                        <a href={item.href} className="text-slate-200 font-bold text-sm hover:text-cyan-400 transition-colors block">{item.detail}</a>
                       ) : (
-                        <p className="text-white font-semibold text-sm leading-relaxed">{item.detail}</p>
+                        <p className="text-slate-200 font-bold text-sm leading-relaxed">{item.detail}</p>
                       )}
                     </div>
                   </div>
@@ -131,13 +136,22 @@ const ContactUs = () => {
             </div>
 
             {/* Hours footer */}
-            <div className="relative z-10 mt-8 pt-6 border-t border-white/20 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center">
-                <Clock className="w-4 h-4 text-cyan-300" />
+            <div className="relative z-10 mt-12 pt-6 flex items-center justify-between border-t border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
+                  <Clock className="w-4 h-4 text-blue-400" />
+                </div>
+                <div>
+                  <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Available</div>
+                  <span className="text-sm text-slate-300 font-bold">
+                    Mon – Fri (9am – 6pm)
+                  </span>
+                </div>
               </div>
-              <span className="text-sm text-blue-100 font-semibold">
-                Available: Mon – Fri (9am – 6pm)
-              </span>
+              <div className="w-10 h-10 rounded-full bg-cyan-500/10 flex items-center justify-center relative">
+                <div className="w-3 h-3 bg-cyan-400 rounded-full animate-ping absolute" />
+                <div className="w-2.5 h-2.5 bg-cyan-400 rounded-full relative z-10" />
+              </div>
             </div>
           </div>
 

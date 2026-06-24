@@ -82,15 +82,16 @@ const ShopDetail = () => {
       )}
 
       {/* ── HERO BANNER ── */}
-      <div className="relative h-[200px] sm:h-[260px] rounded-none md:rounded-b-none overflow-hidden bg-slate-800 cursor-pointer group" onClick={() => setSelectedImage(shopInfo.shopImage)}>
+      <div className="relative w-full h-[200px] sm:h-[260px] rounded-none md:rounded-b-none overflow-hidden bg-slate-800 cursor-pointer group" onClick={() => setSelectedImage(shopInfo.shopImage)}>
         {shopInfo.shopImage
           ? <img src={shopInfo.shopImage} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2s]" alt={shopInfo.shopName} />
           : <div className="w-full h-full bg-gradient-to-br from-green-900 to-slate-900" />}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
       </div>
 
-      {/* ── SHOP IDENTITY CARD ── */}
-      <div className="bg-white border-b border-slate-100 px-4 md:px-6 pt-4 pb-5">
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        {/* ── SHOP IDENTITY CARD ── */}
+        <div className="bg-white border-b border-slate-100 px-4 md:px-6 pt-4 pb-5 mt-4 rounded-t-2xl shadow-sm">
         <div className="flex items-start gap-4">
           {/* Logo */}
           <div className="w-20 h-20 rounded-2xl border-4 border-white shadow-lg bg-amber-50 flex items-center justify-center overflow-hidden shrink-0 -mt-10 relative z-10">
@@ -371,6 +372,8 @@ const ShopDetail = () => {
         </div>
       </div>
 
+      </div>
+      
       {/* ── TOAST MESSAGE ── */}
       {toastMessage && createPortal(
         <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[99999] bg-slate-900 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-2 border border-slate-700">

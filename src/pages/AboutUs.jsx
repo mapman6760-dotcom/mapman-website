@@ -13,7 +13,7 @@ const AboutUs = () => {
 
       {/* ── TOP BANNER ── */}
       <div
-        className="relative w-[100vw] left-1/2 -translate-x-1/2 overflow-hidden bg-slate-900 bg-cover bg-center"
+        className="relative w-full overflow-hidden bg-slate-900 bg-cover bg-center"
         style={{ backgroundImage: `url(/assets/aboutus.jpeg)` }}
       >
         {/* Text Readability Overlay */}
@@ -87,7 +87,7 @@ const AboutUs = () => {
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-3xl rotate-2 scale-95" />
             <img
-              src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80"
+              src="https://static.vecteezy.com/system/resources/previews/003/177/404/large_2x/local-seo-market-strategy-business-search-engine-optimization-free-vector.jpg"
               alt="Team collaboration"
               className="relative z-10 w-full h-[340px] object-cover rounded-3xl shadow-xl border border-slate-100"
             />
@@ -112,57 +112,34 @@ const AboutUs = () => {
             </div>
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Mission & Vision</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
-            {[
-              {
-                icon: Target,
-                bgGradient: "bg-gradient-to-br from-blue-500 to-indigo-600",
-                hoverShadow: "hover:shadow-[0_20px_40px_rgba(37,99,235,0.12)]",
-                lightBg: "bg-blue-50",
-                iconColor: "text-blue-600",
-                borderColor: "border-blue-100/50",
-                label: "Our Mission",
-                text: "To help people discover nearby businesses quickly and easily through an interactive map platform. We empower local businesses to increase their visibility and attract more customers through engaging video promotions."
-              },
-              {
-                icon: Eye,
-                bgGradient: "bg-gradient-to-br from-emerald-500 to-teal-600",
-                hoverShadow: "hover:shadow-[0_20px_40px_rgba(16,185,129,0.12)]",
-                lightBg: "bg-emerald-50",
-                iconColor: "text-emerald-600",
-                borderColor: "border-emerald-100/50",
-                label: "Our Vision",
-                text: "To become the most trusted platform for local business discovery and digital advertising. We aim to connect communities with businesses while helping every local shop grow and succeed in the digital world."
-              }
-            ].map((card, i) => (
-              <div key={i} className={`group relative overflow-hidden ${card.lightBg} border-2 border-white hover:border-white/50 rounded-[2rem] p-8 sm:p-10 transition-all duration-500 shadow-md ${card.hoverShadow} hover:-translate-y-2 cursor-default`}>
-
-                {/* Decorative Background Blob */}
-                <div className={`absolute -top-20 -right-20 w-56 h-56 rounded-full ${card.bgGradient} opacity-[0.1] group-hover:opacity-[0.2] blur-3xl transition-all duration-700 group-hover:scale-150`} />
-
-                {/* Top Section */}
-                <div className="flex items-start justify-between mb-8 relative z-10">
-                  <div className={`w-16 h-16 bg-white border border-slate-100 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 group-hover:bg-white transition-all duration-500`}>
-                    <card.icon className={`w-8 h-8 ${card.iconColor}`} />
-                  </div>
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 bg-white shadow-sm`}>
-                    <ArrowRight className={`w-5 h-5 ${card.iconColor}`} />
-                  </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
+            {/* MISSION */}
+            <div className="group relative bg-slate-950 rounded-[2.5rem] p-10 sm:p-12 overflow-hidden shadow-2xl shadow-slate-900/20 hover:-translate-y-2 transition-all duration-500 border border-slate-800">
+              <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-blue-500/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 pointer-events-none group-hover:bg-blue-500/30 transition-colors duration-700" />
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="flex items-center gap-4 mb-8">
+                  <h3 className="text-2xl md:text-3xl font-black text-white tracking-tight">Our Mission</h3>
                 </div>
-
-                {/* Content */}
-                <div className="relative z-10">
-                  <h3 className="text-2xl font-black text-slate-900 tracking-tight mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-slate-900 group-hover:to-slate-600 transition-all duration-300">
-                    {card.label}
-                  </h3>
-                  <div className={`w-12 h-1.5 ${card.bgGradient} rounded-full mb-6 opacity-80 group-hover:w-24 transition-all duration-500`} />
-                  <p className="text-slate-500 leading-relaxed font-medium text-[15px] group-hover:text-slate-700 transition-colors duration-300">
-                    {card.text}
-                  </p>
-                </div>
-
+                <div className="w-12 h-1.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full mb-8 opacity-80 group-hover:w-24 transition-all duration-500" />
+                <p className="text-blue-100/70 leading-relaxed font-medium text-lg">
+                  To help people discover nearby businesses quickly and easily through an interactive map platform. We empower local businesses to increase their visibility and attract more customers through engaging video promotions.
+                </p>
               </div>
-            ))}
+            </div>
+
+            {/* VISION */}
+            <div className="group relative bg-white rounded-[2.5rem] p-10 sm:p-12 overflow-hidden shadow-xl shadow-slate-200/50 hover:-translate-y-2 transition-all duration-500 border border-slate-100">
+              <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-emerald-500/10 rounded-full blur-[80px] translate-y-1/3 translate-x-1/3 pointer-events-none group-hover:bg-emerald-500/20 transition-colors duration-700" />
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="flex items-center gap-4 mb-8">
+                  <h3 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Our Vision</h3>
+                </div>
+                <div className="w-12 h-1.5 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full mb-8 opacity-80 group-hover:w-24 transition-all duration-500" />
+                <p className="text-slate-500 leading-relaxed font-medium text-lg">
+                  To become the most trusted platform for local business discovery and digital advertising. We aim to connect communities with businesses while helping every local shop grow and succeed in the digital world.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -201,11 +178,7 @@ const AboutUs = () => {
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-100 rounded-full">
-                <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                <span className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">Our Edge</span>
-              </div>
-              <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-[1.1]">
+              <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-[1.1]">
                 Why Businesses & Explorers Choose Mapman
               </h2>
               <p className="text-slate-500 font-medium leading-relaxed text-lg">

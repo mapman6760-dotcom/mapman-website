@@ -300,7 +300,7 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
       className="flex flex-col h-full bg-transparent no-scrollbar relative animate-fade-in"
     >
       {/* 1. PROFESSIONAL HEADER & TABS */}
-      <div className="relative w-full mb-4 md:mb-8 overflow-hidden shadow-xl border-b border-slate-800 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 p-6 md:p-8 lg:px-12 lg:py-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 z-10">
+      <div className="relative w-[100vw] left-1/2 -translate-x-1/2 mb-4 md:mb-8 overflow-hidden shadow-xl border-b border-slate-800 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 py-6 md:py-8 lg:py-10 px-6 md:px-8 lg:px-12 flex flex-col lg:flex-row lg:items-center justify-between gap-6 z-10">
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20"></div>
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none -ml-20 -mb-20"></div>
 
@@ -403,117 +403,117 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
         <div
           className={`${activeTab === "all" ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6" : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 px-1 md:px-2"} gap-1.5 md:gap-5 bg-transparent pb-20 no-scrollbar`}
         >
-            {videos.map((vid, i) => {
-              if (!vid) return null;
-              return (
-                <div
-                  key={vid.id || i}
-                  style={{ animationDelay: `${i * 30}ms` }}
-                  onClick={() => {
-                    if (activeTab === "all") {
-                      navigate(`/category-videos?category=${vid.categoryName}`);
-                    } else {
-                      navigate(`/video-player/${vid.id || i}`, {
-                        state: {
-                          videos: videos,
-                          index: i,
-                          isMyVideos: activeTab === "my",
-                        },
-                      });
-                    }
-                  }}
-                  className={`relative group cursor-pointer transition-all duration-500 animate-fade-in-up opacity-0 ${activeTab === "all" ? "flex flex-col aspect-[3/4] overflow-hidden bg-white border-r border-b border-slate-100" : "flex flex-col bg-white rounded-xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 border border-slate-100"}`}
-                >
-                  {activeTab === "all" ? (
-                    <>
-                      <div className="absolute inset-0">
-                        <img
-                          src={`${API_BASE_URL}${vid.categoryVideo}`}
-                          alt={vid.categoryName}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" />
+          {videos.map((vid, i) => {
+            if (!vid) return null;
+            return (
+              <div
+                key={vid.id || i}
+                style={{ animationDelay: `${i * 30}ms` }}
+                onClick={() => {
+                  if (activeTab === "all") {
+                    navigate(`/category-videos?category=${vid.categoryName}`);
+                  } else {
+                    navigate(`/video-player/${vid.id || i}`, {
+                      state: {
+                        videos: videos,
+                        index: i,
+                        isMyVideos: activeTab === "my",
+                      },
+                    });
+                  }
+                }}
+                className={`relative group cursor-pointer transition-all duration-500 animate-fade-in-up opacity-0 ${activeTab === "all" ? "flex flex-col aspect-[3/4] overflow-hidden bg-white border-r border-b border-slate-100" : "flex flex-col bg-white rounded-xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 border border-slate-100"}`}
+              >
+                {activeTab === "all" ? (
+                  <>
+                    <div className="absolute inset-0">
+                      <img
+                        src={`${API_BASE_URL}${vid.categoryVideo}`}
+                        alt={vid.categoryName}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" />
+                    </div>
+                    <div className="absolute top-4 left-4 right-4 z-10 flex items-center justify-between pointer-events-none">
+                      <div className="px-2.5 py-1 rounded-md border text-white text-[7px] font-black uppercase tracking-widest shadow-xl backdrop-blur-md bg-white/10 border-white/20">
+                        {vid.categoryName}
                       </div>
-                      <div className="absolute top-4 left-4 right-4 z-10 flex items-center justify-between pointer-events-none">
-                        <div className="px-2.5 py-1 rounded-md border text-white text-[7px] font-black uppercase tracking-widest shadow-xl backdrop-blur-md bg-white/10 border-white/20">
-                          {vid.categoryName}
-                        </div>
+                    </div>
+                    <div className="absolute bottom-5 left-5 right-5 z-10 text-white">
+                      <h4 className="text-[11px] font-black uppercase tracking-tight mb-3 line-clamp-2 leading-tight drop-shadow-lg group-hover:text-blue-400 transition-colors uppercase">
+                        {vid.categoryName} Reel
+                      </h4>
+                      <div className="flex items-center gap-1.5 px-2 py-1 bg-emerald-500/10 backdrop-blur-md border border-emerald-500/20 rounded-md inline-flex">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                        <span className="text-[7px] font-black text-emerald-400 uppercase tracking-widest">
+                          Active Studio
+                        </span>
                       </div>
-                      <div className="absolute bottom-5 left-5 right-5 z-10 text-white">
-                        <h4 className="text-[11px] font-black uppercase tracking-tight mb-3 line-clamp-2 leading-tight drop-shadow-lg group-hover:text-blue-400 transition-colors uppercase">
-                          {vid.categoryName} Reel
+                    </div>
+                  </>
+                ) : (
+                  <div className="relative h-full flex flex-col bg-white border border-slate-100 rounded-xl overflow-hidden group/card hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] transition-all duration-500">
+                    {/* VIDEO THUMBNAIL AREA */}
+                    <div className="relative w-full aspect-video bg-slate-950 overflow-hidden">
+                      <video
+                        src={vid.video ? (vid.video.startsWith('http') ? vid.video : `${API_BASE_URL}${vid.video}`) : ""}
+                        className="w-full h-full object-cover opacity-80 group-hover/card:opacity-100 transition-all duration-700 group-hover/card:scale-105"
+                        muted
+                        loop
+                        preload="metadata"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
+
+                      {/* TOP ACTIONS BADGE */}
+                      <div className="absolute top-2 left-3 right-3 flex items-center justify-between">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenEdit(vid);
+                          }}
+                          className="w-8 h-8 bg-white/20 hover:bg-white/40 backdrop-blur-md rounded-lg flex items-center justify-center text-white transition-all shadow-xl border border-white/10"
+                        >
+                          <MoreVertical className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* DATA CONTENT */}
+                    <div className="p-5 flex-1 flex flex-col">
+                      <div className="flex-1 space-y-2">
+                        <h4 className="text-[13px] font-black text-slate-900 uppercase tracking-tight leading-tight line-clamp-2 transition-colors group-hover/card:text-blue-600">
+                          {vid.videoTitle}
                         </h4>
-                        <div className="flex items-center gap-1.5 px-2 py-1 bg-emerald-500/10 backdrop-blur-md border border-emerald-500/20 rounded-md inline-flex">
-                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                          <span className="text-[7px] font-black text-emerald-400 uppercase tracking-widest">
-                            Active Studio
-                          </span>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="relative h-full flex flex-col bg-white border border-slate-100 rounded-xl overflow-hidden group/card hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] transition-all duration-500">
-                      {/* VIDEO THUMBNAIL AREA */}
-                      <div className="relative w-full aspect-video bg-slate-950 overflow-hidden">
-                        <video
-                          src={vid.video ? (vid.video.startsWith('http') ? vid.video : `${API_BASE_URL}${vid.video}`) : ""}
-                          className="w-full h-full object-cover opacity-80 group-hover/card:opacity-100 transition-all duration-700 group-hover/card:scale-105"
-                          muted
-                          loop
-                          preload="metadata"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
-
-                        {/* TOP ACTIONS BADGE */}
-                        <div className="absolute top-2 left-3 right-3 flex items-center justify-between">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleOpenEdit(vid);
-                            }}
-                            className="w-8 h-8 bg-white/20 hover:bg-white/40 backdrop-blur-md rounded-lg flex items-center justify-center text-white transition-all shadow-xl border border-white/10"
-                          >
-                            <MoreVertical className="w-4 h-4" />
-                          </button>
-                        </div>
+                        <p className="text-[10px] text-slate-400 font-medium line-clamp-1 opacity-70">
+                          {vid.description ||
+                            "No description provided for this motion asset."}
+                        </p>
                       </div>
 
-                      {/* DATA CONTENT */}
-                      <div className="p-5 flex-1 flex flex-col">
-                        <div className="flex-1 space-y-2">
-                          <h4 className="text-[13px] font-black text-slate-900 uppercase tracking-tight leading-tight line-clamp-2 transition-colors group-hover/card:text-blue-600">
-                            {vid.videoTitle}
-                          </h4>
-                          <p className="text-[10px] text-slate-400 font-medium line-clamp-1 opacity-70">
-                            {vid.description ||
-                              "No description provided for this motion asset."}
-                          </p>
-                        </div>
-
-                        {/* ANALYTICS BAR */}
-                        <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-1.5">
-                              <Eye className="w-3 h-3 text-slate-300" />
-                              <span className="text-[10px] font-black text-slate-600">
-                                {vid.views || 0}
-                              </span>
-                            </div>
+                      {/* ANALYTICS BAR */}
+                      <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1.5">
+                            <Eye className="w-3 h-3 text-slate-300" />
+                            <span className="text-[10px] font-black text-slate-600">
+                              {vid.views || 0}
+                            </span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <div className="px-2 py-1 bg-blue-50 rounded-md">
-                              <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest italic">
-                                Live Feed
-                              </span>
-                            </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="px-2 py-1 bg-blue-50 rounded-md">
+                            <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest italic">
+                              Live Feed
+                            </span>
                           </div>
                         </div>
                       </div>
                     </div>
-                  )}
-                </div>
-              );
-            })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       ) : (
         <div className="flex-1 flex flex-col items-center justify-center bg-white/50 backdrop-blur-xl rounded-[4rem] border-2 border-slate-100 py-32 px-10 text-center relative overflow-hidden">
@@ -540,229 +540,229 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
           <div
             className="relative w-full max-w-sm bg-white rounded-[2.5rem] shadow-[0_50px_120px_rgba(0,0,0,0.25)] overflow-hidden border border-slate-100 flex flex-col no-scrollbar animate-scale-in"
           >
-              {/* Decorative Top Accent */}
-              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 via-indigo-600 to-blue-500 z-50"></div>
+            {/* Decorative Top Accent */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 via-indigo-600 to-blue-500 z-50"></div>
 
-              {/* Enhanced Header */}
-              <div className="bg-slate-50/80 px-8 py-7 border-b border-slate-100 flex items-center justify-between relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100/30 rounded-full blur-[60px] -mr-16 -mt-16"></div>
-                <div className="flex items-center gap-4 relative z-10 transition-transform">
-                  <div className="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-xl group hover:rotate-12 transition-all">
-                    <Sparkles className="w-6 h-6 text-blue-400" />
+            {/* Enhanced Header */}
+            <div className="bg-slate-50/80 px-8 py-7 border-b border-slate-100 flex items-center justify-between relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100/30 rounded-full blur-[60px] -mr-16 -mt-16"></div>
+              <div className="flex items-center gap-4 relative z-10 transition-transform">
+                <div className="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-xl group hover:rotate-12 transition-all">
+                  <Sparkles className="w-6 h-6 text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-slate-900 tracking-tighter uppercase leading-none mb-1.5 flex items-center gap-2">
+                    {editingVideo ? "Refine Reel" : "Studio Reel"}
+                  </h3>
+                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest flex items-center gap-1.5">
+                    <div className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse"></div>
+                    {editingVideo ? "Modify Experience" : "List Experience"}
+                  </p>
+                </div>
+              </div>
+              {editingVideo && (
+                <button
+                  onClick={handleDeleteVideo}
+                  className="ml-auto mr-4 w-10 h-10 bg-rose-50 hover:bg-rose-100 text-rose-500 rounded-xl flex items-center justify-center transition-all border border-rose-100 shadow-sm relative z-10"
+                >
+                  <AlertCircle className="w-5 h-5" />
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  setShowUploadModal(false);
+                  setEditingVideo(null);
+                }}
+                className="w-10 h-10 bg-white hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-xl flex items-center justify-center transition-all border border-slate-100 shadow-sm relative z-10"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Enhanced Body */}
+            <div className="p-8 space-y-7 overflow-y-auto no-scrollbar max-h-[60vh]">
+              {/* Pick Video Area */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between px-1">
+                  <label className="text-[10px] font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                    <Camera className="w-3.5 h-3.5 text-blue-600" /> Video Hub
+                  </label>
+                  <div className="px-2 py-0.5 bg-slate-100 rounded-md text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none">
+                    Limit 10MB
                   </div>
-                  <div>
-                    <h3 className="text-xl font-black text-slate-900 tracking-tighter uppercase leading-none mb-1.5 flex items-center gap-2">
-                      {editingVideo ? "Refine Reel" : "Studio Reel"}
-                    </h3>
-                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest flex items-center gap-1.5">
-                      <div className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse"></div>
-                      {editingVideo ? "Modify Experience" : "List Experience"}
-                    </p>
+                </div>
+                <div className="relative group/picker cursor-pointer">
+                  <input
+                    type="file"
+                    accept="video/*"
+                    onChange={handleFileChange}
+                    className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                  />
+                  <div
+                    className={`w-full h-40 border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center transition-all duration-500 hover:-translate-y-0.5 overflow-hidden relative shadow-inner ${videoFile || (editingVideo && !videoFile) ? "border-emerald-500 bg-slate-950" : "border-slate-200 bg-slate-50 group-hover/picker:border-blue-400 group-hover/picker:bg-blue-50/5"}`}
+                  >
+                    {videoFile || (editingVideo && !videoFile) ? (
+                      <>
+                        <video
+                          src={
+                            videoFile
+                              ? URL.createObjectURL(videoFile)
+                              : (editingVideo?.video ? (editingVideo.video.startsWith('http') ? editingVideo.video : `${API_BASE_URL}${editingVideo.video}`) : "")
+                          }
+                          className="w-full h-full object-cover opacity-80 group-hover/picker:opacity-100 transition-opacity"
+                          autoPlay
+                          muted
+                          loop
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+                        <div className="absolute bottom-4 left-5 right-5 flex items-center justify-between">
+                          <span className="text-[10px] font-black text-white uppercase tracking-widest truncate max-w-[70%]">
+                            {videoFile
+                              ? videoFile.name
+                              : editingVideo.videoTitle}
+                          </span>
+                          <div className="w-6 h-6 bg-emerald-500 text-white rounded-lg flex items-center justify-center shadow-lg border border-emerald-400/50">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-14 h-14 rounded-2xl mb-4 bg-white text-slate-300 flex items-center justify-center shadow-lg group-hover/picker:rotate-6 transition-all duration-500">
+                          <Plus className="w-7 h-7" />
+                        </div>
+                        <span className="text-[12px] font-black text-slate-500 uppercase tracking-widest">
+                          Select Studio Video
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
                 {editingVideo && (
                   <button
-                    onClick={handleDeleteVideo}
-                    className="ml-auto mr-4 w-10 h-10 bg-rose-50 hover:bg-rose-100 text-rose-500 rounded-xl flex items-center justify-center transition-all border border-rose-100 shadow-sm relative z-10"
+                    onClick={() => handleReplaceVideo(videoFile)}
+                    disabled={!videoFile || isSaving}
+                    className={`w-full h-12 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${videoFile ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "bg-slate-100 text-slate-300 cursor-not-allowed"}`}
                   >
-                    <AlertCircle className="w-5 h-5" />
+                    {isSaving ? "Replacing..." : "Commit Video Replacement"}
                   </button>
                 )}
-                <button
-                  onClick={() => {
-                    setShowUploadModal(false);
-                    setEditingVideo(null);
-                  }}
-                  className="w-10 h-10 bg-white hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-xl flex items-center justify-center transition-all border border-slate-100 shadow-sm relative z-10"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Enhanced Body */}
-              <div className="p-8 space-y-7 overflow-y-auto no-scrollbar max-h-[60vh]">
-                {/* Pick Video Area */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between px-1">
-                    <label className="text-[10px] font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
-                      <Camera className="w-3.5 h-3.5 text-blue-600" /> Video Hub
-                    </label>
-                    <div className="px-2 py-0.5 bg-slate-100 rounded-md text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none">
-                      Limit 10MB
+                {fileError && (
+                  <div
+                    className="flex items-center gap-3 px-4 py-3 bg-red-50 text-red-600 rounded-2xl border border-red-100 shadow-sm shadow-red-200/20 mt-2 animate-fade-in"
+                  >
+                    <div className="shrink-0 w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm">
+                      <AlertCircle className="w-4 h-4" />
                     </div>
-                  </div>
-                  <div className="relative group/picker cursor-pointer">
-                    <input
-                      type="file"
-                      accept="video/*"
-                      onChange={handleFileChange}
-                      className="absolute inset-0 opacity-0 cursor-pointer z-10"
-                    />
-                    <div
-                      className={`w-full h-40 border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center transition-all duration-500 hover:-translate-y-0.5 overflow-hidden relative shadow-inner ${videoFile || (editingVideo && !videoFile) ? "border-emerald-500 bg-slate-950" : "border-slate-200 bg-slate-50 group-hover/picker:border-blue-400 group-hover/picker:bg-blue-50/5"}`}
-                    >
-                      {videoFile || (editingVideo && !videoFile) ? (
-                        <>
-                          <video
-                            src={
-                              videoFile
-                                ? URL.createObjectURL(videoFile)
-                                : (editingVideo?.video ? (editingVideo.video.startsWith('http') ? editingVideo.video : `${API_BASE_URL}${editingVideo.video}`) : "")
-                            }
-                            className="w-full h-full object-cover opacity-80 group-hover/picker:opacity-100 transition-opacity"
-                            autoPlay
-                            muted
-                            loop
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
-                          <div className="absolute bottom-4 left-5 right-5 flex items-center justify-between">
-                            <span className="text-[10px] font-black text-white uppercase tracking-widest truncate max-w-[70%]">
-                              {videoFile
-                                ? videoFile.name
-                                : editingVideo.videoTitle}
-                            </span>
-                            <div className="w-6 h-6 bg-emerald-500 text-white rounded-lg flex items-center justify-center shadow-lg border border-emerald-400/50">
-                              <CheckCircle2 className="w-3.5 h-3.5" />
-                            </div>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="w-14 h-14 rounded-2xl mb-4 bg-white text-slate-300 flex items-center justify-center shadow-lg group-hover/picker:rotate-6 transition-all duration-500">
-                            <Plus className="w-7 h-7" />
-                          </div>
-                          <span className="text-[12px] font-black text-slate-500 uppercase tracking-widest">
-                            Select Studio Video
-                          </span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  {editingVideo && (
-                    <button
-                      onClick={() => handleReplaceVideo(videoFile)}
-                      disabled={!videoFile || isSaving}
-                      className={`w-full h-12 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${videoFile ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "bg-slate-100 text-slate-300 cursor-not-allowed"}`}
-                    >
-                      {isSaving ? "Replacing..." : "Commit Video Replacement"}
-                    </button>
-                  )}
-                  {fileError && (
-                    <div
-                      className="flex items-center gap-3 px-4 py-3 bg-red-50 text-red-600 rounded-2xl border border-red-100 shadow-sm shadow-red-200/20 mt-2 animate-fade-in"
-                    >
-                      <div className="shrink-0 w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm">
-                        <AlertCircle className="w-4 h-4" />
-                      </div>
-                      <span className="text-[10px] font-black uppercase tracking-tight">
-                        {fileError}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Refined Field Group */}
-                <div className="space-y-5">
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-slate-800 uppercase tracking-widest px-1">
-                      Studio Details
-                    </label>
-                    <div className="space-y-3">
-                      {/* Title */}
-                      <div className="relative group">
-                        <input
-                          type="text"
-                          placeholder="reel title..."
-                          className="w-full h-12 px-5 bg-white border border-slate-200 rounded-xl outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all text-sm font-medium placeholder:text-slate-300"
-                          value={uploadForm.videoTitle}
-                          onChange={(e) =>
-                            setUploadForm({
-                              ...uploadForm,
-                              videoTitle: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-
-                      {/* Shop Name (Read Only) */}
-                      <div className="relative group/lock opacity-80">
-                        <input
-                          type="text"
-                          readOnly
-                          className="w-full h-12 px-5 bg-slate-50 border border-slate-200 rounded-xl outline-none text-sm font-medium text-slate-500 cursor-not-allowed"
-                          value={uploadForm.shopName}
-                        />
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                          <Lock className="w-3.5 h-3.5 text-slate-300" />
-                        </div>
-                      </div>
-
-                      {/* Category (Read Only) */}
-                      <div className="relative group/lock opacity-80">
-                        <input
-                          type="text"
-                          readOnly
-                          className="w-full h-12 px-5 bg-slate-50 border border-slate-200 rounded-xl outline-none text-sm font-medium text-slate-500 cursor-not-allowed"
-                          value={uploadForm.shopCategory}
-                        />
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                          <Lock className="w-3.5 h-3.5 text-slate-300" />
-                        </div>
-                      </div>
-
-                      {/* Description */}
-                      <div className="relative group">
-                        <textarea
-                          placeholder="description..."
-                          rows="3"
-                          className="w-full px-5 py-4 bg-white border border-slate-200 rounded-xl outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all text-sm font-medium placeholder:text-slate-300 resize-none min-h-[100px]"
-                          value={uploadForm.description}
-                          onChange={(e) =>
-                            setUploadForm({
-                              ...uploadForm,
-                              description: e.target.value,
-                            })
-                          }
-                        ></textarea>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Enhanced Footer */}
-              <div className="p-8 bg-slate-50/80 border-t border-slate-100 flex gap-4 relative overflow-hidden">
-                <button
-                  onClick={() => setShowUploadModal(false)}
-                  className="btn-secondary flex-1"
-                >
-                  Cancel
-                </button>
-                <button
-                  className={`btn-primary flex-[1.5] shadow-xl transition-all
-                                        ${uploadForm.videoTitle &&
-                      (videoFile || editingVideo)
-                      ? ""
-                      : "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none hover:bg-slate-200"
-                    }`}
-                  disabled={
-                    (!videoFile && !editingVideo) ||
-                    !uploadForm.videoTitle ||
-                    isSaving
-                  }
-                  onClick={
-                    editingVideo ? handleUpdateVideo : handleRegisterVideo
-                  }
-                >
-                  {isSaving ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <span className="relative z-10">
-                      {editingVideo ? "Update" : "Upload"}
+                    <span className="text-[10px] font-black uppercase tracking-tight">
+                      {fileError}
                     </span>
-                  )}
-                </button>
+                  </div>
+                )}
               </div>
+
+              {/* Refined Field Group */}
+              <div className="space-y-5">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-slate-800 uppercase tracking-widest px-1">
+                    Studio Details
+                  </label>
+                  <div className="space-y-3">
+                    {/* Title */}
+                    <div className="relative group">
+                      <input
+                        type="text"
+                        placeholder="reel title..."
+                        className="w-full h-12 px-5 bg-white border border-slate-200 rounded-xl outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all text-sm font-medium placeholder:text-slate-300"
+                        value={uploadForm.videoTitle}
+                        onChange={(e) =>
+                          setUploadForm({
+                            ...uploadForm,
+                            videoTitle: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+
+                    {/* Shop Name (Read Only) */}
+                    <div className="relative group/lock opacity-80">
+                      <input
+                        type="text"
+                        readOnly
+                        className="w-full h-12 px-5 bg-slate-50 border border-slate-200 rounded-xl outline-none text-sm font-medium text-slate-500 cursor-not-allowed"
+                        value={uploadForm.shopName}
+                      />
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                        <Lock className="w-3.5 h-3.5 text-slate-300" />
+                      </div>
+                    </div>
+
+                    {/* Category (Read Only) */}
+                    <div className="relative group/lock opacity-80">
+                      <input
+                        type="text"
+                        readOnly
+                        className="w-full h-12 px-5 bg-slate-50 border border-slate-200 rounded-xl outline-none text-sm font-medium text-slate-500 cursor-not-allowed"
+                        value={uploadForm.shopCategory}
+                      />
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                        <Lock className="w-3.5 h-3.5 text-slate-300" />
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    <div className="relative group">
+                      <textarea
+                        placeholder="description..."
+                        rows="3"
+                        className="w-full px-5 py-4 bg-white border border-slate-200 rounded-xl outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all text-sm font-medium placeholder:text-slate-300 resize-none min-h-[100px]"
+                        value={uploadForm.description}
+                        onChange={(e) =>
+                          setUploadForm({
+                            ...uploadForm,
+                            description: e.target.value,
+                          })
+                        }
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Enhanced Footer */}
+            <div className="p-8 bg-slate-50/80 border-t border-slate-100 flex gap-4 relative overflow-hidden">
+              <button
+                onClick={() => setShowUploadModal(false)}
+                className="btn-secondary flex-1"
+              >
+                Cancel
+              </button>
+              <button
+                className={`btn-primary flex-[1.5] shadow-xl transition-all
+                                        ${uploadForm.videoTitle &&
+                    (videoFile || editingVideo)
+                    ? ""
+                    : "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none hover:bg-slate-200"
+                  }`}
+                disabled={
+                  (!videoFile && !editingVideo) ||
+                  !uploadForm.videoTitle ||
+                  isSaving
+                }
+                onClick={
+                  editingVideo ? handleUpdateVideo : handleRegisterVideo
+                }
+              >
+                {isSaving ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <span className="relative z-10">
+                    {editingVideo ? "Update" : "Upload"}
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
         </div>,
         document.body
@@ -778,41 +778,41 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
           <div
             className="relative w-full max-w-[300px] bg-white rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(30,58,138,0.25)] p-8 border border-white overflow-hidden animate-scale-in"
           >
-              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-amber-600" />
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-amber-600" />
 
-              {/* Treasure Chest Illustration */}
-              <div className="w-32 h-32 mx-auto mb-6 relative">
-                <div
-                  className="relative z-10 animate-[bounce_3s_infinite]"
-                >
-                  <img
-                    src="https://img.freepik.com/premium-vector/purple-box-with-gold-bow-top-it-there-are-many-gold-coins-scattered-around-box-vector-illustration_345238-2441.jpg?semt=ais_incoming&w=740&q=80"
-                    className="w-full h-full object-cover rounded-2xl"
-                    alt="Treasure"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-orange-400/20 blur-3xl rounded-full" />
-              </div>
-
-              <div className="space-y-3 mb-8">
-                <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic leading-tight">
-                  Earn Rewards for <br /> Watching Videos
-                </h3>
-                <p className="text-[11px] font-medium text-slate-400 leading-relaxed px-2 uppercase tracking-wide">
-                  For every video you watch, you will receive{" "}
-                  <span className="text-orange-600 font-bold">
-                    2 SuperCoins
-                  </span>{" "}
-                  as a reward.
-                </p>
-              </div>
-
-              <button
-                onClick={() => setShowRewardsModal(false)}
-                className="w-full h-14 rounded-2xl bg-gradient-to-r from-orange-400 to-amber-600 text-white font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-orange-500/30 hover:shadow-orange-500/50 hover:scale-[1.02] transition-all active:scale-95"
+            {/* Treasure Chest Illustration */}
+            <div className="w-32 h-32 mx-auto mb-6 relative">
+              <div
+                className="relative z-10 animate-[bounce_3s_infinite]"
               >
-                Yes, I Got It
-              </button>
+                <img
+                  src="https://img.freepik.com/premium-vector/purple-box-with-gold-bow-top-it-there-are-many-gold-coins-scattered-around-box-vector-illustration_345238-2441.jpg?semt=ais_incoming&w=740&q=80"
+                  className="w-full h-full object-cover rounded-2xl"
+                  alt="Treasure"
+                />
+              </div>
+              <div className="absolute inset-0 bg-orange-400/20 blur-3xl rounded-full" />
+            </div>
+
+            <div className="space-y-3 mb-8">
+              <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter italic leading-tight">
+                Earn Rewards for <br /> Watching Videos
+              </h3>
+              <p className="text-[11px] font-medium text-slate-400 leading-relaxed px-2 uppercase tracking-wide">
+                For every video you watch, you will receive{" "}
+                <span className="text-orange-600 font-bold">
+                  2 SuperCoins
+                </span>{" "}
+                as a reward.
+              </p>
+            </div>
+
+            <button
+              onClick={() => setShowRewardsModal(false)}
+              className="w-full h-14 rounded-2xl bg-gradient-to-r from-orange-400 to-amber-600 text-white font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-orange-500/30 hover:shadow-orange-500/50 hover:scale-[1.02] transition-all active:scale-95"
+            >
+              Yes, I Got It
+            </button>
           </div>
         </div>,
         document.body

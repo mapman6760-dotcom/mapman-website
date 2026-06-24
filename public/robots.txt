@@ -1,5 +1,6 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Allow: /
+Disallow: /cgi-bin/
 
 Sitemap: https://mapman.in/sitemap.xml

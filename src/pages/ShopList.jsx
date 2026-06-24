@@ -47,56 +47,39 @@ const ShopList = () => {
         canonical="https://mapman.in/shop-list"
       />
 
-      {/* ── TOP BANNER ── */}
-      <div className="relative w-full overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700">
-        {/* Decorative elements */}
-        <div className="absolute -top-16 -right-16 w-72 h-72 bg-white/5 rounded-full" />
-        <div className="absolute -bottom-10 -left-10 w-56 h-56 bg-white/5 rounded-full" />
-        <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
-
-        {/* Dot pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.07]"
-          style={{
-            backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
-            backgroundSize: "24px 24px"
-          }}
-        />
-
-        <div className="relative z-10 max-w-6xl mx-auto px-5 md:px-8 py-8 md:py-10 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
-          <div className="flex items-center gap-5">
-            <button
-              onClick={() => navigate("/profile")}
-              className="w-11 h-11 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl flex items-center justify-center text-white transition-all hover:scale-105 active:scale-95 backdrop-blur-sm shrink-0"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="w-1.5 h-1.5 bg-cyan-300 rounded-full animate-pulse" />
-                <span className="text-[10px] font-bold text-blue-200 uppercase tracking-widest">Merchant Dashboard</span>
+      {/* ── PREMIUM HEADER ── */}
+      <div className="relative w-full overflow-hidden shadow-xl border-b border-slate-800 bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950 py-8 md:py-10 px-6 md:px-10 z-10 mb-6">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] -mr-20 -mt-20 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px] -ml-20 -mb-20 pointer-events-none" />
+        <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-6">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => navigate("/profile")}
+                className="w-11 h-11 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-white hover:bg-white/15 hover:scale-105 transition-all"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse" />
+                  <span className="text-[10px] font-black text-blue-300 uppercase tracking-[0.3em]">Merchant Dashboard</span>
+                </div>
+                <h1 className="text-2xl md:text-3xl font-black text-white tracking-tighter leading-none">
+                  My <span className="text-cyan-400">Shops</span>
+                </h1>
               </div>
-              <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight leading-none">
-                My Shops
-              </h1>
-              <p className="text-blue-200 text-xs font-medium mt-1">Manage and monitor your business listings</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => navigate("/edit-shop", { state: { createNew: true } })}
+                className="flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-blue-600 text-white rounded-2xl font-black text-xs tracking-widest shadow-lg transition-all hover:scale-105 active:scale-95 border border-white/10 hover:border-blue-500 uppercase"
+              >
+                <Plus className="w-4 h-4" />
+                Add Shop
+              </button>
             </div>
           </div>
-
-          <button
-            onClick={() => navigate("/edit-shop", { state: { createNew: true } })}
-            className="flex items-center gap-2.5 px-6 py-3 bg-white text-blue-700 hover:bg-blue-50 border border-white/80 rounded-2xl font-black text-sm shadow-lg transition-all hover:scale-105 active:scale-95 self-start sm:self-center"
-          >
-            <Plus className="w-4 h-4" />
-            Add Shop
-          </button>
-        </div>
-
-        {/* Bottom wave */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
-            <path d="M0 40L1440 40L1440 12C1200 40 960 0 720 12C480 24 240 0 0 12V40Z" fill="#F8FAFD" />
-          </svg>
         </div>
       </div>
 
