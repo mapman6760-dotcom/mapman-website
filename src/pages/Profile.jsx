@@ -21,11 +21,17 @@ import {
 } from "lucide-react";
 import { getProfile } from "../api/shop";
 
+let cachedProfileData = null;
+let cachedToken = undefined;
+
 const Profile = ({ onLogout, isLoggedIn, setIsLoggedIn, openLogin }) => {
-  const [loading, setLoading] = useState(true);
+  const currentToken = localStorage.getItem("token");
+  const isCacheValid = cachedProfileData && cachedToken === currentToken;
+
+  const [loading, setLoading] = useState(!isCacheValid);
   const navigate = useNavigate();
 
-  const [userData, setUserData] = useState({
+  const [userData, setUserData] = useState(isCacheValid ? cachedProfileData : {
     name: "",
     email: "",
     phone: "",
@@ -39,6 +45,11 @@ const Profile = ({ onLogout, isLoggedIn, setIsLoggedIn, openLogin }) => {
 
   useEffect(() => {
     if (isLoggedIn) {
+      const token = localStorage.getItem("token");
+      if (cachedProfileData && cachedToken === token) {
+        setLoading(false);
+        return;
+      }
       fetchProfileData();
     } else {
       setLoading(false);
@@ -51,7 +62,7 @@ const Profile = ({ onLogout, isLoggedIn, setIsLoggedIn, openLogin }) => {
       const res = await getProfile();
       if (res.status === 200) {
         const data = res.data;
-        setUserData({
+        const profileInfo = {
           name: data.userName || "No Name",
           email: data.email || "No Email",
           phone: data.phone || "",
@@ -63,7 +74,10 @@ const Profile = ({ onLogout, isLoggedIn, setIsLoggedIn, openLogin }) => {
             ? data.profilePic
             : "https://cdn-icons-png.flaticon.com/128/3135/3135715.png",
           points: data.points || 0,
-        });
+        };
+        setUserData(profileInfo);
+        cachedProfileData = profileInfo;
+        cachedToken = localStorage.getItem("token");
       }
     } catch (error) {
       console.error("Error fetching profile:", error);
@@ -83,7 +97,7 @@ const Profile = ({ onLogout, isLoggedIn, setIsLoggedIn, openLogin }) => {
     {
       title: "My Shops",
       desc: "Manage listings",
-      icon: <Store className="w-6 h-6" />,
+      icon: "https://cdn-icons-png.flaticon.com/128/869/869432.png",
       color: "text-emerald-600",
       bg: "bg-emerald-50",
       border: "border-emerald-100",
@@ -93,7 +107,7 @@ const Profile = ({ onLogout, isLoggedIn, setIsLoggedIn, openLogin }) => {
     {
       title: "Analytics",
       desc: "View metrics",
-      icon: <BarChart2 className="w-6 h-6" />,
+      icon: "https://cdn-icons-png.flaticon.com/128/10050/10050999.png",
       color: "text-violet-600",
       bg: "bg-violet-50",
       border: "border-violet-100",
@@ -103,7 +117,7 @@ const Profile = ({ onLogout, isLoggedIn, setIsLoggedIn, openLogin }) => {
     {
       title: "Edit Profile",
       desc: "Update info",
-      icon: <Edit3 className="w-6 h-6" />,
+      icon: "https://cdn-icons-png.flaticon.com/128/1077/1077012.png",
       color: "text-blue-600",
       bg: "bg-blue-50",
       border: "border-blue-100",
@@ -113,7 +127,7 @@ const Profile = ({ onLogout, isLoggedIn, setIsLoggedIn, openLogin }) => {
     {
       title: "Support",
       desc: "Get help",
-      icon: <Headphones className="w-6 h-6" />,
+      icon: "https://cdn-icons-png.flaticon.com/128/4961/4961759.png",
       color: "text-orange-600",
       bg: "bg-orange-50",
       border: "border-orange-100",
@@ -125,16 +139,16 @@ const Profile = ({ onLogout, isLoggedIn, setIsLoggedIn, openLogin }) => {
   const settingsItems = [
     {
       onClick: () => navigate("/notifications"),
-      icon: <Bell className="w-5 h-5" />,
+      icon: "https://cdn-icons-png.flaticon.com/128/1827/1827370.png",
       iconBg: "bg-blue-50 text-blue-600",
       title: "Notifications",
       desc: "Manage your alerts and updates",
-      badge: "3",
+      badge: "",
       badgeBg: "bg-rose-500",
     },
     {
       onClick: () => navigate("/notification-settings"),
-      icon: <Settings className="w-5 h-5" />,
+      icon: "https://cdn-icons-png.flaticon.com/128/3953/3953226.png",
       iconBg: "bg-slate-100 text-slate-600",
       title: "Preferences",
       desc: "Configure alerts & display settings",
@@ -306,9 +320,7 @@ const Profile = ({ onLogout, isLoggedIn, setIsLoggedIn, openLogin }) => {
                 onClick={tile.onClick}
                 className={`group relative flex flex-col items-start gap-3 p-5 bg-white rounded-2xl border ${tile.border} shadow-sm hover:shadow-lg ${tile.hoverShadow} transition-all duration-300 overflow-hidden text-left`}
               >
-                <div className={`w-12 h-12 ${tile.bg} ${tile.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                  {tile.icon}
-                </div>
+                <img src={tile.icon} alt="settings-icons" height={25} width={25} />
                 <div>
                   <h3 className="font-black text-slate-800 text-sm tracking-tight">{tile.title}</h3>
                   <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">{tile.desc}</p>
@@ -359,9 +371,7 @@ const Profile = ({ onLogout, isLoggedIn, setIsLoggedIn, openLogin }) => {
                 className={`w-full flex items-center gap-4 px-5 py-4 hover:bg-slate-50 transition-all text-left group ${i < arr.length - 1 ? "border-b border-slate-50" : ""}`}
               >
                 <div className="relative shrink-0">
-                  <div className={`w-10 h-10 ${row.iconBg} rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform`}>
-                    {row.icon}
-                  </div>
+                  <img src={row.icon} alt="settings-icons" height={25} width={25} />
                   {row.badge && (
                     <span className={`absolute -top-1 -right-1 w-4 h-4 ${row.badgeBg} text-white text-[7px] font-black rounded-full flex items-center justify-center border border-white`}>
                       {row.badge}

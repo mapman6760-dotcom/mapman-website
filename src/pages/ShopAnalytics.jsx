@@ -72,21 +72,21 @@ const ShopAnalytics = () => {
       label: "Total Videos",
       value: data.totalVideos.length.toString(),
       change: "+4", // Mocked for design
-      icon: <Clapperboard className="w-7 h-7 text-blue-600" />,
-      badgeColor: "bg-white text-blue-600 shadow-[0_2px_10px_-2px_rgba(37,99,235,0.15)]",
-      bgGradient: "bg-gradient-to-br from-blue-50/80 via-white to-indigo-50/80",
-      iconBg: "bg-white shadow-[0_8px_30px_-5px_rgba(37,99,235,0.2)]",
-      borderColor: "border-blue-100",
+      icon: <Clapperboard className="w-5 h-5 text-blue-600" />,
+      badgeColor: "bg-blue-50 text-blue-600",
+      bgGradient: "bg-white",
+      iconBg: "bg-blue-50/50 border border-blue-100 shadow-sm",
+      borderColor: "border-slate-100",
     },
     {
       label: "Total Views",
       value: data.totalViews.toLocaleString(),
       change: "+24%", // Mocked for design
-      icon: <Eye className="w-7 h-7 text-emerald-600" />,
-      badgeColor: "bg-white text-emerald-600 shadow-[0_2px_10px_-2px_rgba(16,185,129,0.15)]",
-      bgGradient: "bg-gradient-to-br from-emerald-50/80 via-white to-teal-50/80",
-      iconBg: "bg-white shadow-[0_8px_30px_-5px_rgba(16,185,129,0.2)]",
-      borderColor: "border-emerald-100",
+      icon: <Eye className="w-5 h-5 text-emerald-600" />,
+      badgeColor: "bg-emerald-50 text-emerald-600",
+      bgGradient: "bg-white",
+      iconBg: "bg-emerald-50/50 border border-emerald-100 shadow-sm",
+      borderColor: "border-slate-100",
     },
   ];
 
@@ -135,7 +135,7 @@ const ShopAnalytics = () => {
         </div>
       </div>
 
-      <div className="p-4 md:p-8 lg:p-10 max-w-[1400px] mx-auto space-y-10">
+      <div className="px-4 md:px-8 lg:px-10 py-6 max-w-[1400px] mx-auto space-y-6">
 
         {error && (
           <div className="bg-red-50 border border-red-100 p-4 rounded-1xl flex items-center justify-between">
@@ -144,40 +144,34 @@ const ShopAnalytics = () => {
           </div>
         )}
 
-        {/* ── REDESIGNED METRIC CARDS (LIGHT PASTEL) ── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        {/* ── REDESIGNED METRIC CARDS (COMPACT & SLEEK) ── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {getStats().map((stat, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              whileHover={{ y: -4 }}
-              className={`relative group p-6 md:p-8 rounded-[2rem] border ${stat.borderColor} ${stat.bgGradient} shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 overflow-hidden backdrop-blur-xl`}
+              className={`group p-5 rounded-2xl border ${stat.borderColor} ${stat.bgGradient} shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-between`}
             >
-              {/* Background ambient shapes */}
-              <div className="absolute -top-10 -right-10 w-40 h-40 bg-white rounded-full blur-2xl opacity-80 pointer-events-none group-hover:scale-150 transition-transform duration-1000" />
-              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-white rounded-full blur-2xl opacity-80 pointer-events-none group-hover:scale-150 transition-transform duration-1000" />
-
-              <div className="relative z-10 flex items-center justify-between gap-4">
-                <div className="space-y-3">
-                  <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest">
-                    {stat.label}
-                  </h4>
-                  <div className="flex items-center gap-3">
-                    <p className="text-4xl md:text-5xl font-black text-slate-800 tracking-tighter drop-shadow-sm">
-                      {stat.value}
-                    </p>
-                    <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg ${stat.badgeColor}`}>
-                      <TrendingUp className="w-3.5 h-3.5" />
-                      <span className="text-[11px] font-black leading-none">{stat.change}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className={`w-16 h-16 md:w-20 md:h-20 ${stat.iconBg} rounded-[1.5rem] flex items-center justify-center group-hover:scale-110 transition-transform duration-500 group-hover:rotate-3`}>
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 ${stat.iconBg} rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform`}>
                   {stat.icon}
                 </div>
+                <div>
+                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                    {stat.label}
+                  </h4>
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-2xl font-black text-slate-800 tracking-tight">
+                      {stat.value}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className={`flex items-center gap-1 px-2.5 py-1 rounded-lg ${stat.badgeColor}`}>
+                <TrendingUp className="w-3.5 h-3.5" />
+                <span className="text-[10px] font-black">{stat.change}</span>
               </div>
             </motion.div>
           ))}
@@ -207,11 +201,13 @@ const ShopAnalytics = () => {
                 >
                   <div className="relative aspect-video overflow-hidden bg-slate-900 flex items-center justify-center">
                     <video
-                      src={video.video ? (video.video.startsWith('http') ? video.video : `${API_BASE_URL}${video.video}`) : ""}
+                      src={video.video ? (video.video.startsWith('http') ? `${video.video}#t=0.1` : `${API_BASE_URL}${video.video}#t=0.1`) : ""}
                       className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700"
                       muted
                       playsInline
                       preload="metadata"
+                      onMouseEnter={(e) => e.target.play().catch(() => {})}
+                      onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
                     />
 
                     {/* Centered Play Icon Overlay (Minimal) */}
@@ -287,14 +283,8 @@ const ShopAnalytics = () => {
 
         {/* Footer Status */}
         <div className="flex flex-col items-center justify-center pt-10 pb-16 space-y-4">
-          <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 rounded-full border border-slate-200">
-            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">
-              Database Synced: {new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' })}
-            </span>
-          </div>
           <p className="text-[10px] text-slate-300 font-medium uppercase tracking-[0.1em]">
-            © 2026 Mapman Global Analytics
+            © 2026 Mapman Shop Analytics
           </p>
         </div>
       </div>

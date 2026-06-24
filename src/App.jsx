@@ -581,14 +581,15 @@ const Dashboard = ({ onLogout, isLoggedIn, setIsLoggedIn }) => {
       {showLogoutDialog && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div onClick={() => setShowLogoutDialog(false)} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm animate-fade-in" />
-          <div className="relative w-full max-w-[340px] bg-white rounded-[2rem] shadow-[0_30px_80px_rgba(0,0,0,0.12)] overflow-hidden p-8 text-center border border-slate-100 animate-scale-in">
-            <div className="w-16 h-16 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
-              <LogOut className="w-8 h-8 stroke-[2.5]" />
+          <div className="relative w-full max-w-[280px] bg-white rounded-[1.5rem] shadow-2xl overflow-hidden p-6 text-center border border-slate-100 animate-scale-in">
+            <div className="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+              <LogOut className="w-6 h-6 stroke-[2.5]" />
             </div>
-            <h3 className="text-xl font-black text-slate-900 mb-2 tracking-tighter uppercase">Sign Out</h3>
-            <div className="space-y-2.5 pt-4">
-              <button onClick={onLogout} className="w-full py-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-red-600/20 transition-all active:scale-95">Confirm Sign Out</button>
-              <button onClick={() => setShowLogoutDialog(false)} className="w-full py-4 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all">Cancel</button>
+            <h3 className="text-lg font-black text-slate-900 mb-1 tracking-tight">Sign Out</h3>
+            <p className="text-xs text-slate-500 mb-5 font-medium">Are you sure you want to leave?</p>
+            <div className="flex gap-2">
+              <button onClick={() => setShowLogoutDialog(false)} className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-bold text-xs transition-all">Cancel</button>
+              <button onClick={onLogout} className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-xs shadow-md shadow-red-600/20 transition-all active:scale-95">Sign Out</button>
             </div>
           </div>
         </div>

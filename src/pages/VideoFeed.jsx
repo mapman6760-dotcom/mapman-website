@@ -37,13 +37,23 @@ import { VideoCardSkeleton } from "../components/SkeletonLoaders";
 
 
 
+let cachedAllVideos = null;
+let cachedMyVideos = null;
+let cachedShopInfo = null;
+let cachedPoints = null;
+let cachedToken = undefined;
+
 const VideoFeed = ({ isLoggedIn, openLogin }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("all");
-  const [videos, setVideos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isShopRegistered, setIsShopRegistered] = useState(true);
-  const [shopInfo, setShopInfo] = useState(null);
+  
+  const currentToken = localStorage.getItem("token");
+  const isCacheValid = cachedToken === currentToken;
+
+  const [videos, setVideos] = useState(isCacheValid && cachedAllVideos ? cachedAllVideos : []);
+  const [loading, setLoading] = useState(!isCacheValid || !cachedAllVideos);
+  const [isShopRegistered, setIsShopRegistered] = useState(isCacheValid && cachedShopInfo ? true : false);
+  const [shopInfo, setShopInfo] = useState(isCacheValid ? cachedShopInfo : null);
   const [isSaving, setIsSaving] = useState(false);
   const [editingVideo, setEditingVideo] = useState(null);
   const [selectedReel, setSelectedReel] = useState(null);
@@ -60,7 +70,7 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
     shopName: "",
   });
 
-  const [userPoints, setUserPoints] = useState(0);
+  const [userPoints, setUserPoints] = useState(isCacheValid && cachedPoints != null ? cachedPoints : 0);
 
   useEffect(() => {
     fetchData();
@@ -70,12 +80,16 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
   const fetchPoints = async () => {
     try {
       const token = localStorage.getItem("token");
+      if (cachedToken === token && cachedPoints != null) {
+        return;
+      }
       const response = await fetch(`${API_BASE_URL}/shop/fetchPoints`, {
         headers: { usertoken: token },
       });
       const result = await response.json();
       if (result.status === 200) {
         setUserPoints(result.data || 0);
+        cachedPoints = result.data || 0;
       }
     } catch (error) {
       console.error("Error fetching points:", error);
@@ -105,6 +119,8 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
         setShowUploadModal(false);
         setVideoFile(null);
         setUploadForm({ ...uploadForm, videoTitle: "", description: "" });
+        cachedMyVideos = null;
+        cachedAllVideos = null;
         fetchData();
       }
     } catch (error) {
@@ -138,6 +154,8 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
       if (result.status === 200) {
         setShowUploadModal(false);
         setEditingVideo(null);
+        cachedMyVideos = null;
+        cachedAllVideos = null;
         fetchData();
       }
     } catch (error) {
@@ -163,6 +181,8 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
       });
       const result = await res.json();
       if (result.status === 200) {
+        cachedMyVideos = null;
+        cachedAllVideos = null;
         fetchData();
         setShowUploadModal(false);
         setEditingVideo(null);
@@ -190,6 +210,8 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
       });
       const result = await res.json();
       if (result.status === 200) {
+        cachedMyVideos = null;
+        cachedAllVideos = null;
         fetchData();
         setShowUploadModal(false);
         setEditingVideo(null);
@@ -227,10 +249,24 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
   };
 
   const fetchData = async () => {
+    const token = localStorage.getItem("token");
+    if (cachedToken === token) {
+      if (activeTab === "all" && cachedAllVideos) {
+        setVideos(cachedAllVideos);
+        setLoading(false);
+        return;
+      }
+      if (activeTab === "my" && cachedMyVideos) {
+        setVideos(cachedMyVideos);
+        setIsShopRegistered(!!cachedShopInfo);
+        setShopInfo(cachedShopInfo);
+        setLoading(false);
+        return;
+      }
+    }
+
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
-
       // 1. Check Shop Status if in "My Videos" tab
       if (activeTab === "my") {
         try {
@@ -238,14 +274,17 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
           if (shopResult.status === 200 && shopResult.data) {
             setIsShopRegistered(true);
             setShopInfo(shopResult.data);
+            cachedShopInfo = shopResult.data;
           } else {
             setIsShopRegistered(false);
             setShopInfo(null);
+            cachedShopInfo = null;
           }
         } catch (err) {
           console.error("Shop check error:", err);
           setIsShopRegistered(false);
           setShopInfo(null);
+          cachedShopInfo = null;
         }
       }
 
@@ -266,8 +305,12 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
             if (!isAOthers && isBOthers) return -1;
             return 0;
           });
+          cachedAllVideos = sortedData;
+        } else {
+          cachedMyVideos = sortedData;
         }
         setVideos(sortedData);
+        cachedToken = token;
       } else {
         setVideos([]);
       }
@@ -456,11 +499,14 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
                     {/* VIDEO THUMBNAIL AREA */}
                     <div className="relative w-full aspect-video bg-slate-950 overflow-hidden">
                       <video
-                        src={vid.video ? (vid.video.startsWith('http') ? vid.video : `${API_BASE_URL}${vid.video}`) : ""}
+                        src={vid.video ? (vid.video.startsWith('http') ? `${vid.video}#t=0.1` : `${API_BASE_URL}${vid.video}#t=0.1`) : ""}
                         className="w-full h-full object-cover opacity-80 group-hover/card:opacity-100 transition-all duration-700 group-hover/card:scale-105"
                         muted
                         loop
                         preload="metadata"
+                        playsInline
+                        onMouseEnter={(e) => e.target.play().catch(() => {})}
+                        onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
 

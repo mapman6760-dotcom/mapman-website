@@ -44,12 +44,19 @@ const getImageUrl = (url) => {
   return `${API_BASE_URL}${url}`;
 };
 
+let cachedHomeData = null;
+let cachedToken = undefined;
+
 const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
   const navigate = useNavigate();
-  const [categories, setCategories] = useState([]);
-  const [topBanners, setTopBanners] = useState([]);
-  const [categoryBanners, setCategoryBanners] = useState([]);
-  const [loading, setLoading] = useState(true);
+  
+  const currentToken = localStorage.getItem("token");
+  const isCacheValid = cachedHomeData && cachedToken === currentToken;
+
+  const [categories, setCategories] = useState(isCacheValid ? cachedHomeData.categories : []);
+  const [topBanners, setTopBanners] = useState(isCacheValid ? cachedHomeData.topBanners : []);
+  const [categoryBanners, setCategoryBanners] = useState(isCacheValid ? cachedHomeData.categoryBanners : []);
+  const [loading, setLoading] = useState(!isCacheValid);
   const [toastMessage, setToastMessage] = useState(null);
 
   const handleRegisterClick = async () => {
@@ -167,8 +174,13 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
 
   useEffect(() => {
     const fetchHomeData = async () => {
+      const token = localStorage.getItem("token");
+      if (cachedHomeData && cachedToken === token) {
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
       try {
-        const token = localStorage.getItem("token");
         const endpoint = token ? "https://api.mapman.in/shop/home" : "https://api.mapman.in/shop/nonauthendicateHome";
         const headers = token ? { usertoken: token } : {};
         const response = await fetch(endpoint, { headers });
@@ -196,9 +208,20 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
             return 0;
           });
 
-          setCategories(data);
-          setTopBanners(result.data.topBanners || []);
-          setCategoryBanners(result.data.categoryBanners || []);
+          const fetchedCategories = data;
+          const fetchedTopBanners = result.data.topBanners || [];
+          const fetchedCategoryBanners = result.data.categoryBanners || [];
+
+          setCategories(fetchedCategories);
+          setTopBanners(fetchedTopBanners);
+          setCategoryBanners(fetchedCategoryBanners);
+
+          cachedHomeData = {
+            categories: fetchedCategories,
+            topBanners: fetchedTopBanners,
+            categoryBanners: fetchedCategoryBanners,
+          };
+          cachedToken = token;
         }
       } catch (error) {
         console.error("Error fetching home data:", error);
@@ -207,7 +230,7 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
       }
     };
     fetchHomeData();
-  }, []);
+  }, [isLoggedIn, navigate]);
 
   if (loading) return <HomeSkeleton />;
 
