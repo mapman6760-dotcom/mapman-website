@@ -150,11 +150,8 @@ const ShopAnalytics = () => {
           {/* ── REDESIGNED METRIC CARDS (LEFT SIDE ON DESKTOP) ── */}
           <div className="w-full lg:w-[320px] shrink-0 space-y-4 md:space-y-6">
             {getStats().map((stat, i) => (
-              <motion.div
+              <div
                 key={i}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
                 className="group relative p-6 md:p-8 rounded-[2rem] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] transition-all duration-500 overflow-hidden bg-white flex flex-col gap-6"
               >
                 {/* Stylish background glow */}
@@ -178,7 +175,7 @@ const ShopAnalytics = () => {
                     {stat.value}
                   </p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
 
@@ -193,14 +190,11 @@ const ShopAnalytics = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
               {data.totalVideos.length > 0 ? (
                 data.totalVideos.map((video, idx) => (
-                  <motion.div
+                  <div
                     key={video.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 * (idx % 3) }}
                     onClick={() => navigate(`/video-player/${video.id}`, { state: { videos: data.totalVideos, index: idx, isMyVideos: true } })}
                     className="group bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden hover:shadow-xl transition-all duration-500 flex flex-col cursor-pointer"
                   >
@@ -210,7 +204,7 @@ const ShopAnalytics = () => {
                         className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700"
                         muted
                         playsInline
-                        preload="none"
+                        preload="metadata"
                         onMouseEnter={(e) => e.target.play().catch(() => {})}
                         onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
                       />
@@ -270,7 +264,7 @@ const ShopAnalytics = () => {
                       </button>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))
             ) : (
               <div className="col-span-full flex flex-col items-center justify-center py-24 text-center bg-white rounded-[0.5rem] border border-slate-100 shadow-sm mx-4 mb-10 mt-10">

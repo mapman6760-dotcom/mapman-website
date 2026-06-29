@@ -431,7 +431,7 @@ const SavedItems = () => {
                     muted
                     playsInline
                     loop
-                    preload="none"
+                    preload="metadata"
                   />
 
                   <div

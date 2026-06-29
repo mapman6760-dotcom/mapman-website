@@ -46,7 +46,7 @@ const VideoCard = ({ vidObj, i, videos, savedIds, likedIds, hoveredId, navigate,
           muted
           loop
           playsInline
-          preload="none"
+          preload="metadata"
         />
         {/* Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/10" />
@@ -449,7 +449,7 @@ const ViewedVideos = () => {
                           className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition-colors text-left group"
                         >
                           <div className="relative w-14 h-10 rounded-lg overflow-hidden bg-slate-900 shrink-0">
-                            <video src={src} className="w-full h-full object-cover" muted preload="none" />
+                            <video src={src} className="w-full h-full object-cover" muted preload="metadata" />
                             <div className="absolute inset-0 flex items-center justify-center bg-black/30">
                               <Play className="w-3 h-3 text-white fill-white" />
                             </div>

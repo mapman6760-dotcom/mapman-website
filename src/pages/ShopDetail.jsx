@@ -233,7 +233,7 @@ const ShopDetail = () => {
             {videos.map((v, idx) => (
               <div key={v.id} className="shrink-0 w-56 cursor-pointer group" onClick={() => setMainVideo(v)}>
                 <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-900">
-                  <video src={videoSrc(v)} className="w-full h-full object-cover brightness-75 group-hover:brightness-100 transition-all" muted playsInline preload="none" />
+                  <video src={videoSrc(v)} className="w-full h-full object-cover brightness-75 group-hover:brightness-100 transition-all" muted playsInline preload="metadata" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow group-hover:scale-110 transition-transform">
                       <Play className="w-3.5 h-3.5 text-slate-900 fill-slate-900 ml-0.5" />
@@ -272,7 +272,7 @@ const ShopDetail = () => {
           {mainVideo ? (
             <>
               <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-900 cursor-pointer group" onClick={() => navigate(`/video-player/${mainVideo.id}`, { state: { videos } })}>
-                <video ref={videoRef} src={videoSrc(mainVideo)} className="w-full h-full object-contain" controls playsInline preload="none" />
+                <video ref={videoRef} src={videoSrc(mainVideo)} className="w-full h-full object-contain" controls playsInline preload="metadata" />
               </div>
               <div className="mt-3">
                 <p className="text-sm font-bold text-slate-800">{mainVideo.videoTitle}</p>
@@ -296,7 +296,7 @@ const ShopDetail = () => {
               {videos.slice(0, 4).map((v, idx) => (
                 <div key={v.id} className="flex items-center gap-3 cursor-pointer group" onClick={() => setMainVideo(v)}>
                   <div className="relative w-20 h-13 rounded-lg overflow-hidden bg-slate-900 shrink-0">
-                    <video src={videoSrc(v)} className="w-full h-full object-cover" muted preload="none" style={{ height: 52 }} />
+                    <video src={videoSrc(v)} className="w-full h-full object-cover" muted preload="metadata" style={{ height: 52 }} />
                     <div className="absolute inset-0 flex items-center justify-center"><Play className="w-3.5 h-3.5 text-white fill-white" /></div>
                     <span className="absolute bottom-0.5 right-0.5 bg-black/70 text-white text-[8px] px-1 rounded">{idx === 0 ? "0:31" : idx === 1 ? "0:27" : "0:28"}</span>
                   </div>

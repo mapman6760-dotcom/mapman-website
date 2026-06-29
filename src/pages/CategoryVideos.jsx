@@ -177,7 +177,7 @@ const CategoryVideos = () => {
                       className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110 opacity-80 group-hover:opacity-100"
                       muted
                       loop
-                      preload="none"
+                      preload="metadata"
                       onMouseEnter={(e) => {
                         const video = e.currentTarget;
                         video._playPromise = video.play();
