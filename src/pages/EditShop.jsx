@@ -435,6 +435,22 @@ const EditShop = () => {
   };
 
   const handleSave = async () => {
+    if (
+      !shopData.name?.trim() ||
+      !shopData.category?.trim() ||
+      !shopData.location?.trim() ||
+      !shopData.description?.trim() ||
+      !shopData.contact?.trim() ||
+      !shopData.whatsapp?.trim() ||
+      !shopData.registerNumber?.trim() ||
+      !shopData.openTime?.trim() ||
+      !shopData.closeTime?.trim() ||
+      !shopData.websiteLink?.trim()
+    ) {
+      alert("Please fill in all fields before saving.");
+      return;
+    }
+
     try {
       setSaving(true);
 
@@ -610,51 +626,51 @@ const EditShop = () => {
         description={seoDesc}
         canonical="https://mapman.in/edit-shop"
       />
-      {/* ─── REDESIGNED PREMIUM HEADER CARD ─── */}
-      <div className="relative w-[100vw] left-1/2 -translate-x-1/2 mb-6 md:mb-8 overflow-hidden shadow-xl rounded-none border-b border-slate-800 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 py-6 md:py-8 lg:py-10 px-6 md:px-8 lg:px-12 flex flex-col lg:flex-row lg:items-center justify-between gap-6 z-10">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20"></div>
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none -ml-20 -mb-20"></div>
+      {/* ── STYLISH FLOATING HEADER ── */}
+      <div className="max-w-7xl mx-auto px-4 w-full">
+        <div className="relative w-full mb-6 md:mb-8 mt-2 overflow-hidden shadow-sm border border-slate-200/60 bg-white/80 backdrop-blur-xl rounded-[0.5rem] py-4 md:py-5 px-5 md:px-7 flex flex-col md:flex-row md:items-center justify-between gap-5 z-10">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-100/50 to-purple-100/50 rounded-full blur-[60px] pointer-events-none -mr-20 -mt-20"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-emerald-100/50 to-cyan-100/50 rounded-full blur-[60px] pointer-events-none -ml-20 -mb-20"></div>
 
-        <div className="flex items-center gap-6 relative z-10">
-          <button
-            onClick={() => {
-              if (viewState === "register") navigate("/shop-list");
-              else navigate(-1);
-            }}
-            className="w-12 h-12 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl flex items-center justify-center shadow-lg hover:bg-white/10 hover:border-white/20 hover:scale-105 active:scale-95 transition-all text-white"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <div className="space-y-1.5">
-            <h1 className="text-2xl md:text-3xl font-black text-white tracking-tighter uppercase italic leading-none drop-shadow-lg">
-              {viewState === "register"
-                ? "Register Shop Details"
-                : "Edit Shop Details"}
-            </h1>
-            <div className="flex items-center gap-2 pt-1.5">
-              <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
-              <p className="text-[10px] font-black text-blue-200 uppercase tracking-[0.3em] opacity-90">
-                Direct Merchant Gateway
-              </p>
+          <div className="flex items-center gap-4 relative z-10">
+            <button
+              onClick={() => {
+                if (viewState === "register") navigate("/shop-list");
+                else navigate(-1);
+              }}
+              className="w-10 h-10 bg-slate-100 hover:bg-slate-200 border border-slate-200/60 rounded-xl flex items-center justify-center text-slate-600 hover:text-slate-900 transition-all active:scale-95 shadow-sm shrink-0"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <div className="flex flex-col gap-0.5">
+              <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight uppercase leading-none">
+                {viewState === "register" ? "Register Shop" : "Edit Shop"}
+              </h1>
+              <div className="flex items-center gap-2 pt-0.5">
+                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+                <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+                  Direct Merchant Gateway
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="hidden md:flex items-center gap-4 relative z-10">
-          <button
-            onClick={() => navigate("/shop-analytics")}
-            className="bg-white/10 backdrop-blur-xl px-6 py-3.5 rounded-2xl flex items-center gap-3 shadow-xl border border-white/10 hover:bg-white/20 transition-all active:scale-95 group text-emerald-400 hover:text-emerald-300 font-black text-[10px] uppercase tracking-[0.2em]"
-          >
-            <Eye className="w-4 h-4" /> Analytics
-          </button>
-          {viewState === "edit" && (
+          <div className="hidden md:flex items-center gap-3 relative z-10 self-start md:self-auto">
             <button
-              onClick={() => setShowDeleteShopModal(true)}
-              className="w-12 h-12 bg-rose-500/10 backdrop-blur-xl border border-rose-500/20 rounded-2xl flex items-center justify-center text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 transition-all shadow-xl active:scale-95 group"
+              onClick={() => navigate("/shop-analytics")}
+              className="flex items-center gap-2 px-3.5 py-2 bg-white/60 hover:bg-white backdrop-blur-md border border-slate-200/50 hover:border-blue-200 rounded-xl shadow-sm transition-all text-emerald-600 font-black text-[10px] uppercase tracking-widest"
             >
-              <Trash2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
+              <Eye className="w-4 h-4" /> Analytics
             </button>
-          )}
+            {viewState === "edit" && (
+              <button
+                onClick={() => setShowDeleteShopModal(true)}
+                className="w-10 h-10 bg-white/60 hover:bg-rose-50 backdrop-blur-md border border-slate-200/50 hover:border-rose-200 rounded-xl flex items-center justify-center text-rose-500 transition-all shadow-sm shrink-0"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

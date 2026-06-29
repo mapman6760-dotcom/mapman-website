@@ -237,35 +237,38 @@ const SavedItems = () => {
   return (
     <div className="min-h-screen bg-[#F8FAFD] pb-20 animate-fade-in">
 
-      {/* ── PREMIUM HEADER ── */}
-      <div className="relative w-full overflow-hidden shadow-xl border-b border-slate-800 bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950 py-8 md:py-10 px-6 md:px-10 z-10 mb-6">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] -mr-20 -mt-20 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px] -ml-20 -mb-20 pointer-events-none" />
-        <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-6">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate(-1)}
-                className="w-11 h-11 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-white hover:bg-white/15 hover:scale-105 transition-all"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse" />
-                  <span className="text-[10px] font-black text-blue-300 uppercase tracking-[0.3em]">Your Collection</span>
-                </div>
-                <h1 className="text-2xl md:text-3xl font-black text-white tracking-tighter leading-none">
-                  🔖 Saved <span className="text-cyan-400">Items</span>
-                </h1>
+      {/* ── STYLISH FLOATING HEADER ── */}
+      <div className="max-w-7xl mx-auto px-4 w-full">
+        <div className="relative w-full mb-6 md:mb-8 mt-2 overflow-hidden shadow-sm border border-slate-200/60 bg-white/80 backdrop-blur-xl rounded-[0.5rem] py-4 md:py-5 px-5 md:px-7 flex flex-col md:flex-row md:items-center justify-between gap-5 z-10">
+          {/* Subtle background glow */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-100/50 to-purple-100/50 rounded-full blur-[60px] pointer-events-none -mr-20 -mt-20"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-emerald-100/50 to-cyan-100/50 rounded-full blur-[60px] pointer-events-none -ml-20 -mb-20"></div>
+
+          <div className="flex items-center gap-4 relative z-10">
+            <button
+              onClick={() => navigate(-1)}
+              className="w-10 h-10 bg-slate-100 hover:bg-slate-200 border border-slate-200/60 rounded-xl flex items-center justify-center text-slate-600 hover:text-slate-900 transition-all active:scale-95 shadow-sm shrink-0"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <div className="flex flex-col gap-0.5">
+              <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight uppercase leading-none">
+                Saved Items
+              </h1>
+              <div className="flex items-center gap-2 pt-0.5">
+                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+                <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+                  Your Collection
+                </p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl">
-                <Heart className="w-5 h-5 text-rose-500 fill-rose-500" />
-                <span className="font-black text-white text-sm">{(savedShops.length + savedVideos.length)}</span>
-                <span className="text-[9px] text-white/50 font-bold uppercase tracking-widest">total saves</span>
-              </div>
+          </div>
+
+          <div className="flex items-center gap-3 relative z-10 self-start md:self-auto">
+            <div className="flex items-center gap-2 px-3.5 py-2 bg-white/60 backdrop-blur-md border border-slate-200/50 rounded-xl shadow-sm">
+              <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
+              <span className="font-black text-slate-700 text-[11px]">{(savedShops.length + savedVideos.length)}</span>
+              <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">total saves</span>
             </div>
           </div>
         </div>
@@ -308,12 +311,14 @@ const SavedItems = () => {
         {activeTab === "shops" && (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 animate-fade-in">
             {savedShops.length === 0 ? (
-              <div className="col-span-full flex flex-col items-center justify-center py-20 text-center bg-white rounded-3xl border border-slate-100 shadow-sm">
-                <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-4">
-                  <Store className="w-8 h-8 text-blue-300" />
+              <div className="col-span-full flex flex-col items-center justify-center py-24 text-center bg-white rounded-[0.5rem] border border-slate-100 shadow-sm mx-4 mb-10 mt-10">
+                <div className="w-20 h-20 bg-slate-50 rounded-[1rem] flex items-center justify-center mb-5 border border-slate-100 shadow-inner">
+                  <Store className="w-10 h-10 text-slate-300" />
                 </div>
-                <h3 className="text-base font-black text-slate-800 mb-1">No Saved Shops</h3>
-                <p className="text-sm text-slate-400 font-medium max-w-xs">Explore the map and bookmark shops you love — they'll appear here.</p>
+                <h3 className="text-xl font-black text-slate-800 tracking-tight mb-2">No Saved Shops</h3>
+                <p className="text-sm text-slate-400 max-w-xs font-medium leading-relaxed">
+                  Explore the map and bookmark shops you love — they'll appear here.
+                </p>
               </div>
             ) : (
               savedShops.map((shop, i) => (
@@ -405,12 +410,14 @@ const SavedItems = () => {
         {activeTab === "videos" && (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 animate-fade-in">
             {savedVideos.length === 0 ? (
-              <div className="col-span-full flex flex-col items-center justify-center py-20 text-center bg-white rounded-3xl border border-slate-100 shadow-sm">
-                <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-4">
-                  <Play className="w-8 h-8 text-blue-300" />
+              <div className="col-span-full flex flex-col items-center justify-center py-24 text-center bg-white rounded-[0.5rem] border border-slate-100 shadow-sm mx-4 mb-10 mt-10">
+                <div className="w-20 h-20 bg-slate-50 rounded-[1rem] flex items-center justify-center mb-5 border border-slate-100 shadow-inner">
+                  <Play className="w-10 h-10 text-slate-300" />
                 </div>
-                <h3 className="text-base font-black text-slate-800 mb-1">No Saved Videos</h3>
-                <p className="text-sm text-slate-400 font-medium max-w-xs">Browse the video feed and save clips you love — they'll appear here.</p>
+                <h3 className="text-xl font-black text-slate-800 tracking-tight mb-2">No Saved Videos</h3>
+                <p className="text-sm text-slate-400 max-w-xs font-medium leading-relaxed">
+                  Browse the video feed and save clips you love — they'll appear here.
+                </p>
               </div>
             ) : (
               savedVideos.map((video, idx) => (
@@ -424,7 +431,7 @@ const SavedItems = () => {
                     muted
                     playsInline
                     loop
-                    preload="metadata"
+                    preload="none"
                   />
 
                   <div

@@ -46,7 +46,7 @@ const VideoCard = ({ vidObj, i, videos, savedIds, likedIds, hoveredId, navigate,
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="none"
         />
         {/* Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/10" />
@@ -277,66 +277,70 @@ const ViewedVideos = () => {
         canonical="https://mapman.in/viewed-videos"
       />
 
-      {/* ── PREMIUM HEADER ── */}
-      <div className="relative w-full overflow-hidden shadow-xl border-b border-slate-800 bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950 py-8 md:py-10 px-6 md:px-10 z-10">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] -mr-20 -mt-20 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px] -ml-20 -mb-20 pointer-events-none" />
-        <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-6">
-          {/* Top row */}
-          <div className="flex items-center justify-between gap-4">
+      {/* ── STYLISH FLOATING HEADER ── */}
+      <div className="max-w-7xl mx-auto px-4 w-full">
+        <div className="relative w-full mb-6 md:mb-8 mt-2 overflow-hidden shadow-sm border border-slate-200/60 bg-white/80 backdrop-blur-xl rounded-[0.5rem] py-5 px-5 md:px-7 flex flex-col gap-5 z-10">
+          {/* Subtle background glow */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-100/50 to-purple-100/50 rounded-full blur-[60px] pointer-events-none -mr-20 -mt-20"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-emerald-100/50 to-cyan-100/50 rounded-full blur-[60px] pointer-events-none -ml-20 -mb-20"></div>
+
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 relative z-10">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => navigate(-1)}
-                className="w-11 h-11 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-white hover:bg-white/15 hover:scale-105 transition-all"
+                className="w-10 h-10 bg-slate-100 hover:bg-slate-200 border border-slate-200/60 rounded-xl flex items-center justify-center text-slate-600 hover:text-slate-900 transition-all active:scale-95 shadow-sm shrink-0"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse" />
-                  <span className="text-[10px] font-black text-blue-300 uppercase tracking-[0.3em]">Watch History</span>
-                </div>
-                <h1 className="text-2xl md:text-3xl font-black text-white tracking-tighter leading-none">
-                  Viewed <span className="text-cyan-400">Videos</span>
+              <div className="flex flex-col gap-0.5">
+                <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight uppercase leading-none">
+                  Viewed Videos
                 </h1>
+                <div className="flex items-center gap-2 pt-0.5">
+                  <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+                  <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+                    Watch History
+                  </p>
+                </div>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl">
-                <img src="https://cdn-icons-png.flaticon.com/128/7892/7892416.png" className="w-5 h-5 object-contain" alt="points" />
-                <span className="font-black text-white text-sm">{userPoints}</span>
-                <span className="text-[9px] text-white/50 font-bold uppercase tracking-widest">pts</span>
+
+            <div className="flex items-center gap-3 self-start md:self-auto">
+              <div className="flex items-center gap-2 px-3.5 py-2 bg-white/60 backdrop-blur-md border border-slate-200/50 rounded-xl shadow-sm">
+                <img src="https://cdn-icons-png.flaticon.com/128/7892/7892416.png" className="w-4 h-4 object-contain" alt="points" />
+                <span className="font-black text-slate-700 text-[11px]">{userPoints}</span>
+                <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">pts</span>
               </div>
             </div>
           </div>
 
-          {/* Search bar */}
-          <div className="relative max-w-2xl">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search your viewing history..."
-              className="w-full bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl pl-11 pr-4 py-3 text-white placeholder-white/30 text-sm font-medium focus:outline-none focus:border-blue-400/50 focus:bg-white/15 transition-all"
-            />
-            {searchQuery && (
-              <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors">
-                <X className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-
-          {/* Stats strip */}
-          <div className="flex items-center gap-6 flex-wrap">
-            <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">
-              {filtered.length} video{filtered.length !== 1 ? "s" : ""} found
-            </span>
-            {searchQuery && (
-              <span className="px-3 py-1 bg-blue-500/20 border border-blue-400/30 rounded-full text-[10px] font-black text-blue-300 uppercase tracking-widest">
-                Filtering: "{searchQuery}"
+          <div className="relative z-10">
+            <div className="relative max-w-2xl">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search your viewing history..."
+                className="w-full bg-slate-100/50 border border-slate-200/60 rounded-xl pl-11 pr-10 py-3 text-slate-800 placeholder-slate-400 text-sm font-medium focus:outline-none focus:border-blue-300 focus:bg-white transition-all shadow-inner"
+              />
+              {searchQuery && (
+                <button onClick={() => setSearchQuery("")} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-6 flex-wrap mt-3 px-2">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                {filtered.length} video{filtered.length !== 1 ? "s" : ""} found
               </span>
-            )}
+              {searchQuery && (
+                <span className="px-2.5 py-1 bg-blue-50 border border-blue-100 rounded-lg text-[9px] font-black text-blue-600 uppercase tracking-widest">
+                  Filtering: "{searchQuery}"
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -387,16 +391,16 @@ const ViewedVideos = () => {
                 )}
               </>
             ) : (
-              <div className="flex flex-col items-center justify-center bg-white rounded-3xl border border-slate-100 shadow-sm py-32 px-10 text-center">
-                <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mb-6 border border-slate-100">
-                  <VideoOff className="w-9 h-9 text-slate-300" />
+              <div className="flex flex-col items-center justify-center py-24 text-center bg-white rounded-[0.5rem] border border-slate-100 shadow-sm mx-4 mb-10 mt-10">
+                <div className="w-20 h-20 bg-slate-50 rounded-[1rem] flex items-center justify-center mb-5 border border-slate-100 shadow-inner">
+                  <VideoOff className="w-10 h-10 text-slate-300" />
                 </div>
                 <h3 className="text-xl font-black text-slate-800 tracking-tight mb-2">No Videos Found</h3>
-                <p className="text-sm text-slate-400 font-medium max-w-xs leading-relaxed">
+                <p className={`text-sm text-slate-400 max-w-xs font-medium leading-relaxed ${searchQuery ? "mb-6" : ""}`}>
                   {searchQuery ? `No results for "${searchQuery}". Try a different search.` : "Your watch history is empty."}
                 </p>
                 {searchQuery && (
-                  <button onClick={() => setSearchQuery("")} className="mt-6 px-6 py-2.5 bg-blue-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all">
+                  <button onClick={() => setSearchQuery("")} className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-[0.5rem] font-black text-sm shadow-md transition-all hover:scale-105 active:scale-95">
                     Clear Search
                   </button>
                 )}
@@ -445,7 +449,7 @@ const ViewedVideos = () => {
                           className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition-colors text-left group"
                         >
                           <div className="relative w-14 h-10 rounded-lg overflow-hidden bg-slate-900 shrink-0">
-                            <video src={src} className="w-full h-full object-cover" muted preload="metadata" />
+                            <video src={src} className="w-full h-full object-cover" muted preload="none" />
                             <div className="absolute inset-0 flex items-center justify-center bg-black/30">
                               <Play className="w-3 h-3 text-white fill-white" />
                             </div>

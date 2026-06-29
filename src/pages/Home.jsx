@@ -26,6 +26,8 @@ import {
   Smartphone,
   TrendingUp,
   CheckCircle2,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { fetchShop } from "../api/shop";
 import { API_BASE_URL } from "../config";
@@ -49,7 +51,7 @@ let cachedToken = undefined;
 
 const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
   const navigate = useNavigate();
-  
+
   const currentToken = localStorage.getItem("token");
   const isCacheValid = cachedHomeData && cachedToken === currentToken;
 
@@ -58,6 +60,7 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
   const [categoryBanners, setCategoryBanners] = useState(isCacheValid ? cachedHomeData.categoryBanners : []);
   const [loading, setLoading] = useState(!isCacheValid);
   const [toastMessage, setToastMessage] = useState(null);
+  const [openFaqIndex, setOpenFaqIndex] = useState(null);
 
   const handleRegisterClick = async () => {
     if (!isLoggedIn) {
@@ -191,7 +194,6 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
           result.status === 400 &&
           result.error?.type === "UnauthorizedException"
         ) {
-          navigate("/login");
           return;
         }
 
@@ -252,7 +254,59 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
       "@type": "Organization",
       "name": "Mapman",
       "url": "https://mapman.in",
-      "logo": "https://mapman.in/logo.png"
+      "logo": "https://mapman.in/logo.png",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91-9342376760",
+        "contactType": "customer service",
+        "email": "mapman6760@gmail.com"
+      }
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Mapman and how does it work?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Mapman is a next-generation local business discovery platform that combines interactive live maps with engaging shop video reels. Users can visually explore verified businesses, view real-time location coordinates, and watch authentic video reels before visiting them."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How can my business benefit from registering on Mapman?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Registering your business on Mapman puts your shop on the map, literally. You can upload high-impact product video reels, showcase your services, display verified contact details, and drive targeted foot traffic to your physical store. It's the most modern and affordable way to acquire local customers."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is the Mapman app available for download?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! Mapman is fully optimized for mobile devices. You can download the official Mapman App from the Apple App Store for iOS devices or the Google Play Store for Android."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Who developed Mapman and is it a trusted platform?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Mapman is developed and powered by Pafagel Software Solutions Pvt Ltd, a leading technology services firm. We verify business profiles, phone numbers, and coordinates to ensure the directory remains highly trusted, accurate, and secure for our community."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I get started as a user or merchant?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Consumers can start exploring immediately by using the Interactive Map or browsing the Video Feed. Merchants can list their business by clicking the Login or List Your Business buttons, completing a quick profile, and uploading their shop's promo reels."
+          }
+        }
+      ]
     }
   ];
 
@@ -261,9 +315,9 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
       className="relative animate-fade-in"
     >
       <SEO
-        title="Discover Local Businesses & Shop Videos"
-        description="Explore the best local shops, watch custom shop video feeds, find coordinates on the interactive map, and register your business on Mapman."
-        canonical="https://mapman.in/dashboard"
+        title="Discover Local Businesses, Shop Video Reels & Live Maps"
+        description="Discover nearby shops, restaurants, resorts, and services. Watch authentic business video reels, explore live maps with exact coordinates, and promote your brand on Mapman."
+        canonical="https://mapman.in"
         schema={homeSchema}
       />
       {/* --- TOAST --- */}
@@ -486,9 +540,10 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
                   <div
                     key={cat.id || i}
                     style={{ animationDelay: `${i * 40}ms` }}
-                    onClick={() =>
-                      onSelectCategory(cat.categoryName.toLowerCase())
-                    }
+                    onClick={() => {
+                      const catName = cat.categoryName.toLowerCase();
+                      onSelectCategory(catName === "others" ? "all" : catName);
+                    }}
                     className="group cursor-pointer animate-fade-in-up opacity-0"
                   >
                     <div className="relative h-full bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_-10px_rgba(0,0,0,0.04)] hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] transition-all duration-700 overflow-hidden flex flex-col">
@@ -774,6 +829,78 @@ const Home = ({ onSelectCategory, isLoggedIn, openLogin }) => {
             ))}
           </div>
         </section>
+
+        {/* --- INTERACTIVE FAQ SECTION (SEO & VOICE SEARCH OPTIMIZED) --- */}
+        {/* <section className="relative px-1 pb-16">
+          <div className="absolute -bottom-10 left-10 w-80 h-80 bg-indigo-50/40 rounded-full blur-[100px] pointer-events-none" />
+          <div className="relative rounded-[2.5rem] bg-gradient-to-b from-slate-50 to-white border border-slate-100 p-8 md:p-12 shadow-[0_15px_40px_-15px_rgba(0,0,0,0.04)]">
+            
+            <div className="text-center max-w-2xl mx-auto mb-12 space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full">
+                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
+                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">FAQ Hub</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
+                Frequently Asked Questions
+              </h2>
+              <p className="text-slate-500 font-medium text-sm md:text-base">
+                Everything you need to know about Mapman—designed to optimize local discovery and empower businesses.
+              </p>
+            </div>
+
+            <div className="max-w-3xl mx-auto space-y-4">
+              {[
+                {
+                  q: "What is Mapman and how does it work?",
+                  a: "Mapman is a next-generation local business discovery platform that combines interactive live maps with engaging shop video reels. Users can visually explore verified businesses, view real-time location coordinates, and watch authentic video reels before visiting them. This makes neighborhood exploration intuitive, visual, and highly reliable."
+                },
+                {
+                  q: "How can my business benefit from registering on Mapman?",
+                  a: "Registering your business on Mapman puts your shop on the map, literally. You can upload high-impact product video reels, showcase your services, display verified contact details, and drive targeted foot traffic to your physical store. With our location-targeted discovery engine, it's the most modern and affordable way to acquire local customers."
+                },
+                {
+                  q: "Is the Mapman app available for download?",
+                  a: "Yes! Mapman is fully optimized for mobile devices. You can download the official Mapman App from the Apple App Store for iOS devices or the Google Play Store for Android. The app provides a seamless mobile-first layout, smooth animations, and fast loading speeds."
+                },
+                {
+                  q: "Who developed Mapman and is it a trusted platform?",
+                  a: "Mapman is developed and powered by Pafagel Software Solutions Pvt Ltd, a leading technology services firm. We verify business profiles, phone numbers, and coordinates to ensure the directory remains highly trusted, accurate, and secure for our community."
+                },
+                {
+                  q: "How do I get started as a user or merchant?",
+                  a: "Consumers can start exploring immediately by using our interactive Map Explorer or browsing the Video Feed. Merchants can list their business by clicking the 'Login' or 'List Your Business' buttons, completing a quick profile, adding coordinates, and uploading their shop's promo reels."
+                }
+              ].map((faq, idx) => {
+                const isOpen = openFaqIndex === idx;
+                return (
+                  <div 
+                    key={idx}
+                    className="border border-slate-100 rounded-2xl bg-white hover:border-blue-100 transition-all duration-300 overflow-hidden shadow-sm"
+                  >
+                    <button
+                      onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
+                      className="w-full px-6 py-5 flex items-center justify-between gap-4 text-left font-bold text-slate-950 text-sm md:text-base transition-colors hover:text-blue-600 focus:outline-none"
+                    >
+                      <span>{faq.q}</span>
+                      <span className={`w-8 h-8 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 text-slate-500 transition-all ${isOpen ? 'bg-blue-50 border-blue-200 text-blue-600 rotate-180' : ''}`}>
+                        {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      </span>
+                    </button>
+                    
+                    <div 
+                      className={`transition-all duration-500 ease-in-out overflow-hidden ${isOpen ? 'max-h-[300px] border-t border-slate-50 opacity-100' : 'max-h-0 opacity-0'}`}
+                    >
+                      <div className="px-6 py-5 text-sm leading-relaxed text-slate-500 font-medium bg-slate-50/30">
+                        {faq.a}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+          </div>
+        </section> */}
       </div>
     </div>
   );

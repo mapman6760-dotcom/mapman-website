@@ -689,11 +689,11 @@ const App = () => {
   return (
     <HelmetProvider>
       <Helmet>
-        <title>Mapman - Discover Local Businesses & Shop Videos</title>
-        <meta name="description" content="Mapman is the ultimate location-based business discovery platform. Discover nearby shops, watch local category video reels, and explore interactive maps." />
-        <meta name="keywords" content="Mapman, MapMan, Map, Explorer, Business Hub, Shop Videos, Mapman Merchant, Local Shops, India Shops" />
-        <meta property="og:title" content="Mapman - Discover Local Businesses & Shop Videos" />
-        <meta property="og:description" content="Mapman is the ultimate location-based business discovery platform. Discover nearby shops, watch local category video reels, and explore interactive maps." />
+        <title>Mapman - Discover Local Businesses, Shop Video Reels & Live Maps</title>
+        <meta name="description" content="Discover nearby shops, restaurants, resorts, and services. Watch authentic business video reels, explore live maps with exact coordinates, and register your brand on Mapman." />
+        <meta name="keywords" content="Mapman, MapMan, Map, Explorer, Business Hub, Shop Videos, Mapman Merchant, Local Shops, India Shops, Pafagel Software Solutions" />
+        <meta property="og:title" content="Mapman - Discover Local Businesses, Shop Video Reels & Live Maps" />
+        <meta property="og:description" content="Discover nearby shops, restaurants, resorts, and services. Watch authentic business video reels, explore live maps with exact coordinates, and register your brand on Mapman." />
         <meta property="og:type" content="website" />
       </Helmet>
       <BrowserRouter>

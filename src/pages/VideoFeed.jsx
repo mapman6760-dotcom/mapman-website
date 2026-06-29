@@ -46,7 +46,7 @@ let cachedToken = undefined;
 const VideoFeed = ({ isLoggedIn, openLogin }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("all");
-  
+
   const currentToken = localStorage.getItem("token");
   const isCacheValid = cachedToken === currentToken;
 
@@ -342,55 +342,70 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
     <div
       className="flex flex-col h-full bg-transparent no-scrollbar relative animate-fade-in"
     >
-      {/* 1. PROFESSIONAL HEADER & TABS */}
-      <div className="relative w-[100vw] left-1/2 -translate-x-1/2 mb-4 md:mb-8 overflow-hidden shadow-xl border-b border-slate-800 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 py-6 md:py-8 lg:py-10 px-6 md:px-8 lg:px-12 flex flex-col lg:flex-row lg:items-center justify-between gap-6 z-10">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none -mr-20 -mt-20"></div>
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none -ml-20 -mb-20"></div>
+      {/* 1. STYLISH FLOATING HEADER */}
+      <div className="relative w-full mb-6 md:mb-8 mt-2 overflow-hidden shadow-sm border border-slate-200/60 bg-white/80 backdrop-blur-xl rounded-[0.5rem] py-4 md:py-5 px-5 md:px-7 flex flex-col md:flex-row md:items-center justify-between gap-5 z-10">
+        {/* Subtle background glow */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-100/50 to-purple-100/50 rounded-full blur-[60px] pointer-events-none -mr-20 -mt-20"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-emerald-100/50 to-cyan-100/50 rounded-full blur-[60px] pointer-events-none -ml-20 -mb-20"></div>
 
-        <div className="flex flex-col gap-1 relative z-10">
-          <h2 className="text-3xl md:text-4xl font-black text-white tracking-tighter uppercase leading-none drop-shadow-lg">
-            Discover Reels
-          </h2>
-          <div className="flex items-center gap-2 pt-1.5">
-            <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
-            <p className="text-[10px] font-black text-blue-200 uppercase tracking-[0.3em] opacity-90">
-              Explore Hub experiences through live motion
-            </p>
+        <div className="flex items-center gap-4 relative z-10">
+          <div className="w-12 h-12 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl flex items-center justify-center shadow-lg shadow-slate-900/20 text-white group-hover:rotate-6 transition-transform">
+            <Play className="w-5 h-5 fill-current ml-0.5 text-blue-400" />
+          </div>
+          <div className="flex flex-col gap-0.5">
+            <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight uppercase leading-none">
+              Discover Reels
+            </h2>
+            <div className="flex items-center gap-2 pt-0.5">
+              <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+              <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+                Explore Hub experiences through live motion
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-xl p-1.5 rounded-2xl border border-white/10 shadow-lg relative z-10">
-          <button
-            onClick={() => setActiveTab("all")}
-            className={`flex-1 md:flex-none px-4 md:px-6 py-2 md:py-2.5 rounded-xl font-black text-[9px] md:text-[10px] uppercase tracking-widest transition-all duration-300 ${activeTab === "all" ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105" : "text-slate-300 hover:text-white hover:bg-white/5"}`}
-          >
-            All Videos
-          </button>
-          <button
-            onClick={() => {
-              if (!isLoggedIn) {
-                openLogin();
-                return;
-              }
-              setActiveTab("my");
-            }}
-            className={`flex-1 md:flex-none px-4 md:px-6 py-2 md:py-2.5 rounded-xl font-black text-[9px] md:text-[10px] uppercase tracking-widest transition-all duration-300 ${activeTab === "my" ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105" : "text-slate-300 hover:text-white hover:bg-white/5"}`}
-          >
-            My Videos
-          </button>
-        </div>
+        <div className="flex flex-wrap items-center gap-3 relative z-10">
+          {/* Refined Tabs */}
+          <div className="flex items-center bg-slate-100/50 backdrop-blur-md p-1 rounded-xl border border-slate-200/50">
+            <button
+              onClick={() => setActiveTab("all")}
+              className={`px-4 py-2 rounded-lg font-bold text-[10px] uppercase tracking-wider transition-all duration-300 ${
+                activeTab === "all"
+                  ? "bg-white text-blue-600 shadow-sm border border-slate-200/50"
+                  : "text-slate-500 hover:text-slate-700 hover:bg-white/40"
+              }`}
+            >
+              All Videos
+            </button>
+            <button
+              onClick={() => {
+                if (!isLoggedIn) {
+                  openLogin();
+                  return;
+                }
+                setActiveTab("my");
+              }}
+              className={`px-4 py-2 rounded-lg font-bold text-[10px] uppercase tracking-wider transition-all duration-300 ${
+                activeTab === "my"
+                  ? "bg-white text-blue-600 shadow-sm border border-slate-200/50"
+                  : "text-slate-500 hover:text-slate-700 hover:bg-white/40"
+              }`}
+            >
+              My Videos
+            </button>
+          </div>
 
-        <div className="flex flex-wrap items-center gap-4 relative z-10">
           <button
             onClick={() => setShowRewardsModal(true)}
-            className="bg-white/10 backdrop-blur-xl px-6 py-3 rounded-2xl flex items-center gap-3 shadow-xl border border-white/10 hover:bg-white/20 transition-all active:scale-95 group"
+            className="bg-white/60 backdrop-blur-md px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-sm border border-slate-200/50 hover:bg-white transition-all active:scale-95 group"
           >
             <img
               src="https://cdn-icons-png.flaticon.com/128/7892/7892416.png"
-              className="w-6 h-6 object-contain group-hover:rotate-12 transition-transform drop-shadow-lg"
+              className="w-4 h-4 object-contain group-hover:rotate-12 transition-transform"
               alt="Coins"
             />
-            <span className="text-lg font-black text-white tracking-tighter drop-shadow-md">
+            <span className="text-[11px] font-black text-slate-700">
               {userPoints}
             </span>
           </button>
@@ -424,12 +439,12 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
                   navigate("/edit-shop");
                 }
               }}
-              className="flex items-center gap-2.5 bg-blue-600 text-white px-7 py-4 rounded-xl font-bold text-sm shadow-lg transition-all hover:bg-blue-700 hover:scale-105 active:scale-95 duration-200"
+              className="flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider shadow-md shadow-slate-900/20 hover:bg-slate-800 transition-all active:scale-95"
             >
-              <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center">
-                <Plus className="w-4 h-4 text-white" />
+              <div className="w-4 h-4 bg-white/20 rounded flex items-center justify-center">
+                <Plus className="w-3 h-3 text-white" />
               </div>
-              <span className="flex items-center gap-2">Upload Video</span>
+              <span>Upload</span>
             </button>
           )}
         </div>
@@ -503,9 +518,9 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
                         className="w-full h-full object-cover opacity-80 group-hover/card:opacity-100 transition-all duration-700 group-hover/card:scale-105"
                         muted
                         loop
-                        preload="metadata"
+                        preload="none"
                         playsInline
-                        onMouseEnter={(e) => e.target.play().catch(() => {})}
+                        onMouseEnter={(e) => e.target.play().catch(() => { })}
                         onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
@@ -562,15 +577,12 @@ const VideoFeed = ({ isLoggedIn, openLogin }) => {
           })}
         </div>
       ) : (
-        <div className="flex-1 flex flex-col items-center justify-center bg-white/50 backdrop-blur-xl rounded-[4rem] border-2 border-slate-100 py-32 px-10 text-center relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 rounded-full blur-[100px] -mr-32 -mt-32"></div>
-          <div className="w-24 h-24 bg-white text-slate-200 rounded-[2.5rem] flex items-center justify-center mb-8 shadow-2xl border border-slate-50">
-            <Play className="w-10 h-10" />
+        <div className="flex-1 flex flex-col items-center justify-center py-24 text-center bg-white rounded-3xl border border-slate-100 shadow-sm mx-4 mb-10 mt-10">
+          <div className="w-20 h-20 bg-slate-50 rounded-[1rem] flex items-center justify-center mb-5 border border-slate-100 shadow-inner">
+            <Play className="w-10 h-10 text-slate-300" />
           </div>
-          <h3 className="text-2xl font-black text-slate-400 uppercase tracking-widest mb-3">
-            No Gallery Content
-          </h3>
-          <p className="text-[10px] text-slate-300 font-bold uppercase tracking-widest max-w-[320px] leading-relaxed">
+          <h3 className="text-xl font-black text-slate-800 tracking-tight mb-2">No Gallery Content</h3>
+          <p className="text-sm text-slate-400 max-w-xs font-medium leading-relaxed">
             System curators are currently indexing fresh motion experiences.
           </p>
         </div>

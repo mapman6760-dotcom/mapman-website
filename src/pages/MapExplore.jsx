@@ -91,9 +91,9 @@ const MapExplore = ({ isCollapsed, isLoggedIn, openLogin }) => {
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(userPos.lat * (Math.PI / 180)) *
-        Math.cos(parseFloat(targetLat) * (Math.PI / 180)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+      Math.cos(parseFloat(targetLat) * (Math.PI / 180)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   }, [userPos]);
@@ -117,7 +117,7 @@ const MapExplore = ({ isCollapsed, isLoggedIn, openLogin }) => {
     const timer = setTimeout(async () => {
       // Show suggestions starting from the first character
       if (searchInput.trim().length > 0 && showSuggestions) {
-        const data = await fetchShops(searchInput);
+        const data = await fetchShops(searchInput === "others" ? "all" : searchInput);
         const filtered = data.filter((shop) => shop.lat && shop.long);
         setSuggestions(filtered.slice(0, 5));
       } else {
@@ -130,7 +130,8 @@ const MapExplore = ({ isCollapsed, isLoggedIn, openLogin }) => {
   const loadShops = async (input = "") => {
     setLoading(true);
     setShowSuggestions(false);
-    const data = await fetchShops(input);
+    const searchQuery = input.toLowerCase() === "others" ? "all" : input;
+    const data = await fetchShops(searchQuery);
     // Only include shops with valid latitude and longitude
     const validShops = data.filter(
       (shop) =>
@@ -142,9 +143,9 @@ const MapExplore = ({ isCollapsed, isLoggedIn, openLogin }) => {
     // Sort by distance if user position is available
     const loadedSortedShops = userPos
       ? validShops.sort(
-          (a, b) =>
-            getRawDistance(a.lat, a.long) - getRawDistance(b.lat, b.long),
-        )
+        (a, b) =>
+          getRawDistance(a.lat, a.long) - getRawDistance(b.lat, b.long),
+      )
       : validShops;
 
     setShops(loadedSortedShops);
@@ -166,74 +167,75 @@ const MapExplore = ({ isCollapsed, isLoggedIn, openLogin }) => {
   return (
     <>
       <div
-        className="relative w-full h-[88vh] min-h-[700px] mt-6 md:mt-10 transition-all duration-500 ease-in-out bg-[#F8FAFC] z-10 flex flex-col overflow-hidden rounded-t-[2.5rem] shadow-2xl border-x border-t border-slate-200/60"
+        className="relative w-full h-[88vh] min-h-[700px] mt-6 md:mt-10 transition-all duration-500 ease-in-out bg-[#F8FAFC] z-10 flex flex-col overflow-hidden rounded-t-[0.5rem] shadow-2xl border-x border-t border-slate-200/60"
       >
-      <SEO
-        title={searchInput ? `Find ${searchInput} Nearby` : "Explore Local Businesses on Map"}
-        description={searchInput ? `Locate the best verified ${searchInput} in your area. View geo-coordinates, distances, and contact detail cards on Mapman.` : "Use our interactive map directory to discover nearby shops, restaurants, services, and local business hubs."}
-        canonical="https://mapman.in/map"
-      />
-      {/* 1. LEFT-TOP COMPACT SEARCH & SMART AUTOCOMPLETE */}
-      <div className="absolute top-6 left-6 z-40 pointer-events-none w-full max-w-[340px] lg:max-w-[400px]">
-        <div className="relative pointer-events-auto">
-          <form onSubmit={handleSearch} className="flex items-center">
-            <div className="relative flex-1 group">
-              <div className="absolute inset-0 bg-blue-600/5 blur-2xl group-hover:bg-blue-600/10 transition-all duration-500 rounded-[1.5rem]"></div>
-              <div className="relative flex items-center bg-white border border-slate-100 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.08)] transition-all duration-300 focus-within:shadow-[0_10px_40px_-10px_rgba(37,99,235,0.15)] focus-within:border-blue-500/30 px-2 py-1 gap-2">
-                <div className="w-8 h-8 flex items-center justify-center text-slate-400">
-                  <Search className="w-4 h-4 stroke-[2.5]" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Search hubs..."
-                  value={searchInput}
-                  onFocus={() => setShowSuggestions(true)}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  className="flex-1 h-10 bg-transparent outline-none text-[13px] font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-medium"
-                />
-                {searchInput && (
+        <SEO
+          title={searchInput ? `Find ${searchInput} Nearby` : "Explore Local Businesses on Map"}
+          description={searchInput ? `Locate the best verified ${searchInput} in your area. View geo-coordinates, distances, and contact detail cards on Mapman.` : "Use our interactive map directory to discover nearby shops, restaurants, services, and local business hubs."}
+          canonical="https://mapman.in/map"
+        />
+        {/* 1. LEFT-TOP COMPACT SEARCH & SMART AUTOCOMPLETE */}
+        <div className="absolute top-6 left-4 md:left-6 z-40 pointer-events-none w-[calc(100%-2rem)] md:w-full max-w-[340px] lg:max-w-[400px]">
+          <div className="relative pointer-events-auto">
+            <form onSubmit={handleSearch} className="flex items-center">
+              <div className="relative flex-1 group">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10 blur-xl group-hover:blur-2xl transition-all duration-500 rounded-full"></div>
+                <div className="relative flex items-center bg-white/90 backdrop-blur-2xl border border-white/60 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-300 focus-within:shadow-[0_8px_30px_rgba(37,99,235,0.15)] focus-within:border-blue-300/50 focus-within:bg-white pl-4 pr-1.5 py-1.5 gap-2">
+                  <div className="flex items-center justify-center text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                    <Search className="w-4 h-4 stroke-[2.5]" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search local hubs..."
+                    value={searchInput}
+                    onFocus={() => setShowSuggestions(true)}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    className="flex-1 h-9 bg-transparent outline-none text-[13px] font-bold text-slate-900 placeholder:text-slate-400/80 placeholder:font-medium tracking-tight"
+                  />
+                  {searchInput && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchInput("");
+                        setSuggestions([]);
+                        loadShops("");
+                        navigate("/map");
+                      }}
+                      className="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-full transition-colors animate-scale-in"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                   <button
-                    type="button"
-                    onClick={() => {
-                      setSearchInput("");
-                      setSuggestions([]);
-                      loadShops("");
-                      navigate("/map");
-                    }}
-                    className="w-8 h-8 flex items-center justify-center text-slate-300 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors animate-scale-in"
+                    type="submit"
+                    className="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-full flex items-center justify-center shadow-md hover:shadow-blue-500/30 hover:scale-105 active:scale-95 transition-all shrink-0"
                   >
-                    <X className="w-4 h-4" />
+                    <ArrowUpRight className="w-4 h-4" />
                   </button>
-                )}
-                <button
-                  type="submit"
-                  className="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-md hover:bg-blue-600 hover:shadow-blue-600/30 active:scale-95 transition-all"
-                >
-                  <ArrowUpRight className="w-4 h-4" />
-                </button>
-              </div>
+                </div>
 
-              {/* --- COMPACT AUTOCOMPLETE DROPDOWN --- */}
-              {showSuggestions && suggestions.length > 0 && (
-                <div
-                  className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-3xl border border-white/40 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.1)] overflow-hidden z-[60] animate-fade-in-up"
-                >
-                    <div className="p-1.5 max-h-[350px] overflow-y-auto no-scrollbar">
+                {/* --- COMPACT AUTOCOMPLETE DROPDOWN --- */}
+                {showSuggestions && suggestions.length > 0 && (
+                  <div
+                    className="absolute top-full left-0 right-0 mt-3 bg-white/95 backdrop-blur-3xl border border-white/60 rounded-[1.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.12)] overflow-hidden z-[60] animate-fade-in-up"
+                  >
+                    <div className="p-2 max-h-[350px] overflow-y-auto no-scrollbar">
                       {suggestions.map((shop, i) => (
                         <button
                           key={i}
                           onClick={() => {
+                            setShowSuggestions(false);
                             setSearchInput(shop.shopName);
-                            loadShops(shop.shopName);
+                            setSelectedShop(shop);
                             setCenter([
                               parseFloat(shop.lat),
                               parseFloat(shop.long),
                             ]);
-                            navigate(`/shop-detail/${shop.id}`);
+                            setShowShopModal(true);
                           }}
-                          className="w-full flex items-center gap-4 p-3 hover:bg-slate-50 rounded-xl transition-all group text-left border border-transparent hover:border-slate-100"
+                          className="w-full flex items-center gap-4 p-2.5 hover:bg-slate-50/80 rounded-2xl transition-all group text-left border border-transparent hover:border-slate-100"
                         >
-                          <div className="w-10 h-10 rounded-xl bg-slate-50 shadow-sm flex items-center justify-center overflow-hidden border border-slate-100 group-hover:scale-105 transition-transform">
+                          <div className="w-11 h-11 rounded-[1rem] bg-slate-50 shadow-sm flex items-center justify-center overflow-hidden border border-slate-100/50 group-hover:scale-105 transition-transform shrink-0">
                             {shop.shopImage ? (
                               <img
                                 src={shop.shopImage}
@@ -255,112 +257,116 @@ const MapExplore = ({ isCollapsed, isLoggedIn, openLogin }) => {
                               />
                             </div>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between mb-0.5">
-                              <p className="text-[11px] font-black text-slate-900 uppercase tracking-tight truncate">
+                          <div className="flex-1 min-w-0 pr-2">
+                            <div className="flex items-center justify-between mb-1">
+                              <p className="text-[12px] font-black text-slate-900 uppercase tracking-tight truncate group-hover:text-blue-600 transition-colors">
                                 {shop.shopName}
                               </p>
-                              <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-md">
+                              <span className="text-[7.5px] font-black text-blue-600 uppercase tracking-widest bg-blue-50/80 px-2 py-0.5 rounded-md border border-blue-100/50">
                                 {shop.category}
                               </span>
                             </div>
-                            <p className="text-[8px] font-medium text-slate-400 line-clamp-1 truncate leading-tight">
+                            <p className="text-[9px] font-medium text-slate-500 line-clamp-1 truncate leading-tight flex items-center gap-1">
+                              <MapPin className="w-3 h-3 text-slate-400" />
                               {shop.address || "Local Hub, Mapman sector"}
                             </p>
                           </div>
                         </button>
                       ))}
                     </div>
-                    <div className="bg-slate-50/50 p-2.5 border-t border-slate-100/50 flex items-center justify-between">
-                      <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">
+                    <div className="bg-slate-50 p-3 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
                         Matched {suggestions.length} Hubs
                       </span>
                     </div>
-                </div>
-              )}
-            </div>
-          </form>
-        </div>
-      </div>
-
-      {/* 2. MAP AREA with SATURATION */}
-      <div className="flex-1 relative overflow-hidden bg-slate-100">
-        {loading && (
-          <div
-            className="absolute inset-0 flex items-center justify-center bg-white/40 z-50 backdrop-blur-xl animate-fade-in"
-          >
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-              <span className="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em] animate-pulse">
-                Syncing Map Data...
-              </span>
-            </div>
+                  </div>
+                )}
+              </div>
+            </form>
           </div>
-        )}
-
-        <div className="h-full w-full">
-          <Map
-            center={center}
-            zoom={zoom}
-            onBoundsChanged={({ center, zoom }) => {
-              setCenter(center);
-              setZoom(zoom);
-            }}
-          >
-            {sortedShops.map((shop, i) => (
-              <MapMarker
-                key={shop.id}
-                anchor={[parseFloat(shop.lat), parseFloat(shop.long)]}
-                onClick={() => {
-                  setSelectedShop(shop);
-                  setCenter([parseFloat(shop.lat), parseFloat(shop.long)]);
-                  setShowShopModal(true);
-                }}
-              >
-                <MarkerUI
-                  shop={shop}
-                  isActive={selectedShop?.id === shop.id}
-                  delay={i * 0.05}
-                />
-              </MapMarker>
-            ))}
-          </Map>
         </div>
 
-        {/* Controls - Premium Float */}
-        <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-20">
-          {[
-            { icon: ZoomIn, action: () => setZoom((z) => Math.min(z + 1, 20)) },
-            { icon: ZoomOut, action: () => setZoom((z) => Math.max(z - 1, 1)) },
-            { icon: Maximize, action: () => setZoom(12) },
-            { icon: Navigation, action: () => {} },
-          ].map((item, i) => (
-            <button
-              key={i}
-              onClick={item.action}
-              className="w-12 h-12 bg-white/90 backdrop-blur-2xl text-slate-800 rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.1)] hover:text-blue-600 transition-all border border-white/50 flex items-center justify-center group hover:scale-110 active:scale-95"
+        {/* 2. MAP AREA with SATURATION */}
+        <div className="flex-1 relative overflow-hidden bg-slate-100">
+          {loading && (
+            <div
+              className="absolute inset-0 flex items-center justify-center bg-white/40 z-50 backdrop-blur-xl animate-fade-in"
             >
-              <item.icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 3. REDESIGNED SLIDING CARDS */}
-      <div className="absolute bottom-8 left-0 right-0 z-30 px-2 md:px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <h3 className="text-[10px] font-black text-slate-900 bg-white/90 backdrop-blur-xl px-4 py-2.5 rounded-2xl shadow-xl border border-white/50 flex items-center gap-2.5 uppercase tracking-tighter">
-                <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></div>
-                Verified Local Hubs ({sortedShops.length})
-              </h3>
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                <span className="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em] animate-pulse">
+                  Syncing Map Data...
+                </span>
+              </div>
             </div>
+          )}
+
+          <div className="h-full w-full">
+            <Map
+              center={center}
+              zoom={zoom}
+              minZoom={6}
+              onBoundsChanged={({ center, zoom }) => {
+                setCenter(center);
+                setZoom(zoom);
+              }}
+            >
+              {sortedShops.map((shop, i) => (
+                <MapMarker
+                  key={shop.id}
+                  anchor={[parseFloat(shop.lat), parseFloat(shop.long)]}
+                  onClick={() => {
+                    setSelectedShop(shop);
+                    setCenter([parseFloat(shop.lat), parseFloat(shop.long)]);
+                    setZoom(17);
+                    setShowShopModal(true);
+                  }}
+                >
+                  <MarkerUI
+                    shop={shop}
+                    isActive={selectedShop?.id === shop.id}
+                    delay={i * 0.05}
+                  />
+                </MapMarker>
+              ))}
+            </Map>
           </div>
 
-          <div className="flex gap-5 overflow-x-auto no-scrollbar pb-6 -mx-2 px-2 snap-x scroll-smooth">
-            {sortedShops.length > 0
-              ? sortedShops.map((shop, i) => (
+          {/* Controls - Premium Float */}
+          <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-20">
+            {[
+              { icon: ZoomIn, action: () => setZoom((z) => Math.min(z + 1, 20)) },
+              { icon: ZoomOut, action: () => setZoom((z) => Math.max(z - 1, 12)) },
+              { icon: Maximize, action: () => setZoom(12) },
+              { icon: Navigation, action: () => { } },
+            ].map((item, i) => (
+              <button
+                key={i}
+                onClick={item.action}
+                className="w-12 h-12 bg-white/90 backdrop-blur-2xl text-slate-800 rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.1)] hover:text-blue-600 transition-all border border-white/50 flex items-center justify-center group hover:scale-110 active:scale-95"
+              >
+                <item.icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 3. REDESIGNED SLIDING CARDS */}
+        <div className="absolute bottom-8 left-0 right-0 z-30 px-2 md:px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <h3 className="text-[10px] font-black text-slate-900 bg-white/90 backdrop-blur-xl px-4 py-2.5 rounded-2xl shadow-xl border border-white/50 flex items-center gap-2.5 uppercase tracking-tighter">
+                  <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></div>
+                  Verified Local Hubs ({sortedShops.length})
+                </h3>
+              </div>
+            </div>
+
+            <div className="flex gap-5 overflow-x-auto no-scrollbar pb-6 -mx-2 px-2 snap-x scroll-smooth">
+              {sortedShops.length > 0
+                ? sortedShops.map((shop, i) => (
                   <div
                     key={shop.id}
                     style={{ animationDelay: `${i * 60}ms` }}
@@ -441,7 +447,7 @@ const MapExplore = ({ isCollapsed, isLoggedIn, openLogin }) => {
                     </div>
                   </div>
                 ))
-              : !loading && (
+                : !loading && (
                   <div className="w-full h-[130px] flex flex-col items-center justify-center bg-white/80 backdrop-blur-xl rounded-[1.5rem] border-2 border-dashed border-slate-200">
                     <Globe className="w-10 h-10 text-slate-200 mb-2 animate-pulse" />
                     <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">
@@ -449,50 +455,50 @@ const MapExplore = ({ isCollapsed, isLoggedIn, openLogin }) => {
                     </p>
                   </div>
                 )}
-          </div>
-        </div>
-      </div>
-
-      {/* ── MAP BOTTOM INFO STRIP ── */}
-      <div className="absolute bottom-0 left-0 right-0 z-30 pointer-events-none">
-        <div className="bg-gradient-to-t from-white/95 via-white/70 to-transparent pt-6 pb-4 px-4 md:px-6">
-          <div className="pointer-events-auto flex flex-wrap items-center justify-between gap-3 max-w-5xl mx-auto">
-            <div className="flex items-center gap-3 flex-wrap">
-              {[
-                { icon: <Search className="w-3.5 h-3.5" />, text: "Search by category", color: "text-blue-600 bg-blue-50 border-blue-100" },
-                { icon: <MapPin className="w-3.5 h-3.5" />, text: "Click a pin for details", color: "text-emerald-600 bg-emerald-50 border-emerald-100" },
-                { icon: <Navigation className="w-3.5 h-3.5" />, text: "Get directions", color: "text-indigo-600 bg-indigo-50 border-indigo-100" },
-              ].map((tip, i) => (
-                <div key={i} className={`inline-flex items-center gap-2 px-3 py-1.5 ${tip.color} border rounded-full text-[10px] font-bold`}>
-                  {tip.icon} {tip.text}
-                </div>
-              ))}
             </div>
-            {shops.length > 0 && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900/80 backdrop-blur-md rounded-full">
-                <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-                <span className="text-[10px] font-black text-white uppercase tracking-widest">{shops.length} Businesses Found</span>
-              </div>
-            )}
           </div>
         </div>
-      </div>
 
-    </div> {/* END OF MAP CONTAINER */}
+        {/* ── MAP BOTTOM INFO STRIP ── */}
+        <div className="absolute bottom-0 left-0 right-0 z-30 pointer-events-none">
+          <div className="bg-gradient-to-t from-white/95 via-white/70 to-transparent pt-6 pb-4 px-4 md:px-6">
+            <div className="pointer-events-auto flex flex-wrap items-center justify-between gap-3 max-w-5xl mx-auto">
+              <div className="flex items-center gap-3 flex-wrap">
+                {[
+                  { icon: <Search className="w-3.5 h-3.5" />, text: "Search by category", color: "text-blue-600 bg-blue-50 border-blue-100" },
+                  { icon: <MapPin className="w-3.5 h-3.5" />, text: "Click a pin for details", color: "text-emerald-600 bg-emerald-50 border-emerald-100" },
+                  { icon: <Navigation className="w-3.5 h-3.5" />, text: "Get directions", color: "text-indigo-600 bg-indigo-50 border-indigo-100" },
+                ].map((tip, i) => (
+                  <div key={i} className={`inline-flex items-center gap-2 px-3 py-1.5 ${tip.color} border rounded-full text-[10px] font-bold`}>
+                    {tip.icon} {tip.text}
+                  </div>
+                ))}
+              </div>
+              {shops.length > 0 && (
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900/80 backdrop-blur-md rounded-full">
+                  <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                  <span className="text-[10px] font-black text-white uppercase tracking-widest">{shops.length} Businesses Found</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
 
-    {showShopModal && selectedShop && (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in" onClick={() => setShowShopModal(false)}>
-        <div
-          onClick={(e) => e.stopPropagation()}
-          className="relative w-full max-w-[340px] bg-white text-slate-900 rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col animate-scale-in mt-16 sm:mt-0"
-        >
-            <button 
+      </div> {/* END OF MAP CONTAINER */}
+
+      {showShopModal && selectedShop && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in" onClick={() => setShowShopModal(false)}>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-[340px] bg-white text-slate-900 rounded-[10px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col animate-scale-in mt-16 sm:mt-0"
+          >
+            <button
               onClick={() => setShowShopModal(false)}
               className="absolute top-4 right-4 z-20 w-8 h-8 bg-black/20 hover:bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all shadow-sm"
             >
               <X className="w-4 h-4" />
             </button>
-            
+
             <div className="h-44 relative bg-slate-100">
               {selectedShop.shopImage ? (
                 <img src={selectedShop.shopImage} alt={selectedShop.shopName} className="w-full h-full object-cover" />
@@ -503,12 +509,12 @@ const MapExplore = ({ isCollapsed, isLoggedIn, openLogin }) => {
               )}
               {/* Subtle bottom shadow on image */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-0"></div>
-              
+
               <div className="absolute bottom-4 left-5 px-3 py-1.5 bg-white/95 backdrop-blur-md rounded-lg text-[10px] font-black text-blue-600 uppercase tracking-widest shadow-sm z-10">
                 {selectedShop.category}
               </div>
             </div>
-            
+
             <div className="p-6 flex flex-col gap-5 relative z-10 bg-white">
               <div>
                 <h3 className="text-xl font-black text-slate-900 tracking-tight leading-tight mb-2">
@@ -519,7 +525,7 @@ const MapExplore = ({ isCollapsed, isLoggedIn, openLogin }) => {
                   {selectedShop.address || "Local Hub, Mapman sector"}
                 </p>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2 bg-blue-50/50 px-3 py-2 rounded-xl border border-blue-100/50">
                   <Navigation className="w-4 h-4 text-blue-600" />
@@ -528,9 +534,9 @@ const MapExplore = ({ isCollapsed, isLoggedIn, openLogin }) => {
                   </span>
                 </div>
               </div>
-              
+
               <div className="pt-2 grid grid-cols-2 gap-3">
-                <button 
+                <button
                   onClick={() => {
                     if (selectedShop.lat && selectedShop.long) {
                       window.open(`https://www.google.com/maps?q=${selectedShop.lat},${selectedShop.long}`, "_blank");
@@ -540,7 +546,7 @@ const MapExplore = ({ isCollapsed, isLoggedIn, openLogin }) => {
                 >
                   <Navigation className="w-3.5 h-3.5 text-slate-500" /> Directions
                 </button>
-                <button 
+                <button
                   onClick={() => {
                     if (!isLoggedIn) {
                       setShowShopModal(false);
@@ -555,12 +561,12 @@ const MapExplore = ({ isCollapsed, isLoggedIn, openLogin }) => {
                 </button>
               </div>
             </div>
+          </div>
         </div>
-      </div>
-    )}
+      )}
 
-  </>
-);
+    </>
+  );
 };
 
 // --- MEMOIZED MARKER UI COMPONENT ---
@@ -619,62 +625,6 @@ const getCategoryBorderColor = (category = "") => {
   if (cat.includes("hotel") || cat.includes("stay")) return "border-blue-500";
   if (cat.includes("furniture") || cat.includes("wood")) return "border-teal-500";
   return "border-indigo-500";
-};
-
-const getCategoryIcon = (category = "") => {
-  const cat = category.toLowerCase();
-  let iconName = "Others";
-
-  // Mapping provided by USER list: theater, restaurant, hospital, bar, grocery, textile, resort, bunk, spa, hotel, others
-  if (cat.includes("theater") || cat.includes("cinema")) iconName = "Theater";
-  else if (
-    cat.includes("restaurant") ||
-    cat.includes("food") ||
-    cat.includes("eating")
-  )
-    iconName = "Restaurant";
-  else if (
-    cat.includes("hospital") ||
-    cat.includes("medical") ||
-    cat.includes("health")
-  )
-    iconName = "Hospital";
-  else if (cat.includes("bar") || cat.includes("pub") || cat.includes("drink"))
-    iconName = "Bar";
-  else if (
-    cat.includes("grocery") ||
-    cat.includes("shopping") ||
-    cat.includes("store")
-  )
-    iconName = "Grocery";
-  else if (
-    cat.includes("textile") ||
-    cat.includes("cloth") ||
-    cat.includes("fashion")
-  )
-    iconName = "Textile";
-  else if (cat.includes("resort") || cat.includes("park")) iconName = "Resorts";
-  else if (
-    cat.includes("bunk") ||
-    cat.includes("fuel") ||
-    cat.includes("petrol")
-  )
-    iconName = "Bunk";
-  else if (
-    cat.includes("spa") ||
-    cat.includes("salon") ||
-    cat.includes("beauty")
-  )
-    iconName = "Spa";
-  else if (cat.includes("hotel") || cat.includes("stay")) iconName = "Hotel";
-
-  return (
-    <img
-      src={`/assets/${iconName}.png`}
-      alt={category}
-      className="w-full h-full object-contain"
-    />
-  );
 };
 
 export default MapExplore;
